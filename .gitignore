@@ -16,4 +16,8 @@ Thumbs.db
 
 # Swap files #
 ##############
-.*~
+*~
+
+# Config file #
+###############
+config.php
