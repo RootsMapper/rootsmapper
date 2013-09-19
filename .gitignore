@@ -17,6 +17,7 @@ Thumbs.db
 # Swap files #
 ##############
 *~
+*.swp
 
 # Config file #
 ###############

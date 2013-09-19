@@ -2,6 +2,7 @@
 var polyarray = [];
 var markarray = [];
 var infoarray = [];
+var accesstoken;
 
 
     function getLocationPoints(locations) {
@@ -210,17 +211,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     function getSessionId(gen) {
 
-        var key = "AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA";
-        var url = "https://sandbox.familysearch.org/identity/v2/login?key=" + key;
-
-		var xhttp;
-		xhttp=new XMLHttpRequest();
-		xhttp.open("GET",url);
-		xhttp.send();
-		var xmlDocument = xhttp.responseXML;
-                var session = xmlDocument.getElementsByTagName("session");
-                var sessionID = session[0].getAttribute("id");
-                ancestors(sessionID,gen);
+                ancestors(accesstoken,gen);
 
     }
 
