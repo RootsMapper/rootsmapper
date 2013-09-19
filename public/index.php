@@ -7,8 +7,6 @@ require_once('includes/config.php');
 
 session_start();
 
-
-
 $fs = new FSAuthentication();
 
 // If we're returning from the oauth2 redirect, capture the code and store session
@@ -27,10 +25,6 @@ if( isset($_REQUEST['code']) ) {
 
 $access_token = $_SESSION['fs-session']; //store access token in variable
 
-//Output code
-//echo "Access token is " . $access_token . "<p/>";
-
-
 ?>
 
 <!DOCTYPE html>
@@ -42,22 +36,34 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
             src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry">
         </script>
         
-        <!-- map references -->
-        <link href="./map.css" rel="stylesheet" />
-        
-        <script src="./map.js"></script>
+	<!-- map references -->
+
+	<!-- loading animation references -->
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+	<script type="text/javascript" src="scripts/jquery.activity-indicator-1.0.0.js"></script>
+	<!-- loading animation references -->
+
+        <link href="css/map.css" rel="stylesheet" />
+        <script src="scripts/map.js"></script>
         <script type="text/javascript">
              accesstoken='<?php echo($access_token); ?>';
-        </script>
+	</script>
+	<script language="javascript" type="text/javascript">
+  		$(window).load(function() {
+    		$('#loading').hide();
+ 	 });
+	</script>
+
     </head>
     <body>
         
         <div id="rootGrid">
             <div id="mapdisplay"></div>
-            <div id="inputFrame">
-                <input id="start" type="text" size="30" placeholder="Generations..." onkeypress="if (event.keyCode ==13) ancestorgens()"/></br>
-                <input id="personid" type="text" size="30" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-            </div>
+	    <div id="inputFrame">
+		<input id="personid" type="text" size="30" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/></br>
+                <input id="start" type="text" size="30" placeholder="Generations..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
+	    </div>
+            <div id="loading" class="square"></div>
            <button id="logoutbutton" onclick="window.location='logout.php'" onmouseover="this.style.backgroundColor='red';return true;" onmouseout="this.style.backgroundColor='darkred';return true;">Logout</button>
         </div>
     </body>

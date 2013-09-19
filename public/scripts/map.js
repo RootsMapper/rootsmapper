@@ -169,6 +169,12 @@ var accesstoken;
 
         var geodesicPoly = new google.maps.Polyline(geodesicOptions);
         polyarray.push(geodesicPoly);
+	$(function() {
+		$('#loading').activity(false);
+        });
+	$(function() {
+    		$('#loading').hide();
+ 	 });
 
     }
 
@@ -451,7 +457,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
 function ancestorgens() {
     clearOverlays();
-
+    $(function() {
+    	$('#loading').show();
+    });
+    $(function() {
+		$('#loading').activity({segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5});
+    });
     var start = document.getElementById('start');
     var gen = parseFloat(start.value);
     getSessionId(gen);
