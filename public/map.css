@@ -17,9 +17,20 @@ html, body {
     width: inherit;
 }
 
+#logoutbutton {
+    position: fixed;
+    bottom:20px;
+    right:20px;
+    margin: 20px;
+    padding: 5px;
+    z-index: 1;
+    background-color: darkred;
+    color: white;
+}
+
 #inputFrame {
     position: fixed;
-    top:20px;
+    bottom:20px;
     left:20px;
     margin: 20px;
     padding: 5px;
@@ -32,12 +43,18 @@ html, body {
 
 #start {
     margin: 0;
+    margin-bottom: 5px;
     border: none;
     width:150px;
-    height:30px;
     float: left;
 }
 
+#personid {
+    margin: 0;
+    border: none;
+    width:150px;
+    float: left;
+}
 
 progress.withText {
     color: inherit;

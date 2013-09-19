@@ -10,12 +10,13 @@ var accesstoken;
         var placearray = new Array();
         var len = locations.length;
         var delay = 100;
+        var tryagain = true;
 
 
         asyncLoop(len, function (loop) {
 
             var idx = loop.iteration();
-            var place = locations[idx];
+            var place = locations[idx].place;
 
             var placesplit = place.split(",");
             if (placesplit.length > 2) {
@@ -26,6 +27,7 @@ var accesstoken;
 
                     // log the iteration
                     placearray[loop.iteration()] = result;
+                    locations[loop.iteration()].latlng = result;
                     if (result == "empty") {
                         delay++
                         loop.prev();
@@ -33,14 +35,41 @@ var accesstoken;
 
                         
                     } else if (result == "other") { 
-                        if ((loop.iteration() + 1) / 2 == Math.round((loop.iteration() + 1) / 2)) { // male
+                        
+                        if (placesplit.length > 2) {
+                            locations[loop.iteration()].place = placesplit[0] + "," + placesplit[2];
+                            if (tryagain == true) {
+                                tryagain = false;
+                                loop.prev();
+                                loop.next();
+                            } else {
+                                if ((loop.iteration() + 1) / 2 == Math.round((loop.iteration() + 1) / 2)) { // male
 
-                            placearray[loop.iteration()] = placearray[(loop.iteration() + 1) / 2 - 1];
-                        } else { // female ancestor
+                                    placearray[loop.iteration()] = placearray[(loop.iteration() + 1) / 2 - 1];
+                                    locations[loop.iteration()].latlng = locations[(loop.iteration() + 1) / 2 - 1].latlng;
+                                } else { // female ancestor
 
-                            placearray[loop.iteration()] = placearray[(loop.iteration()) / 2 - 1];
+                                    placearray[loop.iteration()] = placearray[(loop.iteration()) / 2 - 1];
+                                    locations[loop.iteration()].latlng = locations[(loop.iteration()) / 2 - 1].latlng;
+                                }
+                                tryagain = true;
+                                loop.next();
+
+                            }
+                        } else {
+                            if ((loop.iteration() + 1) / 2 == Math.round((loop.iteration() + 1) / 2)) { // male
+
+                                placearray[loop.iteration()] = placearray[(loop.iteration() + 1) / 2 - 1];
+                                locations[loop.iteration()].latlng = locations[(loop.iteration() + 1) / 2 - 1].latlng;
+                            } else { // female ancestor
+
+                                placearray[loop.iteration()] = placearray[(loop.iteration()) / 2 - 1];
+                                locations[loop.iteration()].latlng = locations[(loop.iteration()) / 2 - 1].latlng;
+                            }
+                            loop.next();
                         }
-                        loop.next();
+
+
                     } else {
                         loop.next();
                     }
@@ -52,13 +81,13 @@ var accesstoken;
         },
         function () {
             //map.setCenter(placearray[0]);
-
+            var infowindow = new google.maps.InfoWindow();
             var bounds = new google.maps.LatLngBounds;
-            for (var i = 0; i < placearray.length; i++) {
-                bounds.extend(placearray[i]);
+            for (var i = 0; i < locations.length; i++) {
+                bounds.extend(locations[i].latlng);
                 var opts = {
                     map: map,
-                    position: placearray[i],
+                    position: locations[i].latlng,
                     icon: {
                         path: google.maps.SymbolPath.CIRCLE,
                         fillOpacity: 0.5,
@@ -70,11 +99,23 @@ var accesstoken;
                     }
                 }
                 var mark = new google.maps.Marker(opts);
+
+                var contents = "<div id='infow'>" + locations[i].name + '<br/>' + locations[i].place + '<br/>' + locations[i].date + '</div>';
+                mark.content = contents;
+                google.maps.event.addListener(mark, 'click', function (event) {
+                    var infoOptions = {
+                        maxWidth: 300
+                    };
+                    infowindow.setContent(this.content);
+                    //infowindow.constructor(infoOptions);
+                    infowindow.open(map, this);
+                });
                 markarray.push(mark);
-                
+                infoarray.push(infowindow);
+
             }
             map.fitBounds(bounds);
-            pedigree(placearray);
+            pedigree(locations);
         }
         );
 
@@ -93,21 +134,21 @@ var accesstoken;
 
             for (var j = paths - 1; j < 2 * paths - 1; j++) {
                 var patharray = new Array();
-                patharray[k] = places[j];
+                patharray[k] = places[j].latlng;
                 var cdx = j;
 
                 for (var i = k - 1; i > 0; i--) {
                     if ((cdx + 1) / 2 == Math.round((cdx + 1) / 2)) { // male
                         cdx = (cdx + 1) / 2 - 1;
-                        patharray[i] = places[cdx];
+                        patharray[i] = places[cdx].latlng;
                     } else { // female ancestor
                         cdx = (cdx) / 2 - 1;
-                        patharray[i] = places[cdx];
+                        patharray[i] = places[cdx].latlng;
                     }
                 }
-                patharray[0] = places[0];
+                patharray[0] = places[0].latlng;
                 if (j < 3 * paths / 2 - 1) {
-                    polymap(patharray, 'blue', 1 * (gen  + 1 - k));
+                    polymap(patharray, 'blue', 1 * (gen + 1 - k));
                 } else {
                     polymap(patharray, '#CC0099', 1 * (gen + 1 - k));
                 }
@@ -217,7 +258,13 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     function ancestors(id,gen) {
         var generations = gen;
-        var personId = "KW7F-W25";
+
+        var querythis = document.getElementById('personid');
+        var personId = querythis.value;
+
+        if (personId == "") {
+            // if empty, use user default
+        }
 
         var url = "https://sandbox.familysearch.org/familytree/v2/pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + id;
 
@@ -225,29 +272,37 @@ google.maps.event.addDomListener(window, 'load', initialize);
 		xhttp=new XMLHttpRequest();
 		xhttp.open("GET",url);
 		xhttp.send();
-		var xmlDocument = xhttp.responseXML;
-                var persons = xmlDocument.getElementsByTagName("person");
-                var tags = new Array();
-                
-                tags[0] = persons[0].getAttribute("id");
-                for (var i = 0; i < Math.pow(2, generations) - 1; i++) {
-                    
-                    var parents = persons[i].getElementsByTagName("parent");
-                    if (parents.length > 1) {
-                        tags[(i + 1) * 2 - 1] = parents[0].getAttribute("id");
-                        tags[(i + 1) * 2] = parents[1].getAttribute("id");
-                    } else {
-                        tags[(i + 1) * 2 - 1] = "";
-                        tags[(i + 1) * 2] = "";
-                    }
-                    //if (i < Math.pow(2, generations - 1) - 1) {
-                    //    if (persons[(i + 1) * 2 - 1].getAttribute("id") !== parents[1].getAttribute("id")) {
-                    //        persons[(i + 1) * 2 - 1]
-                    //    }
-                    //}
-                }
 
-                getLocations(tags, id);
+		xhttp.onload = function (e) {
+		    if (xhttp.readyState === 4) {
+		        if (xhttp.status === 200) {
+		            console.log(xhttp.responseText);
+
+		            var xmlDocument = xhttp.responseXML.documentElement;
+		          
+                        var persons = xmlDocument.getElementsByTagName("person");
+                        var tags = new Array();
+                
+                        tags[0] = persons[0].getAttribute("id");
+                        for (var i = 0; i < Math.pow(2, generations) - 1; i++) {
+                    
+                            var parents = persons[i].getElementsByTagName("parent");
+                            if (parents.length > 1) {
+                                tags[(i + 1) * 2 - 1] = parents[0].getAttribute("id");
+                                tags[(i + 1) * 2] = parents[1].getAttribute("id");
+                            } else {
+                                tags[(i + 1) * 2 - 1] = "";
+                                tags[(i + 1) * 2] = "";
+                            }
+                            
+                        }
+
+                        getLocations(tags, id);
+		        } else {
+		            console.error(xhttp.statusText);
+		        }
+            }
+		};
     }
 
     function getLocations(persons,sessionId) {
@@ -263,13 +318,13 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
                 // log the iteration
                 locations[loop.iteration()] = result;
-                if (result == "") {
+                if (result.place == "") {
                     if ((loop.iteration() + 1) / 2 == Math.round((loop.iteration() + 1) / 2)) { // male
 
-                        locations[loop.iteration()] = locations[(loop.iteration() + 1) / 2 - 1];
+                        locations[loop.iteration()].place = locations[(loop.iteration() + 1) / 2 - 1].place;
                     } else { // female ancestor
 
-                        locations[loop.iteration()] = locations[(loop.iteration()) / 2 - 1];
+                        locations[loop.iteration()].place = locations[(loop.iteration()) / 2 - 1].place;
                     }
                 }
                 // Okay, for cycle could continue
@@ -301,6 +356,10 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 }
             },
 
+            prev: function () {
+                index--;
+            },
+
             iteration: function () {
                 return index - 1;
             },
@@ -319,27 +378,70 @@ google.maps.event.addDomListener(window, 'load', initialize);
         var url = "https://sandbox.familysearch.org/familytree/v2/person/" + id + "?&events=standard&sessionId=" + sessionId;
 
         if (id !== "") {
-		var xhttp;
-		xhttp=new XMLHttpRequest();
-		xhttp.open("GET",url);
-		xhttp.send();
-		var xmlDocument = xhttp.responseXML;
-            
-                var locString = "";
-                var events = xmlDocument.getElementsByTagName("events");
-                if (events[0]) {
+            var xhttp;
+            xhttp = new XMLHttpRequest();
+            xhttp.open("GET", url);
+            xhttp.send();
 
-                	var places = events[0].getElementsByTagName("place");
+            xhttp.onload = function (e) {
+                if (xhttp.readyState === 4) {
+                    if (xhttp.status === 200) {
+                      //  console.log(xhttp.responseText);
+                        var xmlDocument = xhttp.responseXML.documentElement;
 
-			if (places[0]) {
-				var locString = places[0].childNodes[0].innerText;
+                        var locString = "";
+                        var name = "";
+                        var date = "";
+                        var events = xmlDocument.getElementsByTagName("events");
+                        var fullText = xmlDocument.getElementsByTagName("fullText");
+                        if (events[0]) {
+
+
+                            var value = events[0].getElementsByTagName("value");
+
+                            if (value[0].getAttribute("type") == "Birth") {
+
+                                var dates = value[0].getElementsByTagName("date");
+                                var places = value[0].getElementsByTagName("place");
+
+                                if (places[0]) {
+                                    if (places[0].childNodes[1]) {
+                                        var locString = places[0].childNodes[1].textContent;
+                                    } else {
+                                        var locString = places[0].childNodes[0].textContent;
+                                    }
+                                }
+                                if (dates[0]) {
+                                    if (dates[0].childNodes[1]) {
+                                        var date = dates[0].childNodes[1].textContent;
+                                    } else {
+                                        var date = dates[0].childNodes[0].textContent;
+                                    }
+                                }
+                            }
                         }
-                 }
+                        if (fullText[0]) {
+                            var name = fullText[0].textContent;
+                        }
+                        var obj = {
+                            name: name,
+                            place: locString,
+                            date: date
+                        }
+                        callback(obj);
 
-                 callback(locString);
-
+                    } else {
+                        console.error(xhttp.statusText);
+                    }
+                }
+            };
         } else {
-            callback(id);
+            var obj = {
+                name: "",
+                place: "",
+                date: ""
+            }
+            callback(obj);
         }
 
     }

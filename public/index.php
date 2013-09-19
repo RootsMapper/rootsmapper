@@ -51,15 +51,14 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
         </script>
     </head>
     <body>
-        <a href="logout.php">Logout</a>
+        
         <div id="rootGrid">
-            
             <div id="mapdisplay"></div>
             <div id="inputFrame">
-                <input id="start" type="text" size="30" placeholder="Generations..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-                
+                <input id="start" type="text" size="30" placeholder="Generations..." onkeypress="if (event.keyCode ==13) ancestorgens()"/></br>
+                <input id="personid" type="text" size="30" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
             </div>
-           
+           <button id="logoutbutton" onclick="window.location='logout.php'" onmouseover="this.style.backgroundColor='red';return true;" onmouseout="this.style.backgroundColor='darkred';return true;">Logout</button>
         </div>
     </body>
 </html>
