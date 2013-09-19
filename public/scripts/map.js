@@ -9,7 +9,7 @@ var accesstoken;
 
         var placearray = new Array();
         var len = locations.length;
-        var delay = 25;
+        var delay = 100;
         var tryagain = true;
 
 
@@ -29,7 +29,7 @@ var accesstoken;
                     placearray[loop.iteration()] = result;
                     locations[loop.iteration()].latlng = result;
                     if (result == "empty") {
-                        delay++;
+                        delay++
                         loop.prev();
                         loop.next();
 
@@ -69,10 +69,9 @@ var accesstoken;
                             loop.next();
                         }
 
-                    delay = 25;
+
                     } else {
                         loop.next();
-			delay = 25;
                     }
                 })
             }, delay);
