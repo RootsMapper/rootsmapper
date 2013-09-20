@@ -5,6 +5,7 @@ var infoarray = [];
 var accesstoken;
 var infowindow = new google.maps.InfoWindow();
 var firstTime = true;
+var genquery;
 
 
     function getLocationPoints(locations) {
@@ -151,7 +152,11 @@ var firstTime = true;
 
         var mark = new google.maps.Marker(opts);
 
-        var contents = "<div id='infow'>" + locations[i].name + '<br/>' + locations[i].place + '<br/>' + locations[i].date + '</div>';
+        var contents = "<div id='infow'>" + locations[i].name + '<br/>' +
+            locations[i].place + '<br/>' +
+            locations[i].date + '<br/>' +
+            "<button onclick='ancestorExpand(\"" + locations[i].id + "\")'>" + 'EXPAND</button>' +
+            '</div>';
         mark.content = contents;
         google.maps.event.addListener(mark, 'click', function (event) {
             var infoOptions = {
@@ -177,10 +182,14 @@ var firstTime = true;
         //var num = places.length + 1;
         var gen = Math.round(Math.log(num + 1) / Math.log(2) - 1);
         var tgen = Math.round(Math.log(places.length + 1) / Math.log(2) - 1);
-
+        var f = 64 / Math.pow(2, genquery + 1);
+        
+        
         //for (var k = 2; k > 0; k--) {
 
             var paths = Math.pow(2, gen);
+            var p = Math.pow(2, gen) / Math.pow(2, genquery) * 64;
+            var p = Math.round(gen / genquery * 64);
 
             for (var j = paths - 1; j < 2 * paths - 1; j++) {
                 var patharray = new Array();
@@ -196,16 +205,22 @@ var firstTime = true;
                     patharray[0] = places[cdx].latlng;
                 }
                 
-                //patharray[0] = places[0].latlng;
                 if (j < 3 * paths / 2 - 1) {
-                    polymap(patharray, 'blue', 1 * (tgen + 1 - gen), j,function (result) {
+                    var q = 50;
+                } else {
+                    var q = 150;
+                }
+
+                //patharray[0] = places[0].latlng;
+                if ((j + 1) / 2 == Math.round((j + 1) / 2)) { // (j < 3 * paths / 2 - 1) {
+                    polymap(patharray, rgbToHex(q+p,q+p,255), 1 * (tgen + 1 - gen), j,function (result) {
                         makeInfoWindow(places, result);
                         if (result == 2 * paths - 2) {
                             loop.next()
                         }
                     });
                 } else {
-                    polymap(patharray, '#CC0099', 1 * (tgen + 1 - gen), j, function (result) {
+                    polymap(patharray, rgbToHex(255,q+p,q+p), 1 * (tgen + 1 - gen), j, function (result) {
                         makeInfoWindow(places, result);
                         if (result == 2 * paths - 2) {
                             loop.next()
@@ -224,7 +239,7 @@ var firstTime = true;
         var geodesicOptions = {
             strokeColor: color,
             strokeOpacity: 1.0,
-            strokeWeight: thick,
+            strokeWeight: 3,
             geodesic: true,
             path: [c1,c1],
             map: map
@@ -340,14 +355,16 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     }
 
-    function ancestors(id,gen) {
+    function ancestors(id,gen,root) {
         var generations = gen;
 
-        var querythis = document.getElementById('personid');
-        var personId = querythis.value;
-
-        if (personId == "") {
+        
+        if (root) {
+            personId = root;
             // if empty, use user default
+        } else {
+            var querythis = document.getElementById('personid');
+            var personId = querythis.value;
         }
 
         var url = "https://sandbox.familysearch.org/familytree/v2/pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + id;
@@ -412,7 +429,27 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     }
                 }
                 // Okay, for cycle could continue
-                loop.next();
+
+                //if (Math.log(idx + 2) / Math.log(2) == Math.round(Math.log(idx + 2) / Math.log(2))) {
+                //    var thisGen = Math.log(idx + 2) / Math.log(2);
+                //    var lastGen = Math.pow(2, thisGen-1) - 1;
+
+                //    if (idx == 0) {
+                //        loop.next()
+                //    } else if (idx == 2) {
+                //        var locationsGen = locations.slice(0, idx);
+                //        getLocationPoints(locationsGen);
+                //        loop.next();
+                //    } else {
+                //        var locationsGen = locations.slice(lastGen, idx);
+                //        getLocationPoints(locationsGen);
+                //        loop.next();
+                //    }
+                //} else {
+                    loop.next();
+                //}
+
+                
             })
             },
         function () {
@@ -510,7 +547,8 @@ google.maps.event.addDomListener(window, 'load', initialize);
                         var obj = {
                             name: name,
                             place: locString,
-                            date: date
+                            date: date,
+                            id: id
                         }
                         callback(obj);
 
@@ -523,7 +561,8 @@ google.maps.event.addDomListener(window, 'load', initialize);
             var obj = {
                 name: "",
                 place: "",
-                date: ""
+                date: "",
+                id: ""
             }
             callback(obj);
         }
@@ -542,8 +581,8 @@ function ancestorgens() {
 		$('#loading').activity({segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5});
     });
     var start = document.getElementById('start');
-    var gen = parseFloat(start.value);
-    getSessionId(gen);
+    genquery = parseFloat(start.value);
+    getSessionId(genquery);
 
 }
 
@@ -560,3 +599,25 @@ function clearOverlays() {
     polyarray.length = 0;
 
 }
+
+function ancestorExpand(id) {
+    $(function () {
+        $('#loading').show();
+    });
+    $(function () {
+        $('#loading').activity({ segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5 });
+    });
+    var start = document.getElementById('start');
+    var gen = parseFloat(start.value);
+    ancestors(accesstoken, 1,id);
+
+}
+
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    function rgbToHex(r, g, b) {
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
