@@ -39,7 +39,7 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
 	<!-- map references -->
 
 	<!-- loading animation references -->
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
 	<script type="text/javascript" src="scripts/jquery.activity-indicator-1.0.0.js"></script>
 	<!-- loading animation references -->
 
