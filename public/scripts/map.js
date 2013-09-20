@@ -3,6 +3,8 @@ var polyarray = [];
 var markarray = [];
 var infoarray = [];
 var accesstoken;
+var infowindow = new google.maps.InfoWindow();
+var firstTime = true;
 
 
     function getLocationPoints(locations) {
@@ -16,6 +18,8 @@ var accesstoken;
         asyncLoop(len, function (loop) {
 
             var idx = loop.iteration();
+            
+
             var place = locations[idx].place;
 
             var placesplit = place.split(",");
@@ -53,7 +57,7 @@ var accesstoken;
                                     locations[loop.iteration()].latlng = locations[(loop.iteration()) / 2 - 1].latlng;
                                 }
                                 tryagain = true;
-                                loop.next();
+                                callLoopNext(loop, locations)
 
                             }
                         } else {
@@ -66,12 +70,12 @@ var accesstoken;
                                 placearray[loop.iteration()] = placearray[(loop.iteration()) / 2 - 1];
                                 locations[loop.iteration()].latlng = locations[(loop.iteration()) / 2 - 1].latlng;
                             }
-                            loop.next();
+                            callLoopNext(loop, locations)
                         }
 
 
                     } else {
-                        loop.next();
+                        callLoopNext(loop, locations)
                     }
                 })
             }, delay);
@@ -81,94 +85,168 @@ var accesstoken;
         },
         function () {
             //map.setCenter(placearray[0]);
-            var infowindow = new google.maps.InfoWindow();
-            var bounds = new google.maps.LatLngBounds;
-            for (var i = 0; i < locations.length; i++) {
-                bounds.extend(locations[i].latlng);
-                var opts = {
-                    map: map,
-                    position: locations[i].latlng,
-                    icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        fillOpacity: 0.5,
-                        fillColor: 'ff0000',
-                        strokeOpacity: 1.0,
-                        strokeColor: 'fff000',
-                        strokeWeight: 1.0,
-                        scale: 5 //pixels
-                    }
-                }
-                var mark = new google.maps.Marker(opts);
-
-                var contents = "<div id='infow'>" + locations[i].name + '<br/>' + locations[i].place + '<br/>' + locations[i].date + '</div>';
-                mark.content = contents;
-                google.maps.event.addListener(mark, 'click', function (event) {
-                    var infoOptions = {
-                        maxWidth: 300
-                    };
-                    infowindow.setContent(this.content);
-                    //infowindow.constructor(infoOptions);
-                    infowindow.open(map, this);
-                });
-                markarray.push(mark);
-                infoarray.push(infowindow);
-
-            }
-            map.fitBounds(bounds);
-            pedigree(locations);
+          //  plotEmUp(locations);
         }
         );
 
     }
 
+    function callLoopNext(loop,locations) {
+        var idx = loop.iteration();
 
-    function pedigree(places) {
-    
-        var num = places.length + 1;
-        var gen = Math.round(Math.log(num) / Math.log(2) - 1);
+        if (Math.log(idx + 2) / Math.log(2) == Math.round(Math.log(idx + 2) / Math.log(2))) {
+            if (idx !== 0) {
+                plotEmUp(locations,loop);
+            } else {
+                loop.next();
+            }
+        } else {
+            loop.next();
+        }
+        
+    }
 
-        for (var k = gen; k > 0; k--) {
+    function plotEmUp(locations,loop) {
+        //map.setCenter(placearray[0]);
+
+        var bounds = new google.maps.LatLngBounds;
+
+        if (firstTime == true) {
+            makeInfoWindow(locations, 0);
+            firstTime = false;
+        }
+
+        var num = 0;
+        for (var i = 0; i < locations.length; i++) {
+            if (locations[i].latlng) {
+                num++
+            }
+        }
+
+        for (var i = 0; i < num; i++) {
+            if (locations[i].latlng) {
+                bounds.extend(locations[i].latlng);
+                //makeInfoWindow(locations, i);
+            }
+        }
+        map.fitBounds(bounds);
+        pedigree(locations,loop);
+    }
 
 
-            var paths = Math.pow(2, k);
+    function makeInfoWindow(locations,i) {
+        var opts = {
+            map: map,
+            position: locations[i].latlng,
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillOpacity: 0.5,
+                fillColor: 'ff0000',
+                strokeOpacity: 1.0,
+                strokeColor: 'fff000',
+                strokeWeight: 1.0,
+                scale: 5 //pixels
+            }
+        }
+
+        var mark = new google.maps.Marker(opts);
+
+        var contents = "<div id='infow'>" + locations[i].name + '<br/>' + locations[i].place + '<br/>' + locations[i].date + '</div>';
+        mark.content = contents;
+        google.maps.event.addListener(mark, 'click', function (event) {
+            var infoOptions = {
+                maxWidth: 300
+            };
+            infowindow.setContent(this.content);
+            //infowindow.constructor(infoOptions);
+            infowindow.open(map, this);
+        });
+        markarray.push(mark);
+        infoarray.push(infowindow);
+    }
+
+    function pedigree(places,loop) {
+        
+        var num = 0;
+        for (var i = 0; i < places.length; i++) {
+            if (places[i].latlng) {
+                num++
+            }
+        }
+
+        //var num = places.length + 1;
+        var gen = Math.round(Math.log(num + 1) / Math.log(2) - 1);
+        var tgen = Math.round(Math.log(places.length + 1) / Math.log(2) - 1);
+
+        //for (var k = 2; k > 0; k--) {
+
+            var paths = Math.pow(2, gen);
 
             for (var j = paths - 1; j < 2 * paths - 1; j++) {
                 var patharray = new Array();
-                patharray[k] = places[j].latlng;
+                patharray[1] = places[j].latlng;
                 var cdx = j;
 
-                for (var i = k - 1; i > 0; i--) {
-                    if ((cdx + 1) / 2 == Math.round((cdx + 1) / 2)) { // male
-                        cdx = (cdx + 1) / 2 - 1;
-                        patharray[i] = places[cdx].latlng;
-                    } else { // female ancestor
-                        cdx = (cdx) / 2 - 1;
-                        patharray[i] = places[cdx].latlng;
-                    }
+                
+                if ((cdx + 1) / 2 == Math.round((cdx + 1) / 2)) { // male
+                    cdx = (cdx + 1) / 2 - 1;
+                    patharray[0] = places[cdx].latlng;
+                } else { // female ancestor
+                    cdx = (cdx) / 2 - 1;
+                    patharray[0] = places[cdx].latlng;
                 }
-                patharray[0] = places[0].latlng;
+                
+                //patharray[0] = places[0].latlng;
                 if (j < 3 * paths / 2 - 1) {
-                    polymap(patharray, 'blue', 1 * (gen + 1 - k));
+                    polymap(patharray, 'blue', 1 * (tgen + 1 - gen), j,function (result) {
+                        makeInfoWindow(places, result);
+                        if (result == 2 * paths - 2) {
+                            loop.next()
+                        }
+                    });
                 } else {
-                    polymap(patharray, '#CC0099', 1 * (gen + 1 - k));
+                    polymap(patharray, '#CC0099', 1 * (tgen + 1 - gen), j, function (result) {
+                        makeInfoWindow(places, result);
+                        if (result == 2 * paths - 2) {
+                            loop.next()
+                        }
+                    });
                 }
             }
-        }
+        //}
     }
 
-    function polymap(coords, color, thick) {
+    function polymap(coords, color, thick,idx,callback) {
+
+        var c1 = coords[coords.length - 2];
+        var c2 = coords[coords.length - 1];
 
         var geodesicOptions = {
             strokeColor: color,
             strokeOpacity: 1.0,
             strokeWeight: thick,
             geodesic: true,
-            path: coords,
+            path: [c1,c1],
             map: map
         };
 
         var geodesicPoly = new google.maps.Polyline(geodesicOptions);
         polyarray.push(geodesicPoly);
+
+        var step = 0;
+        var numSteps = 250; //Change this to set animation resolution
+        var timePerStep = 1; //Change this to alter animation speed
+        var interval = setInterval(function () {
+            step += 1;
+            if (step > numSteps) {
+                clearInterval(interval);
+                callback(idx);
+            } else {
+                var are_we_there_yet = google.maps.geometry.spherical.interpolate(c1, c2, step / numSteps);
+                geodesicPoly.setPath([c1, are_we_there_yet]);
+            }
+        }, timePerStep);
+
 	$(function() {
 		$('#loading').activity(false);
         });
