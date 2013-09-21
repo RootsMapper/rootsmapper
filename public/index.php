@@ -45,6 +45,7 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
 
         <link href="css/map.css" rel="stylesheet" />
         <script src="scripts/map.js"></script>
+		<script src="scripts/oms.js"></script>
         <script type="text/javascript">
              accesstoken='<?php echo($access_token); ?>';
              subdomain='<?php echo($ENDPOINT_SUBDOMAIN); ?>';
@@ -63,7 +64,8 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
 	    <div id="inputFrame">
 		<input id="personid" type="text" size="30" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/></br>
                 <input id="start" type="text" size="30" placeholder="Generations..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-	    </div>
+	    <button id="populateUser" onclick="populateUser()">ME</button>
+		</div>
             <div id="loading" class="square"></div>
            <button id="logoutbutton" onclick="window.location='logout.php'" onmouseover="this.style.backgroundColor='red';return true;" onmouseout="this.style.backgroundColor='darkred';return true;">Logout</button>
         </div>
