@@ -48,7 +48,7 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
 		<script src="scripts/oms.js"></script>
         <script type="text/javascript">
              accesstoken='<?php echo($access_token); ?>';
-             subdomain='<?php echo($ENDPOINT_SUBDOMAIN); ?>';
+             baseurl='<?php echo("https://" . $ENDPOINT_SUBDOMAIN . ".familysearch.org/familytree/v2/"); ?>';
 	</script>
 	<script language="javascript" type="text/javascript">
   		$(window).load(function() {
