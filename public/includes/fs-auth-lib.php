@@ -3,20 +3,22 @@
 class FSAuthentication {
     public $CurlHeaders;
     public $ResponseCode;
- 
-    private $_AuthorizeUrl = "https://sandbox.familysearch.org/cis-web/oauth2/v3/authorization";
-    private $_AccessTokenUrl = "https://sandbox.familysearch.org/cis-web/oauth2/v3/token";
 
-    public function __construct() {
+    private $_AuthorizeUrl;
+    private $_AccessTokenUrl;
+
+    public function __construct($subdomain) {
         $this->CurlHeaders = array();
         $this->ResponseCode = 0;
+        $this->_AuthorizeUrl = "https://" . $subdomain . ".familysearch.org/cis-web/oauth2/v3/authorization";
+        $this->_AccessTokenUrl = "https://" . $subdomain . ".familysearch.org/cis-web/oauth2/v3/token";
     }
  
     public function RequestAccessCode ($client_id, $redirect_url) {
         return($this->_AuthorizeUrl . "?client_id=" . $client_id . "&response_type=code&redirect_uri=" . $redirect_url);
     }
  
-    // Convert an authorization code from an Elance callback into an access token.
+    // Convert an authorization code from a callback into an access token.
     public function GetAccessToken($client_id, $auth_code) {        
         // Init cUrl.
 	
@@ -54,7 +56,7 @@ class FSAuthentication {
         // NOTE: If testing locally, add the following lines to use a dummy certificate, and to prevent cUrl from attempting to verify
         // the certificate's authenticity. See http://richardwarrender.com/2007/05/the-secret-to-curl-in-php-on-windows/ for more
         // details on this workaround. If your server has a valid SSL certificate installed, comment out these lines.
-        curl_setopt($r, CURLOPT_SSL_VERIFYPEER, false);
+        //curl_setopt($r, CURLOPT_SSL_VERIFYPEER, false);
         //curl_setopt($r, CURLOPT_CAINFO, "C:\wamp\bin\apache\Apache2.2.21\cacert.crt");
  
         // NOTE: For Fiddler2 debugging.
@@ -63,25 +65,6 @@ class FSAuthentication {
         return($r);
     }
  
-    // A generic function that executes an Elance API request. 
-    public function ExecRequest($url, $access_token, $get_params) {
-        // Create request string.
-        $full_url = http_build_query($url, $get_params);
- 
-        $r = $this->InitCurl($url);
- 
-        curl_setopt($r, CURLOPT_HTTPHEADER, array (
-            "Authorization: Basic " . base64_encode($access_token)
-        ));
- 
-        $response = curl_exec($r);
-        if ($response == false) {
-            die("curl_exec() failed. Error: " . curl_error($r));
-        }
- 
-        //Parse JSON return object.
-        return json_decode($response)->{'access_token'};        
-    }
 }
  
 ?>

@@ -6,6 +6,7 @@ var accesstoken;
 var infowindow = new google.maps.InfoWindow();
 var firstTime = true;
 var genquery;
+var subdomain;
 
 
     function getLocationPoints(locations) {
@@ -367,7 +368,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
             var personId = querythis.value;
         }
 
-        var url = "https://sandbox.familysearch.org/familytree/v2/pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + id;
+        var url = "https://" + subdomain + ".familysearch.org/familytree/v2/pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + id;
 
 		var xhttp;
 		xhttp=new XMLHttpRequest();
@@ -496,7 +497,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     function locationPromise(id, sessionId, callback) {
 
-        var url = "https://sandbox.familysearch.org/familytree/v2/person/" + id + "?&events=standard&sessionId=" + sessionId;
+        var url = "https://" + subdomain + ".familysearch.org/familytree/v2/person/" + id + "?&events=standard&sessionId=" + sessionId;
 
         if (id !== "") {
             var xhttp;

@@ -2,18 +2,18 @@
 
 error_reporting(E_ALL);
 
-require_once('includes/fs-auth-lib.php');
 require_once('includes/config.php');
+require_once('includes/fs-auth-lib.php');
 
 session_start();
 
-$fs = new FSAuthentication();
+$fs = new FSAuthentication($ENDPOINT_SUBDOMAIN);
 
 // If we're returning from the oauth2 redirect, capture the code and store session
 // this way we don't have to reauthenticate after every reload
 if( isset($_REQUEST['code']) ) {
 	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
-	  header('Location: ' . basename(__FILE__)); //Refresh page to clear POST variables
+	  header('Location: ' . '/'); //Refresh page to clear POST variables
 	  exit;
   } 
 
@@ -30,7 +30,7 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
 <!DOCTYPE html>
 <html>
     <head>
-        <title></title>
+        <title>RootsMapper</title>
         <!-- Google Maps API reference -->
         <script
             src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry">
@@ -47,6 +47,7 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
         <script src="scripts/map.js"></script>
         <script type="text/javascript">
              accesstoken='<?php echo($access_token); ?>';
+             subdomain='<?php echo($ENDPOINT_SUBDOMAIN); ?>';
 	</script>
 	<script language="javascript" type="text/javascript">
   		$(window).load(function() {
