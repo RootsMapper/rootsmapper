@@ -505,7 +505,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
         return loop;
     }
 
-<<<<<<< HEAD
     function locationPromise(id, sessionId, callback) {
 
         var url = "https://" + subdomain + ".familysearch.org/familytree/v2/person/" + id + "?&events=standard&sessionId=" + sessionId;
@@ -582,9 +581,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
     }
 
 
-
-=======
->>>>>>> a2d11bd017e2848c50445122c358f7f394362e34
 
 function ancestorgens() {
     clearOverlays();
