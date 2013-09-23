@@ -11,7 +11,7 @@ $fs = new FSAuthentication($ENDPOINT_SUBDOMAIN);
 // this way we don't have to reauthenticate after every reload
 if( isset($_REQUEST['code']) ) {
 	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
-	  session_regenerate_id(); //Regenerate session ID
+	  session_regenerate_id(true); //Regenerate session ID
 	  header('Location: ' . '/'); //Refresh page to clear POST variables
 	  exit;
 } 
