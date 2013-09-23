@@ -10,6 +10,7 @@ var genquery;
 var nSearches;
 var delay = 100;
 var baseurl;
+var userID;
 
     function getLocationPoints(progenitors) {
         var len = progenitors.length;
@@ -39,20 +40,22 @@ var baseurl;
                         var loc = place.split(",");
 
                         if (tryagain == true) { // Try one more query with City,Country as search text
-                            progenitors[idx].birth.placequery = loc[0] + "," + loc[loc.length];
+                            progenitors[idx].birth.placequery = loc[0] + "," + loc[loc.length-1];
                             tryagain = false;
                             loop.prev();
                             loop.next();
                         } else {
+                            console.log("Unable to find  birthplace\"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + ".");
                             if (isEven(idx + 1)) { // male
-                                progenitors[idx].birth.latlng = locations[(idx + 1) / 2 - 1].latlng;
+                                progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].latlng;
                             } else { // female
-                                progenitors[idx].latlng = locations[idx / 2 - 1].latlng;
+                                progenitors[idx].latlng = progenitors[idx / 2 - 1].latlng;
                             }
                             tryagain = true;
                             callLoopNext(loop, progenitors)
                         }
                     } else {
+                        tryagain = true;
                         callLoopNext(loop, progenitors)
                     }
                 })
@@ -103,7 +106,6 @@ var baseurl;
 
         for (var i = 0; i < num; i++) {
             if (progenitors[i].birth.latlng) {
-                bounds.extend(progenitors[i].birth.latlng);
                 if (currentBounds.contains(progenitors[i].birth.latlng) == false) {
                     currentBounds.extend(progenitors[i].birth.latlng);
                     map.fitBounds(currentBounds);
@@ -115,53 +117,70 @@ var baseurl;
     }
 
 
-    function makeInfoWindow(progenitors,i) {
-        var opts = {
-            map: map,
-            position: progenitors[i].birth.latlng,
-            icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                fillOpacity: 0.5,
-                fillColor: 'ff0000',
-                strokeOpacity: 1.0,
-                strokeColor: 'fff000',
-                strokeWeight: 1.0,
-                scale: 10 //pixels
+    function makeInfoWindow(progenitors, i) {
+
+        if (progenitors[i].birth.latlng) {
+
+            if (isEven(i + 1)) {
+                var color = 'blue';
+            } else {
+                var color = 'red';
             }
+            if (i == 0) {
+                var color = 'black';
+            }
+
+            var opts = {
+                map: map,
+                position: progenitors[i].birth.latlng,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillOpacity: 0.5,
+                    fillColor: color,
+                    strokeOpacity: 1.0,
+                    strokeColor: 'black',
+                    strokeWeight: 1.0,
+                    scale: 5 //pixels
+                }
+            }
+
+            var mark = new google.maps.Marker(opts);
+            var gen = log2(progenitors.length + 1);
+            var expandButton = "";
+            if (i + 1 > Math.pow(2, gen - 1) - 1) {
+                var expandButton = "<button onclick='ancestorExpand(\"" + progenitors[i].id + "\")'>" + 'EXPAND</button>';
+            }
+
+            var contents = "<div id='infow'>" + progenitors[i].name + '<br/>' +
+                progenitors[i].birth.place + '<br/>' +
+                progenitors[i].birth.date + '<br/>' +
+                expandButton +
+                "<button onclick='populateIdField(\"" + progenitors[i].id + "\")'>" + progenitors[i].id + '</button>' +
+                '</div>';
+            mark.content = contents;
+
+            google.maps.event.addListener(mark, 'click', function (event) {
+                var infoOptions = {
+                    maxWidth: 300
+                };
+                infowindow.setContent(this.content);
+                //infowindow.constructor(infoOptions);
+                infowindow.open(map, this);
+            });
+
+            oms.addListener('click', function (mark, event) {
+                infowindow.setContent(mark.content);
+                infowindow.open(map, mark);
+            });
+
+            oms.addListener('spiderfy', function (mark) {
+                infowindow.close();
+            });
+
+            oms.addMarker(mark);
+            markarray.push(mark);
+            infoarray.push(infowindow);
         }
-
-        var mark = new google.maps.Marker(opts);
-        var gen = log2(progenitors.length+1);
-        var expandButton = "";
-        if (i + 1 > Math.pow(2, gen - 1) - 1) {
-            var expandButton = "<button onclick='ancestorExpand(\"" + progenitors[i].id + "\")'>" + 'EXPAND</button>';
-        }
-
-        var contents = "<div id='infow'>" + progenitors[i].name + '<br/>' +
-            progenitors[i].birth.place + '<br/>' +
-            progenitors[i].birth.date + '<br/>' +
-            expandButton +
-            "<button onclick='populateIdField(\"" + progenitors[i].id + "\")'>" + 'START HERE</button>' +
-            '</div>';
-        mark.content = contents;
-
-        google.maps.event.addListener(mark, 'click', function (event) {
-            var infoOptions = {
-                maxWidth: 300
-            };
-            infowindow.setContent(this.content);
-            //infowindow.constructor(infoOptions);
-            infowindow.open(map, this);
-        });
-
-        oms.addListener('click', function (event) {
-            infowindow.setContent(this.content);
-            infowindow.open(map, this);
-        });
-
-        oms.addMarker(mark);
-        markarray.push(mark);
-        infoarray.push(infowindow);
     }
 
     function pedigree(progenitors, loop) {
@@ -175,7 +194,7 @@ var baseurl;
         
         
         //for (var k = 2; k > 0; k--) {
-
+        loadingAnimationEnd();
             var paths = Math.pow(2, gen);
             var p = Math.pow(2, gen) / Math.pow(2, genquery) * 64;
             var p = Math.round(gen / genquery * 64);
@@ -197,27 +216,31 @@ var baseurl;
                 }
                 
                 if (j < 3 * paths / 2 - 1) {
-                    // Paternal ancestor
-                    var q = 50;
+                    polymap(patharray, rgbToHex(74,96,255), 1 * (tgen + 1 - gen), j, function (result) {
+                        makeInfoWindow(progenitors, result);
+                        if (result == 2 * paths - 2) {
+                            if (gen !== tgen) {
+                                loadingAnimationStart();
+                            }
+                            loop.next()
+                        }
+                    });
                 } else {
-                    // Maternal ancestor
-                    var q = 150;
+                    polymap(patharray, rgbToHex(255,96,182), 1 * (tgen + 1 - gen), j, function (result) {
+                        makeInfoWindow(progenitors, result);
+                        if (result == 2 * paths - 2) {
+                            if (gen !== tgen) {
+                                loadingAnimationStart();
+                            }
+                            loop.next()
+                        }
+                    });
                 }
 
                 if (isEven(j + 1)) {
-                    polymap(patharray, rgbToHex(q+p,q+p,255), 1 * (tgen + 1 - gen), j,function (result) {
-                        makeInfoWindow(progenitors, result);
-                        if (result == 2 * paths - 2) {
-                            loop.next()
-                        }
-                    });
+                    
                 } else {
-                    polymap(patharray, rgbToHex(255,q+p,q+p), 1 * (tgen + 1 - gen), j, function (result) {
-                        makeInfoWindow(progenitors, result);
-                        if (result == 2 * paths - 2) {
-                            loop.next()
-                        }
-                    });
+                    
                 }
             }
         //}
@@ -259,12 +282,7 @@ var baseurl;
             callback(idx);
         }
 
-	$(function() {
-		$('#loading').activity(false);
-        });
-	$(function() {
-    		$('#loading').hide();
- 	 });
+	
 
     }
 
@@ -341,12 +359,20 @@ var baseurl;
         var place = new google.maps.LatLng(lat, lng);
         var mapOptions = {
             zoom: 3,
-            center: place
+            center: place,
+            streetViewControl: false,
+            panControl: false,
+            zoomControl: true,
+            zoomControlOptions: {
+                style: google.maps.ZoomControlStyle.DEFAULT,
+                position: google.maps.ControlPosition.LEFT_BOTTOM
+            },
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
-        oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 40 });
+        oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 10 });
 
         populateUser();
+
         //var selectMode = document.getElementsByName('mode');
         //selectMode[0].checked = true;
     }
@@ -580,18 +606,30 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     }
 
+    function loadingAnimationStart() {
+        $(function () {
+            $('#loading').show();
+        });
+        $(function () {
+            $('#loading').activity({ segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5 });
+        });
+    }
 
+    function loadingAnimationEnd() {
+        $(function () {
+            $('#loading').activity(false);
+        });
+        $(function () {
+            $('#loading').hide();
+        });
+    }
 
 function ancestorgens() {
     clearOverlays();
-    $(function() {
-    	$('#loading').show();
-    });
-    $(function() {
-		$('#loading').activity({segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5});
-    });
+    loadingAnimationStart();
     var start = document.getElementById('start');
-    genquery = parseFloat(start.value);
+    var select = document.getElementById('genSelect');
+    genquery = parseFloat(select.value);
     getSessionId(genquery);
 
 }
@@ -614,12 +652,8 @@ function clearOverlays() {
 }
 
 function ancestorExpand(id) {
-    $(function () {
-        $('#loading').show();
-    });
-    $(function () {
-        $('#loading').activity({ segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5 });
-    });
+
+    loadingAnimationStart();
     var start = document.getElementById('start');
     var gen = parseFloat(start.value);
     ancestors(accesstoken, 1,id);
@@ -719,9 +753,16 @@ function ancestorExpand(id) {
     }
 
     function populateUser() {
-        personRead("", function (currentUser) {
-            populateIdField(currentUser.id);
-        });
+        if (!userID) {
+            personRead("", function (currentUser) {
+                populateIdField(currentUser.id);
+                userID = currentUser.id;
+                var username = document.getElementById("username");
+                username.value = currentUser.name;
+            });
+        } else {
+            populateIdField(userID);
+        }
     }
 
     function isEven(num) {

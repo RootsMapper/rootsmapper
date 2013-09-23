@@ -62,12 +62,30 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
         <div id="rootGrid">
             <div id="mapdisplay"></div>
 	    <div id="inputFrame">
-		<input id="personid" type="text" size="30" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/></br>
-                <input id="start" type="text" size="30" placeholder="Generations..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-	    <button id="populateUser" onclick="populateUser()">ME</button>
+			<div class="hoverdiv">
+				<input id="personid" class="boxes" type="text" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
+				<button id="populateUser" class="buttons" onclick="populateUser()">ME</button>
+			</div>
+			<div class="hoverdiv">
+				<select id="genSelect" class="boxes">
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+				</select>
+				<button id="runButton" class="buttons" onclick="ancestorgens()">RUN</button>
+			</div>
+			<div class="hoverdiv">
+				<input id="username" class="boxes" type="text" readonly>
+				<button id="logoutbutton" class="buttons" onclick="window.location='logout.php'" onmouseover="this.style.backgroundColor='red';return true;" onmouseout="this.style.backgroundColor='darkred';return true;">LOGOUT</button>
+			</div>
 		</div>
+		
             <div id="loading" class="square"></div>
-           <button id="logoutbutton" onclick="window.location='logout.php'" onmouseover="this.style.backgroundColor='red';return true;" onmouseout="this.style.backgroundColor='darkred';return true;">Logout</button>
+           
         </div>
     </body>
 </html>
