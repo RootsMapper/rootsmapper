@@ -31,6 +31,7 @@ html, body {
 #inputFrame {
     position: fixed;
     top: 5px;
+    left: 10px;
     margin: 0 auto;
     width: 800px;
     z-index: 1;
@@ -112,6 +113,26 @@ html, body {
     height: 30px;
     width: 75px;
 }
+
+    .bluebutton {
+        height: 30px;
+        width: 75px;
+        background-color: dodgerblue;
+        color: white;
+        border: 1px solid dodgerblue;
+        border-radius: 2px;     
+        margin-right: 5px;
+    }
+
+    .greenbutton {
+        height: 30px;
+        width: 75px;
+        background-color: green;
+        color: white;
+        border: 1px solid green;
+        border-radius: 2px;     
+        margin-right: 5px;
+    }
 
 #populateUser {
     float: left;

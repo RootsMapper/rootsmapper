@@ -148,14 +148,14 @@ var userID;
             var gen = log2(progenitors.length + 1);
             var expandButton = "";
             if (i + 1 > Math.pow(2, gen - 1) - 1) {
-                var expandButton = "<button onclick='ancestorExpand(\"" + progenitors[i].id + "\")'>" + 'EXPAND</button>';
+                var expandButton = "<button class='greenbutton' onclick='ancestorExpand(\"" + progenitors[i].id + "\")'>" + 'EXPAND</button>';
             }
 
             var contents = "<div id='infow'>" + progenitors[i].name + '<br/>' +
                 progenitors[i].birth.place + '<br/>' +
                 progenitors[i].birth.date + '<br/>' +
                 expandButton +
-                "<button onclick='populateIdField(\"" + progenitors[i].id + "\")'>" + progenitors[i].id + '</button>' +
+                "<button class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" + progenitors[i].id + "\")'>" + progenitors[i].id + '</button>' +
                 '</div>';
             mark.content = contents;
 
@@ -221,6 +221,8 @@ var userID;
                         if (result == 2 * paths - 2) {
                             if (gen !== tgen) {
                                 loadingAnimationStart();
+                            } else {
+                                completionEvents();
                             }
                             loop.next()
                         }
@@ -231,6 +233,8 @@ var userID;
                         if (result == 2 * paths - 2) {
                             if (gen !== tgen) {
                                 loadingAnimationStart();
+                            } else {
+                                completionEvents();
                             }
                             loop.next()
                         }
@@ -531,80 +535,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
         return loop;
     }
 
-    function locationPromise(id, sessionId, callback) {
-
-        var url = baseurl + "person/" + id + "?&events=standard&sessionId=" + sessionId;
-
-        if (id !== "") {
-            var xhttp;
-            xhttp = new XMLHttpRequest();
-            xhttp.open("GET", url);
-            xhttp.send();
-
-            xhttp.onload = function (e) {
-                if (xhttp.readyState === 4) {
-                    if (xhttp.status === 200) {
-                      //  console.log(xhttp.responseText);
-                        var xmlDocument = xhttp.responseXML.documentElement;
-
-                        var locString = "";
-                        var name = "";
-                        var date = "";
-                        var events = xmlDocument.getElementsByTagName("events");
-                        var fullText = xmlDocument.getElementsByTagName("fullText");
-                        if (events[0]) {
-
-
-                            var value = events[0].getElementsByTagName("value");
-
-                            if (value[0].getAttribute("type") == "Birth") {
-
-                                var dates = value[0].getElementsByTagName("date");
-                                var places = value[0].getElementsByTagName("place");
-
-                                if (places[0]) {
-                                    if (places[0].childNodes[1]) {
-                                        var locString = places[0].childNodes[1].textContent;
-                                    } else {
-                                        var locString = places[0].childNodes[0].textContent;
-                                    }
-                                }
-                                if (dates[0]) {
-                                    if (dates[0].childNodes[1]) {
-                                        var date = dates[0].childNodes[1].textContent;
-                                    } else {
-                                        var date = dates[0].childNodes[0].textContent;
-                                    }
-                                }
-                            }
-                        }
-                        if (fullText[0]) {
-                            var name = fullText[0].textContent;
-                        }
-                        var obj = {
-                            name: name,
-                            place: locString,
-                            date: date,
-                            id: id
-                        }
-                        callback(obj);
-
-                    } else {
-                        console.error(xhttp.statusText);
-                    }
-                }
-            };
-        } else {
-            var obj = {
-                name: "",
-                place: "",
-                date: "",
-                id: ""
-            }
-            callback(obj);
-        }
-
-    }
 
     function loadingAnimationStart() {
         $(function () {
@@ -624,9 +554,10 @@ google.maps.event.addDomListener(window, 'load', initialize);
         });
     }
 
-function ancestorgens() {
-    clearOverlays();
-    loadingAnimationStart();
+    function ancestorgens() {
+
+        clearOverlays();
+        startEvents();
     var start = document.getElementById('start');
     var select = document.getElementById('genSelect');
     genquery = parseFloat(select.value);
@@ -654,8 +585,6 @@ function clearOverlays() {
 function ancestorExpand(id) {
 
     loadingAnimationStart();
-    var start = document.getElementById('start');
-    var gen = parseFloat(start.value);
     ancestors(accesstoken, 1,id);
 
 }
@@ -777,4 +706,18 @@ function ancestorExpand(id) {
     function log2(num) {
         // Base 2 logarithm of number
         return Math.log(num) / Math.log(2);
+    }
+
+    function startEvents() {
+        loadingAnimationStart();
+        var runButton = document.getElementById('runButton');
+        runButton.disabled = true;
+        runButton.style.backgroundColor = 'gray';
+    }
+
+    function completionEvents() {
+        loadingAnimationEnd();
+        var runButton = document.getElementById('runButton');
+        runButton.disabled = false;
+        runButton.style.backgroundColor = 'green';
     }
