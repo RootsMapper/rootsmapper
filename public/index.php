@@ -1,7 +1,5 @@
 ﻿<?php
 
-error_reporting(E_ALL);
-
 require_once('includes/config.php');
 require_once('includes/fs-auth-lib.php');
 
@@ -13,12 +11,13 @@ $fs = new FSAuthentication($ENDPOINT_SUBDOMAIN);
 // this way we don't have to reauthenticate after every reload
 if( isset($_REQUEST['code']) ) {
 	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
+	  session_regenerate_id(); //Regenerate session ID
 	  header('Location: ' . '/'); //Refresh page to clear POST variables
 	  exit;
-  } 
+} 
 
-// If don't already have access token, began request
-  else if (!isset($_SESSION['fs-session'])) {
+// If don't already have access token, begin request
+else if (!isset($_SESSION['fs-session'])) {
 	$url = $fs->RequestAccessCode($DEV_KEY, $OAUTH2_REDIRECT_URI);
 	header("Location: " . $url); //Redirect to FamilySearch auth page
 }
