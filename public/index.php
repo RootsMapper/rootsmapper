@@ -7,17 +7,27 @@ session_start();
 
 $fs = new FSAuthentication($ENDPOINT_SUBDOMAIN);
 
+//Generate fingerprint for session security
+$fingerprint = $SECRET_WORD . $_SERVER['HTTP_USER_AGENT'];
+$ipblocks = explode('.', $_SERVER['REMOTE_ADDR']);
+for ($i=0; $i<2; $i++)
+{
+	$fingerprint .= $ipblocks[$i] . '.';
+}
+
+
 // If we're returning from the oauth2 redirect, capture the code and store session
 // this way we don't have to reauthenticate after every reload
 if( isset($_REQUEST['code']) ) {
-	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
 	  session_regenerate_id(true); //Regenerate session ID
+	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
+	  $_SESSION['fingerprint'] = md5($fingerprint);
 	  header('Location: ' . '/'); //Refresh page to clear POST variables
 	  exit;
 } 
 
 // If don't already have access token, begin request
-else if (!isset($_SESSION['fs-session'])) {
+else if (!isset($_SESSION['fs-session']) || $_SESSION['fingerprint'] != md5($fingerprint)) {
 	$url = $fs->RequestAccessCode($DEV_KEY, $OAUTH2_REDIRECT_URI);
 	header("Location: " . $url); //Redirect to FamilySearch auth page
 }
