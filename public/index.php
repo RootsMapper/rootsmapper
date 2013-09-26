@@ -55,6 +55,7 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
         <link href="css/map.css" rel="stylesheet" />
         <script src="scripts/map.js"></script>
 		<script src="scripts/oms.js"></script>
+		<script src="scripts/markerclusterer.js"></script>
         <script type="text/javascript">
              accesstoken='<?php echo($access_token); ?>';
              baseurl='<?php echo("https://" . $ENDPOINT_SUBDOMAIN . ".familysearch.org/familytree/v2/"); ?>';

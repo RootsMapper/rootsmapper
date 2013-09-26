@@ -21,45 +21,49 @@ var userID;
         asyncLoop(len, function (loop) {
 
             var idx = loop.iteration();
+            if (progenitors[idx]) {
 
-            if (progenitors[idx].birth.placequery) {
-                var place = progenitors[idx].birth.placequery;
-            } else {
-                var place = progenitors[idx].birth.place;
-            }
-            
-            setTimeout(function () {
-                getLatLng(place, function (result) {
+                if (progenitors[idx].birth.placequery) {
+                    var place = progenitors[idx].birth.placequery;
+                } else {
+                    var place = progenitors[idx].birth.place;
+                }
 
-                    progenitors[idx].birth.latlng = result;
-                    if (result == "empty") {
-                        delay++
-                        loop.prev();
-                        loop.next();                        
-                    } else if (result == "other") { 
-                        var loc = place.split(",");
+                setTimeout(function () {
+                    getLatLng(place, function (result) {
 
-                        if (tryagain == true) { // Try one more query with City,Country as search text
-                            progenitors[idx].birth.placequery = loc[0] + "," + loc[loc.length-1];
-                            tryagain = false;
+                        progenitors[idx].birth.latlng = result;
+                        if (result == "empty") {
+                            delay++
                             loop.prev();
                             loop.next();
-                        } else {
-                            console.log("Unable to find  birthplace\"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + ".");
-                            if (isEven(idx + 1)) { // male
-                                progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].latlng;
-                            } else { // female
-                                progenitors[idx].latlng = progenitors[idx / 2 - 1].latlng;
+                        } else if (result == "other") {
+                            var loc = place.split(",");
+
+                            if (tryagain == true) { // Try one more query with City,Country as search text
+                                progenitors[idx].birth.placequery = loc[0] + "," + loc[loc.length - 1];
+                                tryagain = false;
+                                loop.prev();
+                                loop.next();
+                            } else {
+                                console.log("Unable to find  birthplace\"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + ".");
+                                if (isEven(idx + 1)) { // male
+                                    progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].latlng;
+                                } else { // female
+                                    progenitors[idx].latlng = progenitors[idx / 2 - 1].latlng;
+                                }
+                                tryagain = true;
+                                callLoopNext(loop, progenitors)
                             }
+                        } else {
                             tryagain = true;
                             callLoopNext(loop, progenitors)
                         }
-                    } else {
-                        tryagain = true;
-                        callLoopNext(loop, progenitors)
-                    }
-                })
-            }, delay);              
+                    })
+                }, delay);
+            } else {
+                callLoopNext(loop, progenitors);
+            }
      
         }, function () { });
 
@@ -97,18 +101,13 @@ var userID;
             firstTime = false;
         }
 
-        var num = 0;
         for (var i = 0; i < progenitors.length; i++) {
-            if (progenitors[i].birth.latlng) {
-                num++
-            }
-        }
-
-        for (var i = 0; i < num; i++) {
-            if (progenitors[i].birth.latlng) {
-                if (currentBounds.contains(progenitors[i].birth.latlng) == false) {
-                    currentBounds.extend(progenitors[i].birth.latlng);
-                    map.fitBounds(currentBounds);
+            if (progenitors[i]) {
+                if (progenitors[i].birth.latlng) {
+                    if (currentBounds.contains(progenitors[i].birth.latlng) == false) {
+                        currentBounds.extend(progenitors[i].birth.latlng);
+                        map.fitBounds(currentBounds);
+                    }
                 }
             }
         }
@@ -123,11 +122,14 @@ var userID;
 
             if (isEven(i + 1)) {
                 var color = 'blue';
+                var bgcolor = 'lightblue';
             } else {
                 var color = 'red';
+                var bgcolor = 'pink';
             }
             if (i == 0) {
                 var color = 'black';
+                var bgcolor = 'lightgray';
             }
 
             var opts = {
@@ -148,10 +150,10 @@ var userID;
             var gen = log2(progenitors.length + 1);
             var expandButton = "";
             if (i + 1 > Math.pow(2, gen - 1) - 1) {
-                var expandButton = "<button class='greenbutton' onclick='ancestorExpand(\"" + progenitors[i].id + "\")'>" + 'EXPAND</button>';
+                var expandButton = "<button class='greenbutton' onclick='this.style.display=\"none\";ancestorExpand(\"" + progenitors[i].id + "\")'>" + 'EXPAND</button>';
             }
 
-            var contents = "<div id='infow'>" + progenitors[i].name + '<br/>' +
+            var contents = "<div id='infow' style='background-color:" + bgcolor + "'>" + progenitors[i].name + '<br/>' +
                 progenitors[i].birth.place + '<br/>' +
                 progenitors[i].birth.date + '<br/>' +
                 expandButton +
@@ -159,19 +161,20 @@ var userID;
                 '</div>';
             mark.content = contents;
 
-            google.maps.event.addListener(mark, 'click', function (event) {
-                var infoOptions = {
-                    maxWidth: 300
-                };
-                infowindow.setContent(this.content);
-                //infowindow.constructor(infoOptions);
-                infowindow.open(map, this);
-            });
+            //google.maps.event.addListener(mark, 'click', function (event) {
+            //    var infoOptions = {
+            //        maxWidth: 300
+            //    };
+            //    infowindow.setContent(this.content);
+            //    infowindow.open(map, this);
+            //});
 
             oms.addListener('click', function (mark, event) {
                 infowindow.setContent(mark.content);
                 infowindow.open(map, mark);
             });
+
+            mc.addMarker(mark);
 
             oms.addListener('spiderfy', function (mark) {
                 infowindow.close();
@@ -201,18 +204,24 @@ var userID;
 
             for (var j = paths - 1; j < 2 * paths - 1; j++) {
                 var patharray = new Array();
-                patharray[1] = progenitors[j].birth.latlng;
+                if (progenitors[j]) {
+                    patharray[1] = progenitors[j].birth.latlng;
+                }
                 var cdx = j;
 
                 
                 if (isEven(j + 1)) {
                     // male
                     cdx = (j + 1) / 2 - 1; // child of male
-                    patharray[0] = progenitors[cdx].birth.latlng;
+                    if (progenitors[cdx]) {
+                        patharray[0] = progenitors[cdx].birth.latlng;
+                    }
                 } else {
                     // female ancestor
                     cdx = (cdx) / 2 - 1; // child of female
-                    patharray[0] = progenitors[cdx].birth.latlng;
+                    if (progenitors[cdx]) {
+                        patharray[0] = progenitors[cdx].birth.latlng;
+                    }
                 }
                 
                 if (j < 3 * paths / 2 - 1) {
@@ -374,7 +383,7 @@ var userID;
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 10 });
-
+        mc = new MarkerClusterer(map, [], {maxZoom: 4, gridSize: 20, zoomOnClick: true});
         populateUser();
 
         //var selectMode = document.getElementsByName('mode');
@@ -460,10 +469,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 loop.next();
             }
 
-
-                
-
-                
             },
         function () {
 	    getLocationPoints(progenitors);
@@ -579,6 +584,7 @@ function clearOverlays() {
     firstTime = true;
     nSearches = 0;
     oms.clearMarkers();
+    mc.clearMarkers();
 
 }
 
