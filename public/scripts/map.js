@@ -20,7 +20,11 @@ var userID;
 
         asyncLoop(len, function (loop) {
 
+
             var idx = loop.iteration();
+            if (idx == 26) {
+                var pause = true;
+            }
             if (progenitors[idx]) {
 
                 if (progenitors[idx].birth.placequery) {
@@ -48,13 +52,22 @@ var userID;
                             } else {
                                 console.log("Unable to find  birthplace\"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + ".");
                                 if (isEven(idx + 1)) { // male
-                                    progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].latlng;
+                                    progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].birth.latlng;
                                 } else { // female
-                                    progenitors[idx].latlng = progenitors[idx / 2 - 1].latlng;
+                                    progenitors[idx].birth.latlng = progenitors[idx / 2 - 1].birth.latlng;
                                 }
                                 tryagain = true;
                                 callLoopNext(loop, progenitors)
                             }
+                        } else if (!result) {
+                            console.log("Undefined birthplace for " + progenitors[idx].name + ".");
+                            if (isEven(idx + 1)) { // male
+                                progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].birth.latlng;
+                            } else { // female
+                                progenitors[idx].birth.latlng = progenitors[idx / 2 - 1].birth.latlng;
+                            }
+                            tryagain = true;
+                            callLoopNext(loop, progenitors)
                         } else {
                             tryagain = true;
                             callLoopNext(loop, progenitors)
@@ -209,7 +222,6 @@ var userID;
                 }
                 var cdx = j;
 
-                
                 if (isEven(j + 1)) {
                     // male
                     cdx = (j + 1) / 2 - 1; // child of male
