@@ -73,7 +73,7 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
             <div id="mapdisplay"></div>
 	    <div id="inputFrame">
 			<div class="hoverdiv">
-				<input id="personid" class="boxes" type="text" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
+				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
 				<button id="populateUser" class="buttons" onclick="populateUser()">ME</button>
 			</div>
 			<div class="hoverdiv">

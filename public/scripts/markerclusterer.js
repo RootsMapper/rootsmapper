@@ -369,7 +369,7 @@ MarkerClusterer.prototype.calculator_ = function(markers, numStyles) {
   index = Math.min(index, numStyles);
   return {
     text: count,
-    index: index
+    index: 2
   };
 };
 

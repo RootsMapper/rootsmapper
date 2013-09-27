@@ -50,7 +50,7 @@ var userID;
                                 loop.prev();
                                 loop.next();
                             } else {
-                                console.log("Unable to find  birthplace\"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + ".");
+                                console.log("Unable to find birthplace\"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + ".");
                                 if (isEven(idx + 1)) { // male
                                     progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].birth.latlng;
                                 } else { // female
@@ -69,6 +69,7 @@ var userID;
                             tryagain = true;
                             callLoopNext(loop, progenitors)
                         } else {
+                            console.log("Google Maps search for birthplace \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " returned successful.");
                             tryagain = true;
                             callLoopNext(loop, progenitors)
                         }
@@ -130,72 +131,80 @@ var userID;
 
 
     function makeInfoWindow(progenitors, i) {
+        if (progenitors[i]) {
+            if (progenitors[i].birth.latlng) {
 
-        if (progenitors[i].birth.latlng) {
-
-            if (isEven(i + 1)) {
-                var color = 'blue';
-                var bgcolor = 'lightblue';
-            } else {
-                var color = 'red';
-                var bgcolor = 'pink';
-            }
-            if (i == 0) {
-                var color = 'black';
-                var bgcolor = 'lightgray';
-            }
-
-            var opts = {
-                map: map,
-                position: progenitors[i].birth.latlng,
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    fillOpacity: 0.5,
-                    fillColor: color,
-                    strokeOpacity: 1.0,
-                    strokeColor: 'black',
-                    strokeWeight: 1.0,
-                    scale: 5 //pixels
+                if (isEven(i + 1)) {
+                    var color = 'blue';
+                    var bgcolor = 'lightblue';
+                } else {
+                    var color = 'red';
+                    var bgcolor = 'pink';
                 }
+                if (i == 0) {
+                    var color = 'black';
+                    var bgcolor = 'lightgray';
+                }
+
+                var iconBase = 'localhost/rootsmapper/public/images/';
+
+                if (progenitors[i].gender == "Male") {
+                    var icon = 'images/male' + progenitors[i].generation + '.png';
+                } else {
+                    var icon = 'images/female' + progenitors[i].generation + '.png';
+                }
+
+                var opts = {
+                    map: map,
+                    position: progenitors[i].birth.latlng,
+                    icon: {
+                        url: icon,
+                        origin: new google.maps.Point(0,0),
+                        anchor: new google.maps.Point(12,14)
+                    }
+                }
+
+                var mark = new google.maps.Marker(opts);
+                var gen = log2(progenitors.length + 1);
+                var expandButton = "";
+                if (i + 1 > Math.pow(2, gen - 1) - 1) {
+                    var expandButton = "<button class='greenbutton' onload='if(this.isExpanded){this.style.display=\"none\"};' onclick='this.style.display=\"none\";ancestorExpand(\"" + progenitors[i].id + "\")'>" + 'EXPAND</button>';
+                    mark.isExpanded = false;
+                } else {
+                    mark.isExpanded = true;
+                }
+
+                var contents = "<div id='infow' style='background-color:" + bgcolor + "'>" + progenitors[i].name + '<br/>' +
+                    progenitors[i].birth.place + '<br/>' +
+                    progenitors[i].birth.date + '<br/>' +
+                    expandButton +
+                    "<button class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" + progenitors[i].id + "\")'>" + progenitors[i].id + '</button>' +
+                    '</div>';
+                mark.content = contents;
+
+                //google.maps.event.addListener(mark, 'click', function (event) {
+                //    var infoOptions = {
+                //        maxWidth: 300
+                //    };
+                //    infowindow.setContent(this.content);
+                //    infowindow.open(map, this);
+                //});
+
+                oms.addListener('click', function (mark, event) {
+                    infowindow.setContent(mark.content);
+                    infowindow.open(map, mark);
+                });
+
+                mc.addMarker(mark);
+
+                oms.addListener('spiderfy', function (mark) {
+                    infowindow.close();
+                });
+
+                oms.addMarker(mark);
+                markarray.push(mark);
+                infoarray.push(infowindow);
             }
-
-            var mark = new google.maps.Marker(opts);
-            var gen = log2(progenitors.length + 1);
-            var expandButton = "";
-            if (i + 1 > Math.pow(2, gen - 1) - 1) {
-                var expandButton = "<button class='greenbutton' onclick='this.style.display=\"none\";ancestorExpand(\"" + progenitors[i].id + "\")'>" + 'EXPAND</button>';
-            }
-
-            var contents = "<div id='infow' style='background-color:" + bgcolor + "'>" + progenitors[i].name + '<br/>' +
-                progenitors[i].birth.place + '<br/>' +
-                progenitors[i].birth.date + '<br/>' +
-                expandButton +
-                "<button class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" + progenitors[i].id + "\")'>" + progenitors[i].id + '</button>' +
-                '</div>';
-            mark.content = contents;
-
-            //google.maps.event.addListener(mark, 'click', function (event) {
-            //    var infoOptions = {
-            //        maxWidth: 300
-            //    };
-            //    infowindow.setContent(this.content);
-            //    infowindow.open(map, this);
-            //});
-
-            oms.addListener('click', function (mark, event) {
-                infowindow.setContent(mark.content);
-                infowindow.open(map, mark);
-            });
-
-            mc.addMarker(mark);
-
-            oms.addListener('spiderfy', function (mark) {
-                infowindow.close();
-            });
-
-            oms.addMarker(mark);
-            markarray.push(mark);
-            infoarray.push(infowindow);
         }
     }
 
@@ -394,7 +403,7 @@ var userID;
             },
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
-        oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 10 });
+        oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 25 });
         mc = new MarkerClusterer(map, [], {maxZoom: 4, gridSize: 20, zoomOnClick: true});
         populateUser();
 
@@ -447,8 +456,8 @@ google.maps.event.addDomListener(window, 'load', initialize);
                                 tags[(i + 1) * 2 - 1] = parents[0].getAttribute("id");
                                 tags[(i + 1) * 2] = parents[1].getAttribute("id");
                             } else {
-                                //tags[(i + 1) * 2 - 1] = "";
-                                //tags[(i + 1) * 2] = "";
+                                tags[(i + 1) * 2 - 1]=undefined;
+                                tags[(i + 1) * 2]=undefined;
                             }
                             
                         }
@@ -478,11 +487,18 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 });
             } else {
                 //progress(idx, progenitors, loop)
+                progenitors[idx] = undefined;
                 loop.next();
             }
 
             },
         function () {
+            for (var i = 0; i < progenitors.length; i++) {
+                //if (log2(idx + 2) < Math.round(log2(idx + 2))) {
+                    progenitors[i].generation = Math.ceil(log2(i + 2)) - 1;
+                //}
+            }
+
 	    getLocationPoints(progenitors);
                     }
         );
@@ -628,9 +644,9 @@ function ancestorExpand(id) {
         xhttp.onload = function (e) {
             if (xhttp.readyState === 4) {
                 if (xhttp.status === 200) {
-                    
+
                     var xmlDocument = xhttp.responseXML.documentElement;
-                    
+
                     // Get full name of individual
                     var fullText = xmlDocument.getElementsByTagName("fullText");
                     if (fullText[0]) {
@@ -643,6 +659,11 @@ function ancestorExpand(id) {
                         if (person[0]) {
                             id = person[0].getAttribute("id");
                         }
+                    }
+
+                    var genders = xmlDocument.getElementsByTagName("gender");
+                    if (genders[0]) {
+                        var gender = genders[0].textContent;
                     }
 
                     // Get birth date and location
@@ -671,7 +692,7 @@ function ancestorExpand(id) {
                             }
                         }
                     }
-                    
+
                     // Package birth information
                     var birth = {
                         date: birthDate,
@@ -682,14 +703,19 @@ function ancestorExpand(id) {
                     var personObject = {
                         name: name,
                         id: id,
-                        birth: birth
+                        birth: birth,
+                        gender: gender
                     }
 
                     console.log("Person search for " + name + " (" + id + ")" + " returned successful.");
                     // Send reply
                     callback(personObject);
-                    
+
+                } else {
+                    console.log("Error [" + xhttp.status + "]: " + xhttp.statusText);
                 }
+            } else {
+                console.log("XHTTP Request readystate was " + xhttp.readyState + ", not 4.");
             }
         }
     }
