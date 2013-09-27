@@ -61,10 +61,14 @@ var userID;
                             }
                         } else if (!result) {
                             console.log("Undefined birthplace for " + progenitors[idx].name + ".");
-                            if (isEven(idx + 1)) { // male
-                                progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].birth.latlng;
+                            if (progenitors[idx].gender == "Male") { // male
+                                if (progenitors[(idx + 1) / 2 - 1]) {
+                                    progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].birth.latlng;
+                                }
                             } else { // female
-                                progenitors[idx].birth.latlng = progenitors[idx / 2 - 1].birth.latlng;
+                                if (progenitors[idx / 2 - 1]) {
+                                    progenitors[idx].birth.latlng = progenitors[idx / 2 - 1].birth.latlng;
+                                }
                             }
                             tryagain = true;
                             callLoopNext(loop, progenitors)
@@ -160,27 +164,33 @@ var userID;
                     icon: {
                         url: icon,
                         origin: new google.maps.Point(0,0),
-                        anchor: new google.maps.Point(12,14)
+                        anchor: new google.maps.Point(11.5, 14)
                     }
                 }
 
                 var mark = new google.maps.Marker(opts);
                 var gen = log2(progenitors.length + 1);
+                mark.idx = markarray.length;
                 var expandButton = "";
                 if (i + 1 > Math.pow(2, gen - 1) - 1) {
-                    var expandButton = "<button class='greenbutton' onload='if(this.isExpanded){this.style.display=\"none\"};' onclick='this.style.display=\"none\";ancestorExpand(\"" + progenitors[i].id + "\")'>" + 'EXPAND</button>';
+                    var expandButton = "<button class='greenbutton' onclick='this.style.display=\"none\"; markarray[" +
+                        mark.idx + "].isExpanded=true;ancestorExpand(\"" + progenitors[i].id +
+                        "\"," + progenitors[i].generation + ");infowindow.close();'>" + 'EXPAND</button>';
+                    mark.expand = expandButton;
                     mark.isExpanded = false;
                 } else {
                     mark.isExpanded = true;
+                    mark.expand = "";
                 }
 
-                var contents = "<div id='infow' style='background-color:" + bgcolor + "'>" + progenitors[i].name + '<br/>' +
+                var contents1 = "<div id='infow' style='background-color:" + bgcolor + "'>" + progenitors[i].name + '<br/>' +
                     progenitors[i].birth.place + '<br/>' +
-                    progenitors[i].birth.date + '<br/>' +
-                    expandButton +
-                    "<button class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" + progenitors[i].id + "\")'>" + progenitors[i].id + '</button>' +
+                    progenitors[i].birth.date + '<br/>';
+                var contents2 = "<button class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" + progenitors[i].id + "\")'>" + progenitors[i].id + '</button>' +
                     '</div>';
-                mark.content = contents;
+
+                mark.content1 = contents1;
+                mark.content2 = contents2;
 
                 //google.maps.event.addListener(mark, 'click', function (event) {
                 //    var infoOptions = {
@@ -191,7 +201,12 @@ var userID;
                 //});
 
                 oms.addListener('click', function (mark, event) {
-                    infowindow.setContent(mark.content);
+                    if (mark.isExpanded) {
+                        infowindow.setContent(mark.content1 + mark.content2);
+                    } else {
+                        infowindow.setContent(mark.content1 + mark.expand + mark.content2);
+                    }
+
                     infowindow.open(map, mark);
                 });
 
@@ -403,8 +418,13 @@ var userID;
             },
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
-        oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 25 });
-        mc = new MarkerClusterer(map, [], {maxZoom: 4, gridSize: 20, zoomOnClick: true});
+        oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
+        mc = new MarkerClusterer(map, [], {
+            maxZoom: 4,
+            gridSize: 20,
+            zoomOnClick: true,
+            styles: [ { url: 'images/band.png', height: 46, width: 46, anchor: [8, 0], textSize: 12 }]
+        });
         populateUser();
 
         //var selectMode = document.getElementsByName('mode');
@@ -415,11 +435,11 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     function getSessionId(gen) {
 
-                ancestors(accesstoken,gen);
+                ancestors(accesstoken,gen,undefined,undefined);
 
     }
 
-    function ancestors(id,gen,root) {
+    function ancestors(id,gen,root,rootGen) {
         var generations = gen;
 
         
@@ -462,7 +482,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                             
                         }
 
-                        getLocations(tags, id);
+                        getLocations(tags, id,rootGen);
 		        } else {
 		            console.error(xhttp.statusText);
 		        }
@@ -470,7 +490,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 		};
     }
 
-    function getLocations(persons,sessionId) {
+    function getLocations(persons,sessionId,rootGen) {
         var people = persons.length;
         var locations = new Array();
         var progenitors = new Array();
@@ -493,10 +513,13 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
             },
         function () {
+            if (!rootGen) {
+                rootGen = 0;
+            }
             for (var i = 0; i < progenitors.length; i++) {
-                //if (log2(idx + 2) < Math.round(log2(idx + 2))) {
-                    progenitors[i].generation = Math.ceil(log2(i + 2)) - 1;
-                //}
+                if (progenitors[i]) {
+                    progenitors[i].generation = Math.ceil(log2(i + 2)) - 1 + rootGen;
+                }
             }
 
 	    getLocationPoints(progenitors);
@@ -616,10 +639,10 @@ function clearOverlays() {
 
 }
 
-function ancestorExpand(id) {
+function ancestorExpand(id,rootGen) {
 
     loadingAnimationStart();
-    ancestors(accesstoken, 1,id);
+    ancestors(accesstoken, 1,id,rootGen);
 
 }
 
