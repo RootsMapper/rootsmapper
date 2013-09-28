@@ -641,7 +641,7 @@ function clearOverlays() {
 
 function ancestorExpand(id,rootGen) {
 
-    loadingAnimationStart();
+    startEvents();
     ancestors(accesstoken, 1,id,rootGen);
 
 }
