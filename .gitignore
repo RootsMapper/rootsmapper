@@ -23,3 +23,7 @@ Thumbs.db
 ###############
 config.php
 .htpasswd
+
+# Compiled js #
+###############
+js-src/*.js
