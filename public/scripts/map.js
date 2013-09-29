@@ -133,70 +133,74 @@ google.maps.event.addDomListener(window, 'load', initialize);
             if (ID) {
                 personRead(ID, function (result) {
                     if (result) {
-                        progenitors[idx] = result;
-                        progenitors[idx].generation = Math.ceil(log2(idx + 2)) - 1 + rootGen;
-                        if (idx == 0) {
-                            progenitors[idx].isPaternal = paternal;
-                        } else if (idx == 1 && progenitors[idx].generation == 1) {
-                            progenitors[idx].isPaternal = true;
-                        } else if (idx == 2 && progenitors[idx].generation == 1) {
-                            progenitors[idx].isPaternal = false;
+                        if (result == 503) {
+                            loop.prev();
+                            loop.next();
                         } else {
-                            if (progenitors[idx].gender == "Male") {
-                                if (progenitors[(idx + 1)/2 - 1]) {
-                                    progenitors[idx].isPaternal = progenitors[(idx + 1) / 2 - 1].isPaternal;
-                                }
+                            progenitors[idx] = result;
+                            progenitors[idx].generation = Math.ceil(log2(idx + 2)) - 1 + rootGen;
+                            if (idx == 0) {
+                                progenitors[idx].isPaternal = paternal;
+                            } else if (idx == 1 && progenitors[idx].generation == 1) {
+                                progenitors[idx].isPaternal = true;
+                            } else if (idx == 2 && progenitors[idx].generation == 1) {
+                                progenitors[idx].isPaternal = false;
                             } else {
-                                if (progenitors[idx / 2 - 1]) {
-                                    progenitors[idx].isPaternal = progenitors[idx / 2 - 1].isPaternal;
+                                if (progenitors[idx].gender == "Male") {
+                                    if (progenitors[(idx + 1) / 2 - 1]) {
+                                        progenitors[idx].isPaternal = progenitors[(idx + 1) / 2 - 1].isPaternal;
+                                    }
+                                } else {
+                                    if (progenitors[idx / 2 - 1]) {
+                                        progenitors[idx].isPaternal = progenitors[idx / 2 - 1].isPaternal;
+                                    }
                                 }
                             }
-                        }
-                        
-                        if (placequery) {
-                            var place = placequery;
-                        } else {
-                            var place = progenitors[idx].birth.place;
-                        }
 
-                        setTimeout(function () {
-                            getLatLng(place, function (res) {
+                            if (placequery) {
+                                var place = placequery;
+                            } else {
+                                var place = progenitors[idx].birth.place;
+                            }
 
-                                progenitors[idx].birth.latlng = res;
-                                if (res == "empty") {
-                                    delay++
-                                    loop.prev();
-                                    loop.next();
-                                } else if (res == "other") {
-                                    var loc = place.split(",");
+                            setTimeout(function () {
+                                getLatLng(place, function (res) {
 
-                                    if (tryagain == true) { // Try one more query with City,Country as search text
-                                        placequery = loc[0] + "," + loc[loc.length - 1];
-                                        tryagain = false;
+                                    progenitors[idx].birth.latlng = res;
+                                    if (res == "empty") {
+                                        delay++
                                         loop.prev();
                                         loop.next();
-                                    } else {
-                                        console.log("Unable to find location \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
+                                    } else if (res == "other") {
+                                        var loc = place.split(",");
+
+                                        if (tryagain == true) { // Try one more query with City,Country as search text
+                                            placequery = loc[0] + "," + loc[loc.length - 1];
+                                            tryagain = false;
+                                            loop.prev();
+                                            loop.next();
+                                        } else {
+                                            console.log("Unable to find location \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
+                                            progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
+                                            tryagain = true;
+                                            placequery = undefined;
+                                            callLoopNext(loop, progenitors);
+                                        }
+                                    } else if (!res) {
+                                        console.log("Undefined birthplace for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
                                         progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
                                         tryagain = true;
                                         placequery = undefined;
                                         callLoopNext(loop, progenitors);
+                                    } else {
+                                        //console.log("Google Maps search for birthplace \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " returned successful.");
+                                        tryagain = true;
+                                        placequery = undefined;
+                                        callLoopNext(loop, progenitors);
                                     }
-                                } else if (!res) {
-                                    console.log("Undefined birthplace for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
-                                    progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
-                                    tryagain = true;
-                                    placequery = undefined;
-                                    callLoopNext(loop, progenitors);
-                                } else {
-                                    //console.log("Google Maps search for birthplace \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " returned successful.");
-                                    tryagain = true;
-                                    placequery = undefined;
-                                    callLoopNext(loop, progenitors);
-                                }
-                            })
-                        }, delay);
-
+                                })
+                            }, delay);
+                        }
 
                     } else {
                         progenitors[idx] = undefined;
@@ -290,8 +294,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     callback(personObject);
 
                 } else {
-                    completionEvents();
-                    alert("Error: " + xhttp.statusText);
+                    if (xhttp.status != 503) {
+                        completionEvents();
+                        alert("Error: " + xhttp.statusText);
+                    } else {
+                        callback(xhttp.status);
+                    }
                 }
             }
         };
