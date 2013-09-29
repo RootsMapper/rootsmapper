@@ -6,11 +6,11 @@ html, body {
 }
 
 .square {
-	width: 90px;
-	height: 80px;
+	width: 50px;
+	height: 40px;
 	float: left;
-	margin: 10px;
-	padding: 10px 20px;
+	margin: 0px;
+	padding: 0px 0px;
 	color: #000;
 	background: #fff;
 }
@@ -43,7 +43,7 @@ html, body {
     position: absolute;
     top:50%;
     left:50%;
-    margin-left:-45px;
+    margin-left:-25px;
     margin-top:-40px;
     background-color: black;
     opacity: 0.5;
