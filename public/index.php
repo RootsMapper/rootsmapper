@@ -75,7 +75,7 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
 			<div class="hoverdiv">
 				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
 				<script type="text/javascript" src="scripts/keyfilter.js"></script>
-				<button id="populateUser" class="buttons" onclick="populateUser()">ME</button>
+				<button id="populateUser" class="bluebutton" onclick="populateUser()">ME</button>
 			</div>
 			<div class="hoverdiv">
 				<select id="genSelect" class="boxes">
@@ -87,11 +87,11 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
 					<option value="6">6</option>
 					<option value="7">7</option>
 				</select>
-				<button id="runButton" class="buttons" onclick="ancestorgens()">RUN</button>
+				<button id="runButton" class="runButton" onclick="ancestorgens()">RUN</button>
 			</div>
 			<div class="hoverdiv">
 				<input id="username" class="boxes" type="text" readonly>
-				<button id="logoutbutton" class="buttons" onclick="window.location='logout.php'" onmouseover="this.style.backgroundColor='red';return true;" onmouseout="this.style.backgroundColor='darkred';return true;">LOGOUT</button>
+				<button id="logoutbutton" onclick="window.location='logout.php'">LOGOUT</button>
 			</div>
 		</div>
 		

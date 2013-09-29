@@ -5,403 +5,17 @@ var markarray = [];
 var infoarray = [];
 var accesstoken;
 var infowindow = new google.maps.InfoWindow();
-var firstTime = true;
 var genquery;
 var nSearches;
-var delay = 100;
+var delay = 1;
 var baseurl;
 var userID;
 
-    function getLocationPoints(progenitors) {
-        var len = progenitors.length;
-        
-        var tryagain = true;
 
+google.maps.event.addDomListener(window, 'load', initialize);
 
-        asyncLoop(len, function (loop) {
-
-
-            var idx = loop.iteration();
-            if (idx == 26) {
-                var pause = true;
-            }
-            if (progenitors[idx]) {
-
-                if (progenitors[idx].birth.placequery) {
-                    var place = progenitors[idx].birth.placequery;
-                } else {
-                    var place = progenitors[idx].birth.place;
-                }
-
-                setTimeout(function () {
-                    getLatLng(place, function (result) {
-
-                        progenitors[idx].birth.latlng = result;
-                        if (result == "empty") {
-                            delay++
-                            loop.prev();
-                            loop.next();
-                        } else if (result == "other") {
-                            var loc = place.split(",");
-
-                            if (tryagain == true) { // Try one more query with City,Country as search text
-                                progenitors[idx].birth.placequery = loc[0] + "," + loc[loc.length - 1];
-                                tryagain = false;
-                                loop.prev();
-                                loop.next();
-                            } else {
-                                console.log("Unable to find birthplace\"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + ".");
-                                if (isEven(idx + 1)) { // male
-                                    progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].birth.latlng;
-                                } else { // female
-                                    progenitors[idx].birth.latlng = progenitors[idx / 2 - 1].birth.latlng;
-                                }
-                                tryagain = true;
-                                callLoopNext(loop, progenitors)
-                            }
-                        } else if (!result) {
-                            console.log("Undefined birthplace for " + progenitors[idx].name + ".");
-                            if (progenitors[idx].gender == "Male") { // male
-                                if (progenitors[(idx + 1) / 2 - 1]) {
-                                    progenitors[idx].birth.latlng = progenitors[(idx + 1) / 2 - 1].birth.latlng;
-                                }
-                            } else { // female
-                                if (progenitors[idx / 2 - 1]) {
-                                    progenitors[idx].birth.latlng = progenitors[idx / 2 - 1].birth.latlng;
-                                }
-                            }
-                            tryagain = true;
-                            callLoopNext(loop, progenitors)
-                        } else {
-                            console.log("Google Maps search for birthplace \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " returned successful.");
-                            tryagain = true;
-                            callLoopNext(loop, progenitors)
-                        }
-                    })
-                }, delay);
-            } else {
-                callLoopNext(loop, progenitors);
-            }
-     
-        }, function () { });
-
-    }
-
-    function callLoopNext(loop,progenitors) {
-        var idx = loop.iteration();
-
-        if ( log2(idx+2) == Math.round(log2(idx + 2)) ) { // Finished a complete generation
-            if (idx !== 0) {
-                nSearches++;
-                var completeGens = "";
-                if (log2(nSearches + 1) == Math.round(log2(nSearches + 1))) {
-                    //completeGens = log2(nSearches + 1) + " generations."
-                }
-                console.log("Location search completed " + nSearches + " time(s). " + completeGens);
-                plotEmUp(progenitors,loop);
-            } else {
-                loop.next();
-            }
-        } else {
-            loop.next();
-        }
-        
-    }
-
-    function plotEmUp(progenitors,loop) {
-        //map.setCenter(placearray[0]);
-
-        var bounds = new google.maps.LatLngBounds;
-        var currentBounds = map.getBounds();
-
-        if (firstTime == true) {
-            makeInfoWindow(progenitors, 0);
-            firstTime = false;
-        }
-
-        for (var i = 0; i < progenitors.length; i++) {
-            if (progenitors[i]) {
-                if (progenitors[i].birth.latlng) {
-                    if (currentBounds.contains(progenitors[i].birth.latlng) == false) {
-                        currentBounds.extend(progenitors[i].birth.latlng);
-                        map.fitBounds(currentBounds);
-                    }
-                }
-            }
-        }
-       
-        pedigree(progenitors,loop);
-    }
-
-
-    function makeInfoWindow(progenitors, i) {
-        if (progenitors[i]) {
-            if (progenitors[i].birth.latlng) {
-
-                if (isEven(i + 1)) {
-                    var color = 'blue';
-                    var bgcolor = 'lightblue';
-                } else {
-                    var color = 'red';
-                    var bgcolor = 'pink';
-                }
-                if (i == 0) {
-                    var color = 'black';
-                    var bgcolor = 'lightgray';
-                }
-
-                var iconBase = 'localhost/rootsmapper/public/images/';
-
-                if (progenitors[i].gender == "Male") {
-                    var icon = 'images/male' + progenitors[i].generation + '.png';
-                } else {
-                    var icon = 'images/female' + progenitors[i].generation + '.png';
-                }
-
-                var opts = {
-                    map: map,
-                    position: progenitors[i].birth.latlng,
-                    icon: {
-                        url: icon,
-                        origin: new google.maps.Point(0,0),
-                        anchor: new google.maps.Point(11.5, 14)
-                    }
-                }
-
-                var mark = new google.maps.Marker(opts);
-                var gen = log2(progenitors.length + 1);
-                mark.idx = markarray.length;
-                var expandButton = "";
-                if (i + 1 > Math.pow(2, gen - 1) - 1) {
-                    var expandButton = "<button class='greenbutton' onclick='this.style.display=\"none\"; markarray[" +
-                        mark.idx + "].isExpanded=true;ancestorExpand(\"" + progenitors[i].id +
-                        "\"," + progenitors[i].generation + ");infowindow.close();'>" + 'EXPAND</button>';
-                    mark.expand = expandButton;
-                    mark.isExpanded = false;
-                } else {
-                    mark.isExpanded = true;
-                    mark.expand = "";
-                }
-
-                var contents1 = "<div id='infow' style='background-color:" + bgcolor + "'>" + progenitors[i].name + '<br/>' +
-                    progenitors[i].birth.place + '<br/>' +
-                    progenitors[i].birth.date + '<br/>';
-                var contents2 = "<button class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" + progenitors[i].id + "\")'>" + progenitors[i].id + '</button>' +
-                    '</div>';
-
-                mark.content1 = contents1;
-                mark.content2 = contents2;
-
-                //google.maps.event.addListener(mark, 'click', function (event) {
-                //    var infoOptions = {
-                //        maxWidth: 300
-                //    };
-                //    infowindow.setContent(this.content);
-                //    infowindow.open(map, this);
-                //});
-
-                oms.addListener('click', function (mark, event) {
-                    if (mark.isExpanded) {
-                        infowindow.setContent(mark.content1 + mark.content2);
-                    } else {
-                        infowindow.setContent(mark.content1 + mark.expand + mark.content2);
-                    }
-
-                    infowindow.open(map, mark);
-                });
-
-                mc.addMarker(mark);
-
-                oms.addListener('spiderfy', function (mark) {
-                    infowindow.close();
-                });
-
-                oms.addMarker(mark);
-                markarray.push(mark);
-                infoarray.push(infowindow);
-            }
-        }
-    }
-
-    function pedigree(progenitors, loop) {
-        var idx = loop.iteration();
-
-        // Number of generations completed so far
-        var gen = log2(idx + 2) - 1;
-
-        var tgen = Math.round(log2(progenitors.length + 1) - 1);
-        var f = 64 / Math.pow(2, genquery + 1);
-        
-        
-        //for (var k = 2; k > 0; k--) {
-        loadingAnimationEnd();
-            var paths = Math.pow(2, gen);
-            var p = Math.pow(2, gen) / Math.pow(2, genquery) * 64;
-            var p = Math.round(gen / genquery * 64);
-
-            for (var j = paths - 1; j < 2 * paths - 1; j++) {
-                var patharray = new Array();
-                if (progenitors[j]) {
-                    patharray[1] = progenitors[j].birth.latlng;
-                }
-                var cdx = j;
-
-                if (isEven(j + 1)) {
-                    // male
-                    cdx = (j + 1) / 2 - 1; // child of male
-                    if (progenitors[cdx]) {
-                        patharray[0] = progenitors[cdx].birth.latlng;
-                    }
-                } else {
-                    // female ancestor
-                    cdx = (cdx) / 2 - 1; // child of female
-                    if (progenitors[cdx]) {
-                        patharray[0] = progenitors[cdx].birth.latlng;
-                    }
-                }
-                
-                if (j < 3 * paths / 2 - 1) {
-                    polymap(patharray, rgbToHex(74,96,255), 1 * (tgen + 1 - gen), j, function (result) {
-                        makeInfoWindow(progenitors, result);
-                        if (result == 2 * paths - 2) {
-                            if (gen !== tgen) {
-                                loadingAnimationStart();
-                            } else {
-                                completionEvents();
-                            }
-                            loop.next()
-                        }
-                    });
-                } else {
-                    polymap(patharray, rgbToHex(255,96,182), 1 * (tgen + 1 - gen), j, function (result) {
-                        makeInfoWindow(progenitors, result);
-                        if (result == 2 * paths - 2) {
-                            if (gen !== tgen) {
-                                loadingAnimationStart();
-                            } else {
-                                completionEvents();
-                            }
-                            loop.next()
-                        }
-                    });
-                }
-
-                if (isEven(j + 1)) {
-                    
-                } else {
-                    
-                }
-            }
-        //}
-    }
-
-    function polymap(coords, color, thick,idx,callback) {
-
-        var c1 = coords[0];
-        var c2 = coords[1];
-
-        if (c1 && c2) {
-
-            var geodesicOptions = {
-                strokeColor: color,
-                strokeOpacity: 1.0,
-                strokeWeight: 3,
-                geodesic: true,
-                path: [c1, c1],
-                map: map
-            };
-
-            var geodesicPoly = new google.maps.Polyline(geodesicOptions);
-            polyarray.push(geodesicPoly);
-
-            var step = 0;
-            var numSteps = 250; //Change this to set animation resolution
-            var timePerStep = 1; //Change this to alter animation speed
-            var interval = setInterval(function () {
-                step += 1;
-                if (step > numSteps) {
-                    clearInterval(interval);
-                    callback(idx);
-                } else {
-                    var are_we_there_yet = google.maps.geometry.spherical.interpolate(c1, c2, step / numSteps);
-                    geodesicPoly.setPath([c1, are_we_there_yet]);
-                }
-            }, timePerStep);
-        } else {
-            callback(idx);
-        }
-
-	
-
-    }
-
-    function getLatLng(place,callback) {
-
-        if (place) {
-            var geocoder = new google.maps.Geocoder();
-            var georequest = {
-                address: place
-            };
-
-            //setTimeout( function () {
-
-            geocoder.geocode(georequest, function (result, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    var latlng = result[0].geometry.location;
-                    callback(latlng);
-                } else {
-                    if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-                        callback("empty");
-                    } else {
-                        callback("other");
-                    }
-                }
-            })
-        } else {
-            callback(place);
-        }
-    }
-
-    function asyncLoop(iterations, func, callback) {
-        var index = 0;
-        var done = false;
-        var loop = {
-            next: function () {
-                if (done) {
-                    return;
-                }
-
-                if (index < iterations) {
-                    index++;
-                    func(loop);
-
-                } else {
-                    done = true;
-                    callback();
-                }
-            },
-
-            prev: function () {
-                index--;
-            },
-
-            iteration: function () {
-                return index - 1;
-            },
-
-            break: function () {
-                done = true;
-                callback();
-            }
-        };
-        loop.next();
-        return loop;
-    }
 
     function initialize() {
-        //var nav = window.navigator;
-        //var geoloc = nav.geolocation;
-        //geoloc.getCurrentPosition(successCallback);
 
         var lat = 30.0;
         var lng = -30.0;
@@ -423,26 +37,34 @@ var userID;
             maxZoom: 4,
             gridSize: 20,
             zoomOnClick: true,
-            styles: [ { url: 'images/band.png', height: 46, width: 46, anchor: [8, 0], textSize: 12 }]
+            styles: [{ url: 'images/band2.png', height: 46, width: 46, anchor: [8, 0], textSize: 12, textColor: '#000000' }]
         });
         populateUser();
 
-        //var selectMode = document.getElementsByName('mode');
-        //selectMode[0].checked = true;
     }
 
-google.maps.event.addDomListener(window, 'load', initialize);
+    function ancestorgens() {
 
-    function getSessionId(gen) {
-
-                ancestors(accesstoken,gen,undefined,undefined);
+        clearOverlays();
+        startEvents();
+        var select = document.getElementById('genSelect');
+        genquery = parseFloat(select.value);
+        getPedigree(genquery, undefined, undefined);
 
     }
 
-    function ancestors(id,gen,root,rootGen) {
+    function ancestorExpand(id, rootGen, paternal) {
+
+        startEvents();
+        genquery = 1;
+        getPedigree(1, id, rootGen, paternal);
+
+    }
+
+    function getPedigree(gen, root, rootGen, paternal) {
         var generations = gen;
 
-        
+
         if (root) {
             personId = root;
             // if empty, use user default
@@ -451,218 +73,152 @@ google.maps.event.addDomListener(window, 'load', initialize);
             var personId = querythis.value;
         }
 
-        var url = baseurl + "pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + id;
+        var url = baseurl + "pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + accesstoken;
 
-		var xhttp;
-		xhttp=new XMLHttpRequest();
-		xhttp.open("GET",url);
-		xhttp.send();
+        var xhttp;
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url);
 
-		xhttp.onload = function (e) {
-		    if (xhttp.readyState === 4) {
-		        if (xhttp.status === 200) {
-		            console.log("Pedigree result returned successful.");
+        xhttp.onload = function (e) {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200) {
 
-		            var xmlDocument = xhttp.responseXML.documentElement;
-		          
-                        var persons = xmlDocument.getElementsByTagName("person");
-                        var tags = new Array();
-                
-                        tags[0] = persons[0].getAttribute("id");
-                        for (var i = 0; i < Math.pow(2, generations) - 1; i++) {
-                    
+                    var xmlDocument = xhttp.responseXML.documentElement;
+
+                    // Loop through first half of pedigree list and get IDs of their parents
+                    var persons = xmlDocument.getElementsByTagName("person");
+                    var IDs = new Array();
+                    IDs[0] = persons[0].getAttribute("id");
+                    for (var i = 0; i < Math.pow(2, generations) - 1; i++) {
+                        if (persons[i]) {
                             var parents = persons[i].getElementsByTagName("parent");
                             if (parents.length > 1) {
-                                tags[(i + 1) * 2 - 1] = parents[0].getAttribute("id");
-                                tags[(i + 1) * 2] = parents[1].getAttribute("id");
+                                IDs[(i + 1) * 2 - 1] = parents[0].getAttribute("id");
+                                IDs[(i + 1) * 2] = parents[1].getAttribute("id");
                             } else {
-                                tags[(i + 1) * 2 - 1]=undefined;
-                                tags[(i + 1) * 2]=undefined;
+                                IDs[(i + 1) * 2 - 1] = undefined;
+                                IDs[(i + 1) * 2] = undefined;
                             }
-                            
+                        } else {
+                            IDs[(i + 1) * 2 - 1] = undefined;
+                            IDs[(i + 1) * 2] = undefined;
                         }
-
-                        getLocations(tags, id,rootGen);
-		        } else {
-		            console.error(xhttp.statusText);
-		        }
-            }
-		};
-    }
-
-    function getLocations(persons,sessionId,rootGen) {
-        var people = persons.length;
-        var locations = new Array();
-        var progenitors = new Array();
-
-        asyncLoop(people, function (loop) {
-
-            var idx = loop.iteration();
-            var id = persons[idx];
-            if (id) {
-                personRead(id, function (result) {
-                    progenitors[idx] = result;
-                    //progress(idx, progenitors, loop)
-                    loop.next();
-                });
-            } else {
-                //progress(idx, progenitors, loop)
-                progenitors[idx] = undefined;
-                loop.next();
-            }
-
-            },
-        function () {
-            if (!rootGen) {
-                rootGen = 0;
-            }
-            for (var i = 0; i < progenitors.length; i++) {
-                if (progenitors[i]) {
-                    progenitors[i].generation = Math.ceil(log2(i + 2)) - 1 + rootGen;
-                }
-            }
-
-	    getLocationPoints(progenitors);
                     }
-        );
-    }
 
-    function progress(idx,progenitors,loop) {
-        if (log2(idx + 2) == Math.round(log2(idx + 2))) {
-            var thisGen = log2(idx + 2)-1; // 0, 2, 6
-            var lastGen = Math.pow(2, thisGen - 1) - 1;
-            var lastGen = Math.pow(2, thisGen) - Math.pow(2, thisGen - 1) - 1;
-
-            if (thisGen == 1) {
-                lastGen = 0;
-            }
-            if (idx == 0) {
-                loop.next()
-            } else {
-                for (var i = lastGen; i < Math.pow(2, thisGen)-1 ; i++) {
-                    //var prog = progenitors.slice(lastGen, idx + 1);
-                    var prog = new Array();
-                    prog[0] = progenitors[i];
-                    prog[1] = progenitors[(i + 1) * 2 - 1];
-                    prog[2] = progenitors[(i + 1) * 2];
-                    getLocationPoints(prog);
-                    
-                }
-                loop.next();
-            }
-        } else {
-            loop.next();
-        }
-    }
-
-    function asyncLoop(iterations, func, callback) {
-        var index = 0;
-        var done = false;
-        var loop = {
-            next: function () {
-                if (done) {
-                    return;
-                }
-
-                if (index < iterations) {
-                    index++;
-                    func(loop);
-
+                    readPedigreeLoop(IDs,rootGen,paternal);
                 } else {
-                    done = true;
-                    callback();
+                    completionEvents();
+                    alert("Error: " + xhttp.statusText);
                 }
-            },
-
-            prev: function () {
-                index--;
-            },
-
-            iteration: function () {
-                return index - 1;
-            },
-
-            break: function () {
-                done = true;
-                callback();
             }
         };
-        loop.next();
-        return loop;
+
+        xhttp.send();
+        
     }
 
+    function readPedigreeLoop(IDs, rootGen, paternal) {
 
-    function loadingAnimationStart() {
-        $(function () {
-            $('#loading').show();
-        });
-        $(function () {
-            $('#loading').activity({ segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5 });
-        });
+        var tryagain = true;
+        var placequery;
+        delay = 1;
+        var num = IDs.length;
+        var progenitors = new Array();
+        if (!rootGen) { rootGen = 0; }
+
+        asyncLoop(num, function (loop) {
+
+            var idx = loop.iteration();
+            var ID = IDs[idx];
+            if (ID) {
+                personRead(ID, function (result) {
+                    if (result) {
+                        progenitors[idx] = result;
+                        progenitors[idx].generation = Math.ceil(log2(idx + 2)) - 1 + rootGen;
+                        if (idx == 0) {
+                            progenitors[idx].isPaternal = paternal;
+                        } else if (idx == 1 && progenitors[idx].generation == 1) {
+                            progenitors[idx].isPaternal = true;
+                        } else if (idx == 2 && progenitors[idx].generation == 1) {
+                            progenitors[idx].isPaternal = false;
+                        } else {
+                            if (progenitors[idx].gender == "Male") {
+                                if (progenitors[(idx + 1)/2 - 1]) {
+                                    progenitors[idx].isPaternal = progenitors[(idx + 1) / 2 - 1].isPaternal;
+                                }
+                            } else {
+                                if (progenitors[idx / 2 - 1]) {
+                                    progenitors[idx].isPaternal = progenitors[idx / 2 - 1].isPaternal;
+                                }
+                            }
+                        }
+                        
+                        if (placequery) {
+                            var place = placequery;
+                        } else {
+                            var place = progenitors[idx].birth.place;
+                        }
+
+                        setTimeout(function () {
+                            getLatLng(place, function (res) {
+
+                                progenitors[idx].birth.latlng = res;
+                                if (res == "empty") {
+                                    delay++
+                                    loop.prev();
+                                    loop.next();
+                                } else if (res == "other") {
+                                    var loc = place.split(",");
+
+                                    if (tryagain == true) { // Try one more query with City,Country as search text
+                                        placequery = loc[0] + "," + loc[loc.length - 1];
+                                        tryagain = false;
+                                        loop.prev();
+                                        loop.next();
+                                    } else {
+                                        console.log("Unable to find location \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
+                                        progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
+                                        tryagain = true;
+                                        placequery = undefined;
+                                        callLoopNext(loop, progenitors);
+                                    }
+                                } else if (!res) {
+                                    console.log("Undefined birthplace for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
+                                    progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
+                                    tryagain = true;
+                                    placequery = undefined;
+                                    callLoopNext(loop, progenitors);
+                                } else {
+                                    //console.log("Google Maps search for birthplace \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " returned successful.");
+                                    tryagain = true;
+                                    placequery = undefined;
+                                    callLoopNext(loop, progenitors);
+                                }
+                            })
+                        }, delay);
+
+
+                    } else {
+                        progenitors[idx] = undefined;
+                        callLoopNext(loop, progenitors);
+                    }
+                    
+                });
+            } else {
+                progenitors[idx] = undefined;
+                callLoopNext(loop, progenitors);
+            }
+
+        }, function () {});
     }
 
-    function loadingAnimationEnd() {
-        $(function () {
-            $('#loading').activity(false);
-        });
-        $(function () {
-            $('#loading').hide();
-        });
-    }
-
-    function ancestorgens() {
-
-        clearOverlays();
-        startEvents();
-    var start = document.getElementById('start');
-    var select = document.getElementById('genSelect');
-    genquery = parseFloat(select.value);
-    getSessionId(genquery);
-
-}
-
-function clearOverlays() {
-    for (var i = 0; i < markarray.length; i++) {
-        markarray[i].setMap(null);
-    }
-
-    for (var i = 0; i < polyarray.length; i++) {
-        polyarray[i].setMap(null);
-    }
-
-    markarray.length = 0;
-    polyarray.length = 0;
-    firstTime = true;
-    nSearches = 0;
-    oms.clearMarkers();
-    mc.clearMarkers();
-
-}
-
-function ancestorExpand(id,rootGen) {
-
-    startEvents();
-    ancestors(accesstoken, 1,id,rootGen);
-
-}
-
-    function componentToHex(c) {
-        var hex = c.toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-
-    function rgbToHex(r, g, b) {
-        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-    }
-
-    function personRead(id,callback) {
+    function personRead(id, callback) {
 
         var url = baseurl + "person/" + id + "?&events=standard&sessionId=" + accesstoken;
 
         var xhttp;
         xhttp = new XMLHttpRequest();
         xhttp.open("GET", url);
-        xhttp.send();
 
         xhttp.onload = function (e) {
             if (xhttp.readyState === 4) {
@@ -730,17 +286,361 @@ function ancestorExpand(id,rootGen) {
                         gender: gender
                     }
 
-                    console.log("Person search for " + name + " (" + id + ")" + " returned successful.");
                     // Send reply
                     callback(personObject);
 
                 } else {
-                    console.log("Error [" + xhttp.status + "]: " + xhttp.statusText);
+                    completionEvents();
+                    alert("Error: " + xhttp.statusText);
                 }
+            }
+        };
+
+        xhttp.send();
+        
+    }
+
+    function getLatLng(place, callback) {
+
+        if (place) {
+            var geocoder = new google.maps.Geocoder();
+            var georequest = {
+                address: place
+            };
+
+            //setTimeout( function () {
+
+            geocoder.geocode(georequest, function (result, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    var latlng = result[0].geometry.location;
+                    callback(latlng);
+                } else {
+                    if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                        callback("empty");
+                    } else {
+                        callback("other");
+                    }
+                }
+            })
+        } else {
+            callback(place);
+        }
+    }
+
+    function callLoopNext(loop,progenitors) {
+
+        var idx = loop.iteration();
+        if ( log2(idx+2) == Math.round(log2(idx + 2)) ) { // Finished a complete generation
+            if (idx !== 0) {
+                checkBounds(progenitors,loop);
             } else {
-                console.log("XHTTP Request readystate was " + xhttp.readyState + ", not 4.");
+                loop.next();
+            }
+        } else {
+            loop.next();
+        }
+        
+    }
+
+    function checkBounds(progenitors,loop) {
+
+        var bounds = new google.maps.LatLngBounds;
+        var currentBounds = map.getBounds();
+
+        if (firstTime == true) {
+            makeInfoWindow(progenitors[0]);
+            firstTime = false;
+        }
+
+        for (var i = 0; i < progenitors.length; i++) {
+            if (progenitors[i]) {
+                if (progenitors[i].birth.latlng) {
+                    if (currentBounds.contains(progenitors[i].birth.latlng) == false) {
+                        currentBounds.extend(progenitors[i].birth.latlng);
+                        map.fitBounds(currentBounds);
+                    }
+                }
             }
         }
+       
+        plotNextGeneration(progenitors,loop);
+    }
+
+    function plotNextGeneration(progenitors, loop) {
+
+        var idx = loop.iteration();
+        var gen = log2(idx + 2) - 1; // Number of generations completed so far
+
+        loadingAnimationEnd();
+        var paths = Math.pow(2, gen);
+
+        for (var j = paths - 1; j < 2 * paths - 1; j++) {
+            var patharray = new Array();
+            if (progenitors[j]) {
+                patharray[1] = progenitors[j].birth.latlng;
+            }
+            var cdx = j;
+
+            if (isEven(j + 1)) {
+                // male
+                cdx = (j + 1) / 2 - 1; // child of male
+                if (progenitors[cdx]) {
+                    patharray[0] = progenitors[cdx].birth.latlng;
+                }
+            } else {
+                // female ancestor
+                cdx = (cdx) / 2 - 1; // child of female
+                if (progenitors[cdx]) {
+                    patharray[0] = progenitors[cdx].birth.latlng;
+                }
+            }
+
+            if (progenitors[j]) {
+                if (progenitors[j].isPaternal == true) { // (j < 3 * paths / 2 - 1)
+                    polymap(patharray, rgbToHex(74, 96, 255),"", j, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
+                        makeInfoWindow(progenitors[result]);
+                        if (result == 2 * paths - 2) {
+                            if (gen !== genquery) {
+                                loadingAnimationStart();
+                            } else {
+                                completionEvents();
+                            }
+                            loop.next();
+                        }
+                    });
+                } else {
+                    polymap(patharray, rgbToHex(255, 96, 182),"", j, function (result) { // rgbToHex(255,96,182) rgbToHex(245, 139, 237)
+                        makeInfoWindow(progenitors[result]);
+                        if (result == 2 * paths - 2) {
+                            if (gen !== genquery) {
+                                loadingAnimationStart();
+                            } else {
+                                completionEvents();
+                            }
+                            loop.next();
+                        }
+                    });
+                }
+            } else if (j == 2 * paths - 2) {
+                if (gen !== genquery) {
+                    loadingAnimationStart();
+                } else {
+                    completionEvents();
+                }
+                loop.next();
+            }
+        }
+
+    }
+
+    function polymap(coords, color, thick, idx, callback) {
+
+        var c1 = coords[0];
+        var c2 = coords[1];
+
+        if (c1 && c2) {
+
+            var geodesicOptions = {
+                strokeColor: color,
+                strokeOpacity: 1.0,
+                strokeWeight: 3,
+                geodesic: true,
+                path: [c1, c1],
+                map: map
+            };
+
+            var geodesicPoly = new google.maps.Polyline(geodesicOptions);
+            polyarray.push(geodesicPoly);
+
+            var step = 0;
+            var numSteps = 250; //Change this to set animation resolution
+            var timePerStep = 1; //Change this to alter animation speed
+            var interval = setInterval(function () {
+                step += 1;
+                if (step > numSteps) {
+                    clearInterval(interval);
+                    callback(idx);
+                } else {
+                    var are_we_there_yet = google.maps.geometry.spherical.interpolate(c1, c2, step / numSteps);
+                    geodesicPoly.setPath([c1, are_we_there_yet]);
+                }
+            }, timePerStep);
+        } else {
+            callback(idx);
+        }
+
+    }
+
+    function makeInfoWindow(p) {
+        if (p) {
+            if (p.birth.latlng) {
+
+                if (p.gender == "Male") {
+                    var bgcolor = 'lightblue'; //rgbToHex(0, 176, 240);
+                    var icon = 'images/male' + p.generation + '.png';
+                } else {
+                    var bgcolor = 'pink'; // rgbToHex(245, 139, 237);
+                    var icon = 'images/female' + p.generation + '.png';
+                }
+
+                var opts = {
+                    map: map,
+                    position: p.birth.latlng,
+                    icon: {
+                        url: icon,
+                        origin: new google.maps.Point(0,0),
+                        anchor: new google.maps.Point(11.5, 14)
+                    }
+                }
+
+                var mark = new google.maps.Marker(opts);
+                mark.idx = markarray.length;
+                if (p.generation > genquery - 1) {
+                    var expandButton = "<button class='greenbutton' onclick='this.style.display=\"none\"; " +
+                        "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
+                        "\"," + p.generation + "," + p.isPaternal +
+                        "); infowindow.close();'>" + 'EXPAND</button>';
+                    mark.expand = expandButton;
+                    mark.isExpanded = false;
+                } else {
+                    mark.isExpanded = true;
+                    mark.expand = "";
+                }
+
+                var contents1 = "<div id='infow' style='background-color:" + bgcolor + "'>" +
+                    p.name + '<br/>' +
+                    p.birth.place + '<br/>' +
+                    p.birth.date + '<br/>';
+                var contents2 = "<button class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" +
+                    p.id + "\")'>" + p.id + '</button>' +
+                    '</div>';
+
+                mark.content1 = contents1;
+                mark.content2 = contents2;
+
+                oms.addListener('click', function (mark, event) {
+                    if (mark.isExpanded) {
+                        infowindow.setContent(mark.content1 + mark.content2);
+                    } else {
+                        infowindow.setContent(mark.content1 + mark.expand + mark.content2);
+                    }
+
+                    infowindow.open(map, mark);
+                });
+
+                mc.addMarker(mark);
+
+                oms.addListener('spiderfy', function (mark) {
+                    infowindow.close();
+                });
+
+                oms.addMarker(mark);
+                markarray.push(mark);
+            }
+        }
+    }
+
+    function getChildBirthPlace(progenitors, idx) {
+        // Call this function if you can't find a person's birthplace
+        // It will check if the person has children, and if so, returns the child's birthplace instead
+
+        if (progenitors[idx].gender == "Male") {
+
+            if (progenitors[(idx + 1) / 2 - 1]) { // Check if child exists
+                return progenitors[(idx + 1) / 2 - 1].birth.latlng;
+            } else {
+                return undefined;
+            }
+
+        } else { // female
+            if (progenitors[idx / 2 - 1]) { // Check if child exists
+                return progenitors[idx / 2 - 1].birth.latlng;
+            } else {
+                return undefined;
+            }
+        }
+
+    }
+
+    function asyncLoop(iterations, func, callback) {
+        var index = 0;
+        var done = false;
+        var loop = {
+            next: function () {
+                if (done) {
+                    return;
+                }
+
+                if (index < iterations) {
+                    index++;
+                    func(loop);
+
+                } else {
+                    done = true;
+                    callback();
+                }
+            },
+
+            prev: function () {
+                index--;
+            },
+
+            iteration: function () {
+                return index - 1;
+            },
+
+            break: function () {
+                done = true;
+                callback();
+            }
+        };
+        loop.next();
+        return loop;
+    }
+
+    function loadingAnimationStart() {
+        $(function () {
+            $('#loading').show();
+        });
+        $(function () {
+            $('#loading').activity({ segments: 12, width: 5.5, space: 6, length: 13, color: '#252525', speed: 1.5 });
+        });
+    }
+
+    function loadingAnimationEnd() {
+        $(function () {
+            $('#loading').activity(false);
+        });
+        $(function () {
+            $('#loading').hide();
+        });
+    }
+
+    function clearOverlays() {
+        for (var i = 0; i < markarray.length; i++) {
+            markarray[i].setMap(null);
+        }
+
+        for (var i = 0; i < polyarray.length; i++) {
+            polyarray[i].setMap(null);
+        }
+
+        markarray.length = 0;
+        polyarray.length = 0;
+        firstTime = true;
+        nSearches = 0;
+        oms.clearMarkers();
+        mc.clearMarkers();
+
+    }
+
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    function rgbToHex(r, g, b) {
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
     }
 
     function populateIdField(id) {
@@ -779,12 +679,12 @@ function ancestorExpand(id,rootGen) {
         loadingAnimationStart();
         var runButton = document.getElementById('runButton');
         runButton.disabled = true;
-        runButton.style.backgroundColor = 'gray';
+        runButton.className = 'disabledbutton';
     }
 
     function completionEvents() {
         loadingAnimationEnd();
         var runButton = document.getElementById('runButton');
         runButton.disabled = false;
-        runButton.style.backgroundColor = 'green';
+        runButton.className = 'runButton';
     }
