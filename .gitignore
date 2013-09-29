@@ -27,3 +27,4 @@ config.php
 # Compiled js #
 ###############
 js-src/*.js
+public/scripts/*.js

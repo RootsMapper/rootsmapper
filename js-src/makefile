@@ -16,4 +16,4 @@ install: compile
 	cp *.js $(OUTPUT)
 
 clean:
-	rm -rf *.js
+	rm -rf *.js $(OUTPUT)*.js
