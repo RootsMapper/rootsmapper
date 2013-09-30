@@ -85,13 +85,13 @@ if (isset($access_token))
 			</div>
 			<div class="hoverdiv">
 				<select id="genSelect" class="boxes">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
+					<option value="1">1 generation</option>
+					<option value="2">2 generations</option>
+					<option value="3">3 generations</option>
+					<option value="4">4 generations</option>
+					<option value="5">5 generations</option>
+					<option value="6">6 generations</option>
+					<option value="7">7 generations</option>
 				</select>
 				<button id="runButton" class="runButton" onclick="ancestorgens()">RUN</button>
 			</div>
