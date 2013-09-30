@@ -4,7 +4,7 @@ var polyarray = [];
 var markarray = [];
 var infoarray = [];
 var accesstoken;
-var infowindow = new google.maps.InfoWindow();
+var ib;
 var genquery;
 var nSearches;
 var delay = 1;
@@ -13,7 +13,6 @@ var userID;
 
 
 google.maps.event.addDomListener(window, 'load', initialize);
-
 
     function initialize() {
 
@@ -507,7 +506,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     var expandButton = "<button class='greenbutton' onclick='this.style.display=\"none\"; " +
                         "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
                         "\"," + p.generation + "," + p.isPaternal +
-                        "); infowindow.close();'>" + 'EXPAND</button>';
+                        "); ib.close();'>" + 'EXPAND</button>';
                     mark.expand = expandButton;
                     mark.isExpanded = false;
                 } else {
@@ -515,7 +514,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     mark.expand = "";
                 }
 
-                var contents1 = "<div id='infow' style='background-color:" + bgcolor + "'>" +
+                var contents1 = "<div id='infow' class='infoboxstyle' style='background-color:" + bgcolor + "'>" +
                     p.name + '<br/>' +
                     p.birth.place + '<br/>' +
                     p.birth.date + '<br/>';
@@ -528,18 +527,18 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
                 oms.addListener('click', function (mark, event) {
                     if (mark.isExpanded) {
-                        infowindow.setContent(mark.content1 + mark.content2);
+                        ib.setContent(mark.content1 + mark.content2);
                     } else {
-                        infowindow.setContent(mark.content1 + mark.expand + mark.content2);
+                        ib.setContent(mark.content1 + mark.expand + mark.content2);
                     }
 
-                    infowindow.open(map, mark);
+                    ib.open(map, mark);
                 });
 
                 mc.addMarker(mark);
 
                 oms.addListener('spiderfy', function (mark) {
-                    infowindow.close();
+                    ib.close();
                 });
 
                 oms.addMarker(mark);
@@ -633,6 +632,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
             polyarray[i].setMap(null);
         }
 
+        ib = new InfoBox({ contents: "" });
         markarray.length = 0;
         polyarray.length = 0;
         firstTime = true;

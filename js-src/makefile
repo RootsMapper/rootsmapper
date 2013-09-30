@@ -2,7 +2,7 @@
 
 COMPILER=java -jar ~/compiler.jar
 
-SOURCES=map.js keyfilter.js oms.js loading.js markerclusterer.js
+SOURCES=map.js keyfilter.js oms.js loading.js markerclusterer.js infobox_packed.js
 JS=$(SOURCES:.jss=.js)
 OUTPUT=../public/scripts/
 
