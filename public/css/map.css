@@ -230,24 +230,24 @@ html, body {
         }
 
 #loginbutton {
-    background-color: darkred;
+    background-color: #003e97;
     color: white;
-    border: 1px solid darkred;
+    border: 1px solid #003e97;
     border-radius: 0px 2px 2px 0px; 
-    height: 30px;
-    width: 75px;
+    height: 50px;
+    width: 100px;
     float: left;
     margin: 0;
 }
 
         #loginbutton:hover {
-            background-color: rgba(145,0,0,1);
-            border: 1px solid rgba(145,0,0,1);
+            background-color: #358ee6;
+            border: 1px solid #358ee6;
         }
 
         #loginbutton:active {
-            background-color: rgba(133,0,0,1);
-            border: 1px solid rgba(133,0,0,1);
+            background-color: #358ee6;
+            border: 1px solid #358ee6;
         }
 
 .runButton {
