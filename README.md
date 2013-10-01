@@ -2,7 +2,7 @@
 
 ## Setup
 
-### EditConfig file
+### Edit Config file
 1. Go into the public/includes folder <br />
 2. Copy config-example.php to config.php <br />
 3. Edit config.php and populate with your info <br />
@@ -21,3 +21,6 @@ the Google Closure Compiler. <br />
 2. Edit makefile and set the location of compiler.jar <br />
 3. make <br />
 4. make install <br />
+
+### Setup Web Server
+Point your webserver at the public folder.
