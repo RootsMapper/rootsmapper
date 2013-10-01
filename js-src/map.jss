@@ -32,12 +32,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
-        mc = new MarkerClusterer(map, [], {
-            maxZoom: 4,
-            gridSize: 20,
-            zoomOnClick: true,
-            styles: [{ url: 'images/band2.png', height: 46, width: 46, anchor: [8, 0], textSize: 12, textColor: '#000000' }]
-        });
         populateUser();
 
     }
@@ -535,8 +529,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     ib.open(map, mark);
                 });
 
-                mc.addMarker(mark);
-
                 oms.addListener('spiderfy', function (mark) {
                     ib.close();
                 });
@@ -638,7 +630,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
         firstTime = true;
         nSearches = 0;
         oms.clearMarkers();
-        mc.clearMarkers();
 
     }
 
