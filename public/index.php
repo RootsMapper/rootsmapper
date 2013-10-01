@@ -74,19 +74,20 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
             <div id="mapdisplay"></div>
 	    <div id="inputFrame">
 			<div class="hoverdiv">
+				<label id="prompt" for="personid">Root Person ID:</label>
 				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
 				<script type="text/javascript" src="scripts/keyfilter.js"></script>
 				<button id="populateUser" class="bluebutton" onclick="populateUser()">ME</button>
 			</div>
 			<div class="hoverdiv">
 				<select id="genSelect" class="boxes">
-					<option value="1">1</option>
-					<option value="2">2</option>
-					<option value="3">3</option>
-					<option value="4">4</option>
-					<option value="5">5</option>
-					<option value="6">6</option>
-					<option value="7">7</option>
+					<option value="1">1 Generation</option>
+					<option value="2">2 Generations</option>
+					<option value="3">3 Generations</option>
+					<option value="4">4 Generations</option>
+					<option value="5">5 Generations</option>
+					<option value="6">6 Generations</option>
+					<option value="7">7 Generations</option>
 				</select>
 				<button id="runButton" class="runButton" onclick="ancestorgens()">RUN</button>
 			</div>

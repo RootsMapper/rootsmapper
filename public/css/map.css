@@ -45,7 +45,7 @@ html, body {
     top: 5px;
     left: 10px;
     margin: 0 auto;
-    width: 800px;
+    width: 1000px;
     z-index: 1;
     background-color: transparent;
     max-height: 608px;
@@ -70,13 +70,31 @@ html, body {
     width:150px;
     float: left;
     text-indent: 5px;
+    font: arial;
 }
 
 #personid {
     height: 28px;
+    width: 80px;
     border: 1px solid white;
     border-right: 1px solid dodgerblue;
+    /*border-radius: 2px 0px 0px 2px;*/ 
+    /*box-shadow: 0px 0px 5px 0px rgba(100, 100, 100, 0.5);*/
+}
+
+#prompt {
+    height: 18px;
+    width: 100px;
+    float:left;
+    background-color: white;
+    border: 1px solid white;
     border-radius: 2px 0px 0px 2px; 
+    padding: 5px;
+    padding-right:0;
+    font-family: helvetica, arial, sans serif;
+    font-weight: bold;
+    font-size: small;
+    color: dodgerblue;
     /*box-shadow: 0px 0px 5px 0px rgba(100, 100, 100, 0.5);*/
 }
 
