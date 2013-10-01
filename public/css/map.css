@@ -229,6 +229,27 @@ html, body {
             border: 1px solid rgba(133,0,0,1);
         }
 
+#loginbutton {
+    background-color: darkred;
+    color: white;
+    border: 1px solid darkred;
+    border-radius: 0px 2px 2px 0px; 
+    height: 30px;
+    width: 75px;
+    float: left;
+    margin: 0;
+}
+
+        #loginbutton:hover {
+            background-color: rgba(145,0,0,1);
+            border: 1px solid rgba(145,0,0,1);
+        }
+
+        #loginbutton:active {
+            background-color: rgba(133,0,0,1);
+            border: 1px solid rgba(133,0,0,1);
+        }
+
 .runButton {
     float: left;
     background-color: green;

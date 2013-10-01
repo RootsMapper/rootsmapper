@@ -26,13 +26,15 @@ if( isset($_REQUEST['code']) ) {
 	  exit;
 } 
 
-// If don't already have access token, begin request
-else if (!isset($_SESSION['fs-session']) || $_SESSION['fingerprint'] != md5($fingerprint)) {
+// If don't already have access token and login is clicked, begin request
+else if (isset($_REQUEST['login']) && (!isset($_SESSION['fs-session']) || $_SESSION['fingerprint'] != md5($fingerprint))) {
 	$url = $fs->RequestAccessCode($DEV_KEY, $OAUTH2_REDIRECT_URI);
 	header("Location: " . $url); //Redirect to FamilySearch auth page
 }
-
-$access_token = $_SESSION['fs-session']; //store access token in variable
+if (isset($_SESSION['fs-session']))
+{
+	$access_token = $_SESSION['fs-session']; //store access token in variable
+}
 
 ?>
 
@@ -73,6 +75,9 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
         <div id="rootGrid">
             <div id="mapdisplay"></div>
 	    <div id="inputFrame">
+<?php
+if (isset($access_token))
+{ ?>
 			<div class="hoverdiv">
 				<label id="prompt" for="personid">Root Person ID:</label>
 				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
@@ -81,19 +86,29 @@ $access_token = $_SESSION['fs-session']; //store access token in variable
 			</div>
 			<div class="hoverdiv">
 				<select id="genSelect" class="boxes">
-					<option value="1">1 Generation</option>
-					<option value="2">2 Generations</option>
-					<option value="3">3 Generations</option>
-					<option value="4">4 Generations</option>
-					<option value="5">5 Generations</option>
-					<option value="6">6 Generations</option>
-					<option value="7">7 Generations</option>
+					<option value="1">1 generation</option>
+					<option value="2">2 generations</option>
+					<option value="3">3 generations</option>
+					<option value="4">4 generations</option>
+					<option value="5">5 generations</option>
+					<option value="6">6 generations</option>
+					<option value="7">7 generations</option>
 				</select>
 				<button id="runButton" class="runButton" onclick="ancestorgens()">RUN</button>
 			</div>
 			<div class="hoverdiv">
 				<input id="username" class="boxes" type="text" readonly>
 				<button id="logoutbutton" onclick="window.location='logout.php'">LOGOUT</button>
+<?php
+}
+else
+{
+?>
+			<div class="hoverdiv">
+				<button id="loginbutton" onclick="window.location='index.php?login=true'"">LOGIN</button>
+<?php
+}
+?>
 			</div>
 		</div>
 		
