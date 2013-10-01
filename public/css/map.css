@@ -53,10 +53,9 @@ html, body {
 
 #loading {
     position: absolute;
-    top:50%;
+    bottom: 5px;
     left:50%;
     margin-left:-25px;
-    margin-top:-40px;
     background-color: black;
     opacity: 0.5;
     border-radius: 3px;
