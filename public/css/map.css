@@ -248,6 +248,29 @@ html, body {
             border: 1px solid #358ee6;
         }
 
+#faqbutton {
+    background-color: grey;
+    color: white;
+    border: 1px solid grey;
+    border-radius: 0px 2px 2px 0px; 
+    height: 30px;
+    width: 50px;
+    position: fixed;
+    right: 10px;
+    bottom: 20px;
+    margin: 0;
+}
+
+        #faqbutton:hover {
+            background-color: rgba(134,134,134,1);
+            border: 1px solid rgba(134,134,134,1);
+        }
+
+        #faqbutton:active {
+            background-color: rgba(122,122,122,1);
+            border: 1px solid rgba(122,122,122,1);
+        }
+
 .runButton {
     float: left;
     background-color: green;

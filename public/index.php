@@ -79,6 +79,10 @@ if (isset($_SESSION['fs-session']))
 if (isset($access_token))
 { ?>
 			<div class="hoverdiv">
+				<input id="username" class="boxes" type="text" readonly>
+				<button id="logoutbutton" onclick="window.location='logout.php'">LOGOUT</button>
+			</div>
+			<div class="hoverdiv">
 				<label id="prompt" for="personid">Root Person ID:</label>
 				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
 				<script type="text/javascript" src="scripts/keyfilter.js"></script>
@@ -95,17 +99,13 @@ if (isset($access_token))
 					<option value="7">7 generations</option>
 				</select>
 				<button id="runButton" class="runButton" onclick="ancestorgens()">RUN</button>
-			</div>
-			<div class="hoverdiv">
-				<input id="username" class="boxes" type="text" readonly>
-				<button id="logoutbutton" onclick="window.location='logout.php'">LOGOUT</button>
 <?php
 }
 else
 {
 ?>
 			<div class="hoverdiv">
-				<button id="loginbutton" onclick="window.location='index.php?login=true'"">Login to FamilySearch</button>
+				<button id="loginbutton" onclick="window.location='index.php?login=true'">Login to FamilySearch</button>
 <?php
 }
 ?>
@@ -113,7 +113,7 @@ else
 		</div>
 		
             <div id="loading" class="square"></div>
-           
+            <button id="faqbutton" onclick="window.open('http://blog.rootsmapper.com/p/faq.html', '_blank')">FAQ</button>
         </div>
     </body>
 </html>
