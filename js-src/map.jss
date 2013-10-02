@@ -32,7 +32,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
-        populateUser();
+        if (accesstoken) {
+            populateUser();
+        }
 
     }
 
@@ -623,7 +625,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
         for (var i = 0; i < polyarray.length; i++) {
             polyarray[i].setMap(null);
         }
-
+	if (ib) {
+            ib.close();
+        }
         ib = new InfoBox({ contents: "" });
         markarray.length = 0;
         polyarray.length = 0;
