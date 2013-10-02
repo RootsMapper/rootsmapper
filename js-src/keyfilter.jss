@@ -1,3 +1,11 @@
+/* 
+  RootsMapper
+  https://github.com/dawithers/rootsmapper
+  Copyright (c) 2013 Mitch Withers, Drew Withers
+  Released under the MIT licence: http://opensource.org/licenses/mit-license
+  Note: The Google Maps API v3 must be included *before* this code
+*/
+
 function alphaFilterKeypress(evt) {
     evt = evt || window.event;
     var charCode = evt.keyCode || evt.which;
