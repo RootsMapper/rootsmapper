@@ -24,3 +24,10 @@ the Google Closure Compiler. <br />
 
 ### Setup Web Server
 Point your webserver at the public folder.
+
+## Attributions
+
+* OAuth2 https://www.elance.com/q/api2/examples/oauth/php
+* InfoBox https://code.google.com/p/google-maps-utility-library-v3/
+* OverlappingMarkerSpiderfier https://github.com/jawj/OverlappingMarkerSpiderfier
+* Neteye Activity Indicator https://github.com/neteye/jquery-plugins
