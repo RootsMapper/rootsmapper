@@ -28,6 +28,6 @@ Point your webserver at the public folder.
 ## Attributions
 
 * OAuth2 https://www.elance.com/q/api2/examples/oauth/php
-* InfoBox https://code.google.com/p/google-maps-utility-library-v3/
-* OverlappingMarkerSpiderfier https://github.com/jawj/OverlappingMarkerSpiderfier
-* Neteye Activity Indicator https://github.com/neteye/jquery-plugins
+* InfoBox (Apache 2.0 License) https://code.google.com/p/google-maps-utility-library-v3/
+* OverlappingMarkerSpiderfier (MIT License) https://github.com/jawj/OverlappingMarkerSpiderfier
+* Neteye Activity Indicator (MIT License) https://github.com/neteye/jquery-plugins
