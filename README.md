@@ -31,3 +31,5 @@ Point your webserver at the public folder.
 * InfoBox (Apache 2.0 License) https://code.google.com/p/google-maps-utility-library-v3/
 * OverlappingMarkerSpiderfier (MIT License) https://github.com/jawj/OverlappingMarkerSpiderfier
 * Neteye Activity Indicator (MIT License) https://github.com/neteye/jquery-plugins
+* php-sample-person-browser https://github.com/justincy/php-sample-person-browser
+* Journalness https://github.com/dawithers/journalness
