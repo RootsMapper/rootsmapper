@@ -39,9 +39,62 @@ google.maps.event.addDomListener(window, 'load', initialize);
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
+
+        document.getElementById("personid").onmouseover = function (e) { tooltip(e, "Enter the ID for the root person."); }
+        document.getElementById("populateUser").onmouseover = function (e) { tooltip(e, "Set yourself as the root person."); }
+        document.getElementById("genSelect").onmouseover = function (e) { tooltip(e, "Select the number of generations to plot."); }
+        document.getElementById("runButton").onmouseover = function (e) { tooltip(e, "Begin the plotting process."); }
+
         if (accesstoken) {
             populateUser();
         }
+
+
+    }
+
+    function tooltip(e,tip) {
+
+        var tt;
+        var ie = document.all ? true : false;
+        var timeoutId = setTimeout(function () {
+            tt = document.createElement('div');
+            tt.setAttribute('id', 'tt');
+            tt.innerHTML = tip;
+            h = parseInt(tt.offsetHeight) + 3;
+            var u = ie ? event.clientY + document.documentElement.scrollTop : e.pageY;
+            var l = ie ? event.clientX + document.documentElement.scrollLeft : e.pageX;
+            tt.style.top = (u - h) + 'px';
+            tt.style.left = (l + 3) + 'px';
+
+            document.body.appendChild(tt);
+
+            var timeoutId2 = setTimeout(function () {
+                if (document.getElementById('tt')) {
+
+                    var m = document.getElementById('tt');
+                    document.body.removeChild(m);
+                }
+            }, 5000);
+
+            this.onmouseout = function () {
+                clearTimeout(timeoutId2);
+                if (document.getElementById('tt')) {
+                    var m = document.getElementById('tt');
+                    document.body.removeChild(tt);
+                }
+            };
+
+        }, 1000);
+        var element = this;
+        element.data = { timeoutId: timeoutId };
+        this.onmouseout = function () {
+            clearTimeout(this.data.timeoutId);
+            if (document.getElementById('tt')) {
+                var m = document.getElementById('tt');
+                document.body.removeChild(tt);
+
+            }
+        };
 
     }
 
@@ -506,7 +559,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 var mark = new google.maps.Marker(opts);
                 mark.idx = markarray.length;
                 if (p.generation > genquery - 1) {
-                    var expandButton = "<button class='greenbutton' onclick='this.style.display=\"none\"; " +
+                    var expandButton = "<button id='expandbutton' class='greenbutton' onclick='this.style.display=\"none\"; " +
                         "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
                         "\"," + p.generation + "," + p.isPaternal +
                         "); ib.close();'>" + 'EXPAND</button>';
@@ -521,20 +574,27 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     p.name + '<br/>' +
                     p.birth.place + '<br/>' +
                     p.birth.date + '<br/>';
-                var contents2 = "<button class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" +
+                var contents2 = "<button id='idbutton' class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" +
                     p.id + "\")'>" + p.id + '</button>' +
                     '</div>';
 
                 mark.content1 = contents1;
                 mark.content2 = contents2;
-
+                google.maps.event.addListener(ib, 'domready', function () {
+  
+                    if ( document.getElementById("expandbutton")){
+                        document.getElementById("expandbutton").onmouseover = function (e) { tooltip(e, "Plot the parents of this person."); }
+                    }
+                        document.getElementById("idbutton").onmouseover = function (e) { tooltip(e, "Set this person as the root person."); }
+                    
+                });
                 oms.addListener('click', function (mark, event) {
                     if (mark.isExpanded) {
                         ib.setContent(mark.content1 + mark.content2);
                     } else {
                         ib.setContent(mark.content1 + mark.expand + mark.content2);
                     }
-
+                  
                     ib.open(map, mark);
                 });
 

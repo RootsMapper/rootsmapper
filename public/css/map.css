@@ -154,13 +154,13 @@ html, body {
     }
 
         .bluebutton:hover {
-            background-color: rgba(36,150,255,1);
-            border: 1px solid rgba(36,150,255,1);
+            background-color: rgba(36,162,255,1);
+            border: 1px solid rgba(36,162,255,1);
         }
 
         .bluebutton:active {
-            background-color: rgba(24,138,255,1);
-            border: 1px solid rgba(24,138,255,1);
+            background-color: rgba(24,126,255,1);
+            border: 1px solid rgba(24,126,255,1);
         }
 
     .greenbutton {
@@ -174,13 +174,13 @@ html, body {
     }
 
         .greenbutton:hover {
-            background-color: rgba(0,134,0,1);
-            border: 1px solid rgba(0,134,0,1);
+            background-color: rgba(0,146,0,1);
+            border: 1px solid rgba(0,146,0,1);
         }
 
         .greenbutton:active {
-            background-color: rgba(0,122,0,1);
-            border: 1px solid rgba(0,122,0,1);
+            background-color: rgba(0,110,0,1);
+            border: 1px solid rgba(0,110,0,1);
         }
 
 #populateUser {
@@ -197,13 +197,13 @@ html, body {
 }
 
         #populateUser:hover {
-            background-color: rgba(36,150,255,1);
-            border: 1px solid rgba(36,150,255,1);
+            background-color: rgba(36,162,255,1);
+            border: 1px solid rgba(36,162,255,1);
         }
 
         #populateUser:active {
-            background-color: rgba(24,138,255,1);
-            border: 1px solid rgba(24,138,255,1);
+            background-color: rgba(24,126,255,1);
+            border: 1px solid rgba(24,126,255,1);
         }
 
 #logoutbutton {
@@ -218,20 +218,20 @@ html, body {
 }
 
         #logoutbutton:hover {
-            background-color: rgba(145,0,0,1);
-            border: 1px solid rgba(145,0,0,1);
+            background-color: rgba(157,0,0,1);
+            border: 1px solid rgba(157,0,0,1);
         }
 
         #logoutbutton:active {
-            background-color: rgba(133,0,0,1);
-            border: 1px solid rgba(133,0,0,1);
+            background-color: rgba(121,0,0,1);
+            border: 1px solid rgba(121,0,0,1);
         }
 
 #loginbutton {
     background-color: #003e97;
     color: white;
     border: 1px solid #003e97;
-    border-radius: 0px 2px 2px 0px; 
+    border-radius: 2px; 
     height: 50px;
     width: 100px;
     float: left;
@@ -239,8 +239,11 @@ html, body {
 }
 
         #loginbutton:hover {
-            background-color: #358ee6;
-            border: 1px solid #358ee6;
+            /*background-color: #358ee6;
+            border: 1px solid #358ee6;*/
+            background-color: #003ea9;
+            border: 1px solid #003ea9;
+
         }
 
         #loginbutton:active {
@@ -303,15 +306,16 @@ html, body {
     width: 75px;
 }
 
-progress.withText {
-    color: inherit;
-    vertical-align: text-bottom;
-}
+#tt {
+ position:absolute;
+ display:block;
+ z-index: 99;
+ background-color: white;
+ border: 1px solid black;
+ padding: 2px 4px 2px 4px;
+ color: black;
+ font-family: helvetica, arial, sans serif;
+ font-size: smaller;
+ }
 
-.progressRingText {
-    font-weight: bold;
-}
-
-.progressRingText progress {
-    margin-right: 5px;
-}
+ 
