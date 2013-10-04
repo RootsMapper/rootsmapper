@@ -571,11 +571,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 }
 
                 var contents1 = "<div id='infow' class='infoboxstyle' style='background-color:" + bgcolor + "'>" +
-                    p.name + '<br/>' +
+                    '<strong>' + p.name + '</strong><br/>' +
+                    '<em>' + p.id + '</em><br/>' +
                     p.birth.place + '<br/>' +
                     p.birth.date + '<br/>';
                 var contents2 = "<button id='idbutton' class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" +
-                    p.id + "\")'>" + p.id + '</button>' +
+                    p.id + "\"); ib.close();'>" + "SET AS ROOT" + '</button>' +
                     '</div>';
 
                 mark.content1 = contents1;
