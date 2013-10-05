@@ -71,7 +71,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
             tt.setAttribute('id', 'tt');
             tt.innerHTML = tip;
             var rect = that.getBoundingClientRect();
-            tt.style.top = (rect.bottom + rect.height + 20) + 'px';
+            tt.style.top = (rect.bottom + 10) + 'px';
             tt.style.left = (rect.left) + 'px';
 
             document.body.appendChild(tt);
