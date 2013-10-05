@@ -113,28 +113,5 @@ else
 		</div>
 		
             <button id="faqbutton" onclick="window.open('http://blog.rootsmapper.com/p/faq.html', '_blank')">FAQ</button>
-        </div>
-	<div id="adbox">
-		<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-		<!-- RootsMapper Responsive -->
-		<ins class="adsbygoogle rootsmapper-responsive"
-		     style="display:inline-block"
-		     data-ad-client="ca-pub-3965895544082423"
-		     data-ad-slot="1055824562"></ins>
-		<script>
-			(adsbygoogle = window.adsbygoogle || []).push({});
-		</script>
-	</div>
-	<div id="adbox2">
-		<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-		<!-- RootsMapper Bottom Responsive -->
-		<ins class="adsbygoogle rootsmapper-bottom-responsive"
-		     style="display:inline-block"
-		     data-ad-client="ca-pub-3965895544082423"
-		     data-ad-slot="8579091360"></ins>
-		<script>
-			(adsbygoogle = window.adsbygoogle || []).push({});
-		</script>
-	</div>
 </body>
 </html>
