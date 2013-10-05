@@ -44,13 +44,13 @@ if (isset($_SESSION['fs-session']))
         <title>RootsMapper</title>
         <!-- Google Maps API reference -->
         <script
-            src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry">
+            src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry">
         </script>
         
 	<!-- map references -->
 
 	<!-- loading animation references -->
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/loading.js"></script>
 	<!-- loading animation references -->
 
@@ -109,10 +109,32 @@ else
 }
 ?>
 			</div>
+            	<div id="loading" class="square"></div>
 		</div>
 		
-            <div id="loading" class="square"></div>
             <button id="faqbutton" onclick="window.open('http://blog.rootsmapper.com/p/faq.html', '_blank')">FAQ</button>
         </div>
-    </body>
+	<div id="adbox">
+		<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<!-- RootsMapper Responsive -->
+		<ins class="adsbygoogle rootsmapper-responsive"
+		     style="display:inline-block"
+		     data-ad-client="ca-pub-3965895544082423"
+		     data-ad-slot="1055824562"></ins>
+		<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+	</div>
+	<div id="adbox2">
+		<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<!-- RootsMapper Bottom Responsive -->
+		<ins class="adsbygoogle rootsmapper-bottom-responsive"
+		     style="display:inline-block"
+		     data-ad-client="ca-pub-3965895544082423"
+		     data-ad-slot="8579091360"></ins>
+		<script>
+			(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+	</div>
+</body>
 </html>

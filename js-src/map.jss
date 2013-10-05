@@ -677,7 +677,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
             $('#loading').show();
         });
         $(function () {
-            $('#loading').activity({ segments: 10, width: 3, space: 1, length: 6, color: '#FFFFFF', speed: 1.5 });
+            $('#loading').activity({ segments: 10, width: 2, space: 1, length: 5, color: '#FFFFFF', speed: 1.5 });
         });
     }
 

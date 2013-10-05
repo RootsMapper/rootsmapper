@@ -18,8 +18,8 @@ html, body {
 }
 
 .square {
-	width: 50px;
-	height: 40px;
+	width: 40px;
+	height: 30px;
 	float: left;
 	margin: 0px;
 	padding: 0px 0px;
@@ -52,10 +52,7 @@ html, body {
 }
 
 #loading {
-    position: absolute;
-    bottom: 5px;
-    left:50%;
-    margin-left:-25px;
+    float: left;
     background-color: black;
     opacity: 0.5;
     border-radius: 3px;
@@ -320,4 +317,24 @@ html, body {
  font-weight: bold;
  }
 
+#adbox {
+ top: 30px;
+ position: absolute;
+ right: 0px;
+ z-index:0;
+}
+
+.rootsmapper-responsive { width: 70px; height: 240px; }
+@media (max-width: 950px) and (max-height: 340px) { .rootsmapper-responsive { width: 0px; height: 0px; } }
+@media (min-width: 950px) and (min-height: 340px) { .rootsmapper-responsive { width: 120px; height: 240px; } }
  
+#adbox2 {
+ bottom: 0px;
+ position: absolute;
+ left: 70px;
+ z-index:0;
+}
+
+.rootsmapper-bottom-responsive { width: 320px; height: 50px; }
+@media (max-width: 500px) and (max-height: 700px) { .rootsmapper-bottom-responsive { width: 0px; height: 0px; } }
+@media (min-width: 500px) and (min-height: 700px) { .rootsmapper-bottom-responsive { width: 468px; height: 60px; } }
