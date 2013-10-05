@@ -189,7 +189,7 @@ html, body {
     border: 1px solid dodgerblue;
     border-radius: 0px 2px 2px 0px; 
     height: 30px;
-    width: 75px;
+    width: 35px;
    /* box-shadow: 2px 0px 5px -2px rgba(100, 100, 100, 0.5) inset; */
 }
 
@@ -236,8 +236,6 @@ html, body {
 }
 
         #loginbutton:hover {
-            /*background-color: #358ee6;
-            border: 1px solid #358ee6;*/
             background-color: #003ea9;
             border: 1px solid #003ea9;
 
@@ -256,7 +254,7 @@ html, body {
     margin: 0;
     border-radius: 0px 2px 2px 0px; 
     height: 30px;
-    width: 75px;
+    width: 45px;
 }
 
         .runButton:hover {
@@ -269,15 +267,15 @@ html, body {
             border: 1px solid rgba(0,122,0,1);
         }
 
-.disabledbutton {
+.disabledRunButton {
     float: left;
     background-color: gray;
-    color: white;
+    color: lightgray;
     border: 1px solid gray;
     margin: 0;
     border-radius: 0px 2px 2px 0px; 
     height: 30px;
-    width: 75px;
+    width: 45px;
 }
 
 #tt {
@@ -306,43 +304,46 @@ html, body {
 }
 
 #faqbutton {
-    background-color: grey;
+    background-color: black;
     color: white;
-    border: 1px solid grey;
+    border: 1px solid black;
     border-radius: 2px; 
     height: 30px;
     width: 50px;
     float: right;
     margin-left: 5px;
+    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
 }
 
         #faqbutton:hover {
-            background-color: rgba(134,134,134,1);
-            border: 1px solid rgba(134,134,134,1);
+            background-color: black;
+            border: 1px solid black;
         }
 
         #faqbutton:active {
-            background-color: rgba(122,122,122,1);
-            border: 1px solid rgba(122,122,122,1);
+            background-color: black;
+            border: 1px solid black;
         }
 
 #feedbackbutton {
-    background-color: grey;
+    background-color: #003e97;
     color: white;
-    border: 1px solid grey;
+    color: white;
+    border: 1px solid #003e97;
     border-radius: 2px; 
     height: 30px;
     width: 70px;
     float: right;
     margin: 0;
+    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
 }
 
         #feedbackbutton:hover {
-            background-color: rgba(134,134,134,1);
-            border: 1px solid rgba(134,134,134,1);
+            background-color: #003ea9;
+            border: 1px solid #003ea9;
         }
 
         #feedbackbutton:active {
-            background-color: rgba(122,122,122,1);
-            border: 1px solid rgba(122,122,122,1);
+            background-color: #358ee6;
+            border: 1px solid #358ee6;
         }

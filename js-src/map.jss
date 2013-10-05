@@ -756,7 +756,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
         loadingAnimationStart();
         var runButton = document.getElementById('runButton');
         runButton.disabled = true;
-        runButton.className = 'disabledbutton';
+        runButton.className = 'disabledRunButton';
     }
 
     function completionEvents() {
