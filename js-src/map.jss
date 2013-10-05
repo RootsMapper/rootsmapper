@@ -550,14 +550,15 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     var bgcolor = 'pink'; // rgbToHex(245, 139, 237);
                     var icon = 'images/female' + p.generation + '.png';
                 }
-
+                var scaleFactor = .75;
                 var opts = {
                     map: map,
                     position: p.birth.latlng,
                     icon: {
                         url: icon,
                         origin: new google.maps.Point(0,0),
-                        anchor: new google.maps.Point(11.5, 14)
+                        anchor: new google.maps.Point(11.5, 14),
+                        scaledSize: new google.maps.Size(23*scaleFactor,28*scaleFactor)
                     }
                 }
 
