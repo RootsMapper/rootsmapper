@@ -111,7 +111,9 @@ else
 			</div>
             	<div id="loading" class="square"></div>
 		</div>
-		
-            <button id="faqbutton" onclick="window.open('http://blog.rootsmapper.com/p/faq.html', '_blank')">FAQ</button>
+	    	<div id="lowerbuttonframe">
+            	<button id="faqbutton" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
+            	<button id="feedbackbutton" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
+		</div>
 </body>
 </html>

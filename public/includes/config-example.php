@@ -17,4 +17,12 @@ $ENDPOINT_SUBDOMAIN = 'sandbox';
 // different than what is in this example!!
 $SECRET_WORD = 'mysecret';
 
+// Set the URL for the Feedback button on the lower
+// right of the page
+$FEEDBACK_URL = 'http://example.com/feedback';
+
+// Set the URL for the FAQ button on the lower
+// right of the page
+$FAQ_URL = 'http://example.com/faq';
+
 ?>

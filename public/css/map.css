@@ -248,29 +248,6 @@ html, body {
             border: 1px solid #358ee6;
         }
 
-#faqbutton {
-    background-color: grey;
-    color: white;
-    border: 1px solid grey;
-    border-radius: 2px; 
-    height: 30px;
-    width: 50px;
-    position: fixed;
-    right: 10px;
-    bottom: 20px;
-    margin: 0;
-}
-
-        #faqbutton:hover {
-            background-color: rgba(134,134,134,1);
-            border: 1px solid rgba(134,134,134,1);
-        }
-
-        #faqbutton:active {
-            background-color: rgba(122,122,122,1);
-            border: 1px solid rgba(122,122,122,1);
-        }
-
 .runButton {
     float: left;
     background-color: green;
@@ -317,3 +294,55 @@ html, body {
  font-weight: bold;
  }
 
+#lowerbuttonframe {
+    position: fixed;
+    bottom: 20px;
+    right: 5px;
+    margin: 0 auto;
+    width: 1000px;
+    z-index: 1;
+    background-color: transparent;
+    max-height: 608px;
+}
+
+#faqbutton {
+    background-color: grey;
+    color: white;
+    border: 1px solid grey;
+    border-radius: 2px; 
+    height: 30px;
+    width: 50px;
+    float: right;
+    margin-left: 5px;
+}
+
+        #faqbutton:hover {
+            background-color: rgba(134,134,134,1);
+            border: 1px solid rgba(134,134,134,1);
+        }
+
+        #faqbutton:active {
+            background-color: rgba(122,122,122,1);
+            border: 1px solid rgba(122,122,122,1);
+        }
+
+#feedbackbutton {
+    background-color: grey;
+    color: white;
+    border: 1px solid grey;
+    border-radius: 2px; 
+    height: 30px;
+    width: 70px;
+    float: right;
+    margin: 0;
+}
+
+        #feedbackbutton:hover {
+            background-color: rgba(134,134,134,1);
+            border: 1px solid rgba(134,134,134,1);
+        }
+
+        #feedbackbutton:active {
+            background-color: rgba(122,122,122,1);
+            border: 1px solid rgba(122,122,122,1);
+        }
