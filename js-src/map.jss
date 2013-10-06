@@ -57,6 +57,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
         if (accesstoken) {
             populateUser();
+            ancestorgens('3');
         }
 
 
@@ -103,12 +104,19 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
     }
 
-    function ancestorgens() {
+    function ancestorgens(gens) {
 
         clearOverlays();
         startEvents();
-        var select = document.getElementById('genSelect');
-        genquery = parseFloat(select.value);
+	if (gens == undefined) 
+        {
+		select = document.getElementById('genSelect');
+		genquery = parseFloat(select.value);
+        }
+	else
+	{
+		genquery = parseFloat(gens);
+	}
         getPedigree(genquery, undefined, undefined);
 
     }

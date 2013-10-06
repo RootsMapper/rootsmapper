@@ -91,7 +91,7 @@ if (isset($access_token))
 				<select id="genSelect" class="boxes">
 					<option value="1">1 generation</option>
 					<option value="2">2 generations</option>
-					<option value="3">3 generations</option>
+					<option selected="selected" value="3">3 generations</option>
 					<option value="4">4 generations</option>
 					<option value="5">5 generations</option>
 					<option value="6">6 generations</option>
