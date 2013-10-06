@@ -114,6 +114,7 @@ else
 	    	<div id="lowerbuttonframe">
             	<button id="faqbutton" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
             	<button id="feedbackbutton" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
+            	<button id="donatebutton" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
 		</div>
 </body>
 </html>

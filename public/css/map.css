@@ -328,13 +328,12 @@ html, body {
 #feedbackbutton {
     background-color: #003e97;
     color: white;
-    color: white;
     border: 1px solid #003e97;
     border-radius: 2px; 
     height: 30px;
     width: 70px;
     float: right;
-    margin: 0;
+    margin-left: 5px;
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
 }
 
@@ -346,4 +345,26 @@ html, body {
         #feedbackbutton:active {
             background-color: #358ee6;
             border: 1px solid #358ee6;
+        }
+
+#donatebutton {
+    background-color: gold;
+    color: black;
+    border: 1px solid gold;
+    border-radius: 2px; 
+    height: 30px;
+    width: 70px;
+    float: right;
+    margin: 0;
+    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
+}
+
+        #donatebutton:hover {
+            background-color: gold;
+            border: 1px solid gold;
+        }
+
+        #donatebutton:active {
+            background-color: gold;
+            border: 1px solid gold;
         }

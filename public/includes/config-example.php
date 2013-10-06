@@ -25,4 +25,8 @@ $FEEDBACK_URL = 'http://example.com/feedback';
 // right of the page
 $FAQ_URL = 'http://example.com/faq';
 
+// Set the URL for the Donate button on the lower
+// right of the page
+$DONATE_URL = 'http://example.com/donate';
+
 ?>
