@@ -92,7 +92,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 }
             };
 
-        }, 1000);
+        }, 500);
         
         that.onmouseout = function () {
             clearTimeout(timeoutId);
@@ -576,7 +576,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     var expandButton = "<button id='expandbutton' class='greenbutton' onclick='this.style.display=\"none\"; " +
                         "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
                         "\"," + p.generation + "," + p.isPaternal +
-                        "); ib.close();'>" + 'EXPAND</button>';
+                        "); ib.close();'>" + 'Expand</button>';
                     mark.expand = expandButton;
                     mark.isExpanded = false;
                 } else {
@@ -587,10 +587,10 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 var contents1 = "<div id='infow' class='infoboxstyle' style='background-color:" + bgcolor + "'>" +
                     '<strong>' + p.name + '</strong><br/>' +
                     '<em>' + p.id + '</em><br/>' +
-                    p.birth.place + '<br/>' +
-                    p.birth.date + '<br/>';
+                    "Birth: " + p.birth.date + '<br/>' +
+                    p.birth.place + '<br/>';
                 var contents2 = "<button id='idbutton' class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" +
-                    p.id + "\"); ib.close();'>" + "SET AS ROOT" + '</button>' +
+                    p.id + "\"); ib.close();'>" + "Set as root" + '</button>' +
                     '</div>';
 
                 mark.content1 = contents1;

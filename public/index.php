@@ -79,13 +79,13 @@ if (isset($access_token))
 { ?>
 			<div class="hoverdiv">
 				<input id="username" class="boxes" type="text" readonly>
-				<button id="logoutbutton" onclick="window.location='logout.php'">LOGOUT</button>
+				<button id="logoutbutton" onclick="window.location='logout.php'">Logout</button>
 			</div>
 			<div class="hoverdiv">
 				<label id="prompt" for="personid">Root Person ID:</label>
 				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
 				<script type="text/javascript" src="scripts/keyfilter.js"></script>
-				<button id="populateUser" class="bluebutton" onclick="populateUser()">ME</button>
+				<button id="populateUser" class="bluebutton" onclick="populateUser()">Me</button>
 			</div>
 			<div class="hoverdiv">
 				<select id="genSelect" class="boxes">
@@ -97,7 +97,7 @@ if (isset($access_token))
 					<option value="6">6 generations</option>
 					<option value="7">7 generations</option>
 				</select>
-				<button id="runButton" class="runButton" onclick="ancestorgens()">RUN</button>
+				<button id="runButton" class="runButton" onclick="ancestorgens()">Run</button>
 <?php
 }
 else
