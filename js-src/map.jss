@@ -17,6 +17,7 @@ var nSearches;
 var delay = 1;
 var baseurl;
 var userID;
+var expanding;
 
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -41,18 +42,18 @@ google.maps.event.addDomListener(window, 'load', initialize);
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
 
         if (document.getElementById("personid")) {
-            document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person"); }
+            document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person",35); }
         }
         if (document.getElementById("populateUser")) {
-            document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person"); }
+            document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person",35); }
         }
 
         if (document.getElementById("genSelect")) {
-            document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot"); }
+            document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot",35); }
         }
 
         if (document.getElementById("runButton")) {
-            document.getElementById("runButton").onmouseover = function () { tooltip("Begin the plotting process"); }
+            document.getElementById("runButton").onmouseover = function () { tooltip("Begin the plotting process",35); }
         }
 
         if (accesstoken) {
@@ -60,20 +61,26 @@ google.maps.event.addDomListener(window, 'load', initialize);
             ancestorgens();
         }
 
-
+        google.maps.event.addListener(map, 'click', function () {
+            ib.close();
+        });
     }
 
-    function tooltip(tip) {
+    function tooltip(tip, v, h) {
+		var vert;
+		var horiz;
+    	if (v) {vert = v} else {vert = 0}
+		if (h) {horiz = v} else {horiz = 0}
+		var tt;
+		var that = this.event.toElement;
 
-        var tt;
-        var that = this.event.toElement;
-        var timeoutId = setTimeout(function () {
-            tt = document.createElement('div');
-            tt.setAttribute('id', 'tt');
-            tt.innerHTML = tip;
-            var rect = that.getBoundingClientRect();
-            tt.style.top = (rect.bottom + 10) + 'px';
-            tt.style.left = (rect.left) + 'px';
+		var timeoutId = setTimeout(function () {
+		tt = document.createElement('div');
+		tt.setAttribute('id', 'tt');
+		tt.innerHTML = tip;
+		var rect = that.getBoundingClientRect();
+            tt.style.top = (rect.bottom +vert +10) + 'px';
+            tt.style.left =(rect.left +horiz) + 'px';
 
             document.body.appendChild(tt);
 
@@ -81,22 +88,22 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 if (document.getElementById('tt')) {
                     var m = document.getElementById('tt');
                     document.body.removeChild(m);
-                }
+                    }
             }, 4000);
 
             that.onmouseout = function () {
                 clearTimeout(timer);
                 if (document.getElementById('tt')) {
-                    var m = document.getElementById('tt');
+				var m = document.getElementById('tt');
                     document.body.removeChild(tt);
-                }
-            };
+                    }
+                    };
 
-        }, 500);
-        
-        that.onmouseout = function () {
-            clearTimeout(timeoutId);
-            if (document.getElementById('tt')) {
+                    }, 500);
+
+				that.onmouseout = function () {
+					clearTimeout(timeoutId);
+					if (document.getElementById('tt')) {
                 var m = document.getElementById('tt');
                 document.body.removeChild(tt);
             }
@@ -309,45 +316,110 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     if (genders[0]) {
                         var gender = genders[0].textContent;
                     }
-
+                    var death = {
+                        date: null,
+                        place: null
+                    }
                     // Get birth date and location
                     var events = xmlDocument.getElementsByTagName("events");
                     if (events[0]) {
                         var value = events[0].getElementsByTagName("value");
-
-                        if (value[0].getAttribute("type") == "Birth") {
-
-                            var dates = value[0].getElementsByTagName("date");
-                            var places = value[0].getElementsByTagName("place");
+                        for (var i = 0; i < value.length; i++) {
+                            var dates = value[i].getElementsByTagName("date");
+                            var places = value[i].getElementsByTagName("place");
 
                             if (places[0]) {
                                 if (places[0].childNodes[1]) {
-                                    var birthPlace = places[0].childNodes[1].textContent;
+                                    var place = places[0].childNodes[1].textContent;
                                 } else {
-                                    var birthPlace = places[0].childNodes[0].textContent;
+                                    var place = places[0].childNodes[0].textContent;
                                 }
                             }
                             if (dates[0]) {
                                 if (dates[0].childNodes[1]) {
-                                    var birthDate = dates[0].childNodes[1].textContent;
+                                    var date = dates[0].childNodes[1].textContent;
                                 } else {
-                                    var birthDate = dates[0].childNodes[0].textContent;
+                                    var date = dates[0].childNodes[0].textContent;
+                                }
+                            }
+
+                            if (value[i].getAttribute("type") == "Birth") {
+                                // Package birth information
+                                var birth = {
+                                    date: date,
+                                    place: place
+                                }
+                            } else if (value[i].getAttribute("type") == "Death") {
+                                // Package death information
+                                var death = {
+                                    date: date,
+                                    place: place
                                 }
                             }
                         }
                     }
 
-                    // Package birth information
-                    var birth = {
-                        date: birthDate,
-                        place: birthPlace
-                    }
+                    //    if (value[0].getAttribute("type") == "Birth") {
+
+                    //        var dates = value[0].getElementsByTagName("date");
+                    //        var places = value[0].getElementsByTagName("place");
+
+                    //        if (places[0]) {
+                    //            if (places[0].childNodes[1]) {
+                    //                var birthPlace = places[0].childNodes[1].textContent;
+                    //            } else {
+                    //                var birthPlace = places[0].childNodes[0].textContent;
+                    //            }
+                    //        }
+                    //        if (dates[0]) {
+                    //            if (dates[0].childNodes[1]) {
+                    //                var birthDate = dates[0].childNodes[1].textContent;
+                    //            } else {
+                    //                var birthDate = dates[0].childNodes[0].textContent;
+                    //            }
+                    //        }
+                    //    }
+
+                    //    if (value[0].getAttribute("type") == "Death") {
+
+                    //        var dates = value[0].getElementsByTagName("date");
+                    //        var places = value[0].getElementsByTagName("place");
+
+                    //        if (places[0]) {
+                    //            if (places[0].childNodes[1]) {
+                    //                var deathPlace = places[0].childNodes[1].textContent;
+                    //            } else {
+                    //                var deathPlace = places[0].childNodes[0].textContent;
+                    //            }
+                    //        }
+                    //        if (dates[0]) {
+                    //            if (dates[0].childNodes[1]) {
+                    //                var deathDate = dates[0].childNodes[1].textContent;
+                    //            } else {
+                    //                var deathDate = dates[0].childNodes[0].textContent;
+                    //            }
+                    //        }
+                    //    }
+                    //}
+
+                    //// Package birth information
+                    //var birth = {
+                    //    date: birthDate,
+                    //    place: birthPlace
+                    //}
+
+                    //// Package death information
+                    //var death = {
+                    //    date: deathDate,
+                    //    place: deathPlace
+                    //}
 
                     // Package individual summary
                     var personObject = {
                         name: name,
                         id: id,
                         birth: birth,
+                        death: death,
                         gender: gender
                     }
 
@@ -418,6 +490,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
 
         if (firstTime == true) {
             makeInfoWindow(progenitors[0]);
+			var mark = markarray[0];
+			ib.setContent(mark.content1 +mark.content2);
+			ib.open(map, mark);
             firstTime = false;
         }
 
@@ -547,9 +622,11 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 if (p.gender == "Male") {
                     var bgcolor = 'lightblue'; //rgbToHex(0, 176, 240);
                     var icon = 'images/male' + p.generation + '.png';
+                    var src = 'images/man.png';
                 } else {
                     var bgcolor = 'pink'; // rgbToHex(245, 139, 237);
                     var icon = 'images/female' + p.generation + '.png';
+                    var src = 'images/woman.png';
                 }
                 var scaleFactor = .75;
                 var opts = {
@@ -558,7 +635,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     icon: {
                         url: icon,
                         origin: new google.maps.Point(0,0),
-                        anchor: new google.maps.Point(11.5, 14),
+                        anchor: new google.maps.Point(23*scaleFactor*0.5,28*scaleFactor*0.5),
                         scaledSize: new google.maps.Size(23*scaleFactor,28*scaleFactor)
                     }
                 }
@@ -566,10 +643,10 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 var mark = new google.maps.Marker(opts);
                 mark.idx = markarray.length;
                 if (p.generation > genquery - 1) {
-                    var expandButton = "<button id='expandbutton' class='greenbutton' onclick='this.style.display=\"none\"; " +
+                    var expandButton = "<button id='expandButton' class='button green' onclick='this.style.display=\"none\"; " +
                         "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
                         "\"," + p.generation + "," + p.isPaternal +
-                        "); ib.close();'>" + 'Expand</button>';
+                        "); ib.close();'>" + 'Expand Parents</button>';
                     mark.expand = expandButton;
                     mark.isExpanded = false;
                 } else {
@@ -577,23 +654,39 @@ google.maps.event.addDomListener(window, 'load', initialize);
                     mark.expand = "";
                 }
 
-                var contents1 = "<div id='infow' class='infoboxstyle' style='background-color:" + bgcolor + "'>" +
-                    '<strong>' + p.name + '</strong><br/>' +
-                    '<em>' + p.id + '</em><br/>' +
-                    "Birth: " + p.birth.date + '<br/>' +
-                    p.birth.place + '<br/>';
-                var contents2 = "<button id='idbutton' class='bluebutton' style=\"width:100px\" onclick='populateIdField(\"" +
-                    p.id + "\"); ib.close();'>" + "Set as root" + '</button>' +
-                    '</div>';
-
+                var contents1 =
+                "<div id='infow'>" +
+                    "<div class='person'>" +
+                        "<img class='profile-image' src='" + src + "'>" +
+                        "<div class='box'>" +
+                            "<div class='xlarge'>" + p.name + "</div>" +
+                            "<button id='idButton' class='buttonLink' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + p.id + '</button>' +
+                        "</div>" +
+                    "</div>" +
+                    "<div class='person'>" +
+                        "<div class='label'>BIRTH</div>" +
+                        "<div class='box'>" +
+                            "<div class='large'>" + (p.birth.date || "") + "</div>" +
+                            "<div class='small'>" + (p.birth.place || "") + "</div>" +
+                        "</div>" +
+                    "</div>" +
+                    "<div class='person'>" +
+                        "<div class='label'>DEATH</div>" +
+                        "<div class='box'>" +
+                            "<div class='large'>" + (p.death.date || "Living") + "</div>" +
+                            "<div class='small'>" + (p.death.place || "") + "</div>" +
+                        "</div>" +
+                    "</div>";
+                var contents2 = '</div>';
+                
                 mark.content1 = contents1;
                 mark.content2 = contents2;
                 google.maps.event.addListener(ib, 'domready', function () {
   
-                    if ( document.getElementById("expandbutton")){
-                        document.getElementById("expandbutton").onmouseover = function () { tooltip("Plot the parents of this person"); }
+                    if ( document.getElementById("expandButton")){
+                        document.getElementById("expandButton").onmouseover = function () { tooltip("Plot the parents of this person",35); }
                     }
-                        document.getElementById("idbutton").onmouseover = function () { tooltip("Set this person as the root person"); }
+                        document.getElementById("idButton").onmouseover = function () { tooltip("Set this person as the root person",35); }
                     
                 });
                 oms.addListener('click', function (mark, event) {
@@ -703,7 +796,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 	if (ib) {
             ib.close();
         }
-        ib = new InfoBox({ contents: "" });
+        ib = new InfoBox({ contents: "", maxWidth: 0, closeBoxURL: "" });
         markarray.length = 0;
         polyarray.length = 0;
         firstTime = true;
@@ -757,12 +850,12 @@ google.maps.event.addDomListener(window, 'load', initialize);
         loadingAnimationStart();
         var runButton = document.getElementById('runButton');
         runButton.disabled = true;
-        runButton.className = 'disabledRunButton';
+        runButton.className = 'button disabled';
     }
 
     function completionEvents() {
         loadingAnimationEnd();
         var runButton = document.getElementById('runButton');
         runButton.disabled = false;
-        runButton.className = 'runButton';
+        runButton.className = 'button green';
     }

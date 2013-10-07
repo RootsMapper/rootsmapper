@@ -79,25 +79,25 @@ if (isset($access_token))
 { ?>
 			<div class="hoverdiv">
 				<input id="username" class="boxes" type="text" readonly>
-				<button id="logoutbutton" onclick="window.location='logout.php'">Logout</button>
+				<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
 			</div>
 			<div class="hoverdiv">
 				<label id="prompt" for="personid">Root Person ID:</label>
 				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
 				<script type="text/javascript" src="scripts/keyfilter.js"></script>
-				<button id="populateUser" class="bluebutton" onclick="populateUser()">Me</button>
+				<button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
 			</div>
 			<div class="hoverdiv">
 				<select id="genSelect" class="boxes">
-					<option value="1">1 generation</option>
+					<option selected="selected" value="1">1 generation</option>
 					<option value="2">2 generations</option>
-					<option selected="selected" value="3">3 generations</option>
+					<option value="3">3 generations</option>
 					<option value="4">4 generations</option>
 					<option value="5">5 generations</option>
 					<option value="6">6 generations</option>
 					<option value="7">7 generations</option>
 				</select>
-				<button id="runButton" class="runButton" onclick="ancestorgens()">Run</button>
+				<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
 <?php
 }
 else
@@ -112,9 +112,9 @@ else
             	<div id="loading" class="square"></div>
 		</div>
 	    	<div id="lowerbuttonframe">
-            	<button id="faqbutton" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
-            	<button id="feedbackbutton" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
-            	<button id="donatebutton" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
+            	<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
+            	<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
+            	<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
 		</div>
 </body>
 </html>
