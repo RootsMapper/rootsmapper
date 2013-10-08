@@ -1,5 +1,7 @@
 <?php
 
+require_once('config.php');
+
 class FSAuthentication {
     public $CurlHeaders;
     public $ResponseCode;
@@ -56,11 +58,10 @@ class FSAuthentication {
         // NOTE: If testing locally, add the following lines to use a dummy certificate, and to prevent cUrl from attempting to verify
         // the certificate's authenticity. See http://richardwarrender.com/2007/05/the-secret-to-curl-in-php-on-windows/ for more
         // details on this workaround. If your server has a valid SSL certificate installed, comment out these lines.
-        curl_setopt($r, CURLOPT_SSL_VERIFYPEER, false);
-        //curl_setopt($r, CURLOPT_CAINFO, "C:\wamp\bin\apache\Apache2.2.21\cacert.crt");
- 
-        // NOTE: For Fiddler2 debugging.
-        //curl_setopt($r, CURLOPT_PROXY, '127.0.0.1:8888');
+        if($ENDPOINT_SUBDOMAIN == 'sandbox')
+	{
+		curl_setopt($r, CURLOPT_SSL_VERIFYPEER, false);
+        }
  
         return($r);
     }

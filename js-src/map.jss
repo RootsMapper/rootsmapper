@@ -42,18 +42,26 @@ google.maps.event.addDomListener(window, 'load', initialize);
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
 
         if (document.getElementById("personid")) {
-            document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person",35); }
+            document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person",10); }
         }
         if (document.getElementById("populateUser")) {
-            document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person",35); }
+            document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person",10); }
         }
 
         if (document.getElementById("genSelect")) {
-            document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot",35); }
+            document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot",10); }
         }
 
         if (document.getElementById("runButton")) {
-            document.getElementById("runButton").onmouseover = function () { tooltip("Begin the plotting process",35); }
+            document.getElementById("runButton").onmouseover = function () { tooltip("Begin the plotting process",10); }
+        }
+
+        if (document.getElementById("feedbackbutton")) {
+            document.getElementById("feedbackbutton").onmouseover = function () { tooltip("Leave some comments about your experience",-75,-100); }
+        }
+
+        if (document.getElementById("donatebutton")) {
+            document.getElementById("donatebutton").onmouseover = function () { tooltip("Help keep this site up and running",-65,-65); }
         }
 
         if (accesstoken) {
@@ -70,7 +78,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 		var vert;
 		var horiz;
     	if (v) {vert = v} else {vert = 0}
-		if (h) {horiz = v} else {horiz = 0}
+		if (h) {horiz = h} else {horiz = 0}
 		var tt;
 		var that = this.event.toElement;
 
@@ -79,7 +87,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
 		tt.setAttribute('id', 'tt');
 		tt.innerHTML = tip;
 		var rect = that.getBoundingClientRect();
-            tt.style.top = (rect.bottom +vert +10) + 'px';
+            tt.style.top = (rect.bottom +vert) + 'px';
             tt.style.left =(rect.left +horiz) + 'px';
 
             document.body.appendChild(tt);
@@ -684,9 +692,9 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 google.maps.event.addListener(ib, 'domready', function () {
   
                     if ( document.getElementById("expandButton")){
-                        document.getElementById("expandButton").onmouseover = function () { tooltip("Plot the parents of this person",35); }
+                        document.getElementById("expandButton").onmouseover = function () { tooltip("Plot the parents of this person",10); }
                     }
-                        document.getElementById("idButton").onmouseover = function () { tooltip("Set this person as the root person",35); }
+                        document.getElementById("idButton").onmouseover = function () { tooltip("Set this person as the root person",10); }
                     
                 });
                 oms.addListener('click', function (mark, event) {
