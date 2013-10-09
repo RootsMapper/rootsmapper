@@ -5,7 +5,21 @@ require_once('includes/fs-auth-lib.php');
 
 session_start();
 
-$fs = new FSAuthentication(($SITE_MODE == 'production' ? "ident." : "sandbox."));
+switch ($SITE_MODE):
+	case 'production':
+		$auth_subdomain = "ident.";
+		break;
+	case 'beta':
+		$auth_subdomain = "identbeta.";
+		break;
+	case 'sandbox':
+		$auth_subdomain = "sandbox.";
+		break;
+	default:
+		$auth_subdomain = "sandbox.";
+endswitch;
+
+$fs = new FSAuthentication($auth_subdomain);
 
 //Generate fingerprint for session security
 $fingerprint = $SECRET_WORD . $_SERVER['HTTP_USER_AGENT'];
