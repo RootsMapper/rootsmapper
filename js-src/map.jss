@@ -20,7 +20,6 @@ var userID;
 var expanding;
 
 
-google.maps.event.addDomListener(window, 'load', initialize);
 
     function initialize() {
 
@@ -325,6 +324,10 @@ google.maps.event.addDomListener(window, 'load', initialize);
                         var gender = genders[0].textContent;
                     }
                     var death = {
+                        date: null,
+                        place: null
+                    }
+                    var birth = {
                         date: null,
                         place: null
                     }
@@ -872,3 +875,5 @@ google.maps.event.addDomListener(window, 'load', initialize);
 			firstTime.box = false;
 		}
     }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
