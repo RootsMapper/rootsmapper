@@ -15,8 +15,6 @@ switch ($SITE_MODE):
 	case 'sandbox':
 		$auth_subdomain = "sandbox.";
 		break;
-	default:
-		$auth_subdomain = "sandbox.";
 endswitch;
 
 $fs = new FSAuthentication($auth_subdomain);
@@ -74,7 +72,7 @@ if (isset($_SESSION['fs-session']))
 		<script src="scripts/infobox.js"></script>
         <script type="text/javascript">
              accesstoken='<?php echo($access_token); ?>';
-             baseurl='<?php echo("https://" . ($SITE_MODE == 'production' ? "" : "sandbox.") . "familysearch.org/familytree/v2/"); ?>';
+             baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org/familytree/v2/"); ?>';
 	</script>
 	<script language="javascript" type="text/javascript">
   		$(window).load(function() {
