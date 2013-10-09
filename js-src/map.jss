@@ -501,6 +501,7 @@ var expanding;
 
         if (firstTime.plot == true) {
             makeInfoWindow(progenitors[0]);
+            firstTime.plot = false;
         }
 
         for (var i = 0; i < progenitors.length; i++) {
