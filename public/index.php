@@ -78,20 +78,20 @@ if (isset($_SESSION['fs-session']))
 if (isset($access_token))
 { ?>
 			<div class="hoverdiv">
-				<input id="username" class="boxes" type="text" readonly>
+				<label id="username" class="labelbox" for"logoutbutton">User Name</label>
 				<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
 			</div>
 			<div class="hoverdiv">
-				<label id="prompt" for="personid">Root Person ID:</label>
+				<label id="prompt" class="labelbox" for="personid">Root Person ID:</label>
 				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
 				<script type="text/javascript" src="scripts/keyfilter.js"></script>
 				<button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
 			</div>
 			<div class="hoverdiv">
 				<select id="genSelect" class="boxes">
-					<option selected="selected" value="1">1 generation</option>
+					<option value="1">1 generation</option>
 					<option value="2">2 generations</option>
-					<option value="3">3 generations</option>
+					<option selected="selected" value="3">3 generations</option>
 					<option value="4">4 generations</option>
 					<option value="5">5 generations</option>
 					<option value="6">6 generations</option>

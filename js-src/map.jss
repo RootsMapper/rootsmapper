@@ -496,12 +496,8 @@ google.maps.event.addDomListener(window, 'load', initialize);
         var bounds = new google.maps.LatLngBounds;
         var currentBounds = map.getBounds();
 
-        if (firstTime == true) {
+        if (firstTime.plot == true) {
             makeInfoWindow(progenitors[0]);
-			var mark = markarray[0];
-			ib.setContent(mark.content1 +mark.content2);
-			ib.open(map, mark);
-            firstTime = false;
         }
 
         for (var i = 0; i < progenitors.length; i++) {
@@ -794,20 +790,23 @@ google.maps.event.addDomListener(window, 'load', initialize);
     }
 
     function clearOverlays() {
-        for (var i = 0; i < markarray.length; i++) {
-            markarray[i].setMap(null);
-        }
+    	for (var i = 0; i < markarray.length; i++) {
+    		markarray[i].setMap(null);
+    	}
 
-        for (var i = 0; i < polyarray.length; i++) {
-            polyarray[i].setMap(null);
-        }
-	if (ib) {
-            ib.close();
-        }
-        ib = new InfoBox({ contents: "", maxWidth: 0, closeBoxURL: "" });
-        markarray.length = 0;
-        polyarray.length = 0;
-        firstTime = true;
+    	for (var i = 0; i < polyarray.length; i++) {
+    		polyarray[i].setMap(null);
+    	}
+    	if (ib) {
+    		ib.close();
+    	}
+    	ib = new InfoBox({ contents: "", maxWidth: 0, closeBoxURL: "" });
+    	markarray.length = 0;
+    	polyarray.length = 0;
+    	firstTime = {
+    		plot: true,
+			box: true
+	    };
         nSearches = 0;
         oms.clearMarkers();
 
@@ -833,7 +832,7 @@ google.maps.event.addDomListener(window, 'load', initialize);
                 populateIdField(currentUser.id);
                 userID = currentUser.id;
                 var username = document.getElementById("username");
-                username.value = currentUser.name;
+                username.innerHTML = currentUser.name;
             });
         } else {
             populateIdField(userID);
@@ -866,4 +865,10 @@ google.maps.event.addDomListener(window, 'load', initialize);
         var runButton = document.getElementById('runButton');
         runButton.disabled = false;
         runButton.className = 'button green';
+		if (firstTime.box == true) {
+			var mark = markarray[0];
+			ib.setContent(mark.content1 +mark.content2);
+			ib.open(map, mark);
+			firstTime.box = false;
+		}
     }
