@@ -5,7 +5,7 @@ require_once('includes/fs-auth-lib.php');
 
 session_start();
 
-$fs = new FSAuthentication($ENDPOINT_SUBDOMAIN);
+$fs = new FSAuthentication(($SITE_MODE == 'production' ? "ident." : "sandbox."));
 
 //Generate fingerprint for session security
 $fingerprint = $SECRET_WORD . $_SERVER['HTTP_USER_AGENT'];
@@ -60,7 +60,7 @@ if (isset($_SESSION['fs-session']))
 		<script src="scripts/infobox.js"></script>
         <script type="text/javascript">
              accesstoken='<?php echo($access_token); ?>';
-             baseurl='<?php echo("https://" . $ENDPOINT_SUBDOMAIN . ".familysearch.org/familytree/v2/"); ?>';
+             baseurl='<?php echo("https://" . ($SITE_MODE == 'production' ? "" : "sandbox.") . "familysearch.org/familytree/v2/"); ?>';
 	</script>
 	<script language="javascript" type="text/javascript">
   		$(window).load(function() {
