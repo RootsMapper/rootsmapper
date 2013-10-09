@@ -6,7 +6,7 @@ $DEV_KEY = 'AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA';
 // OAUTH redirect URI
 $OAUTH2_REDIRECT_URI = 'http://mydomain.com/callback';
 
-// Set production or sandbox mode
+// Set production, beta or sandbox mode
 $SITE_MODE = 'sandbox'; 
 
 // Choose a secret word that will be used to
