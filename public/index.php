@@ -72,7 +72,7 @@ if (isset($_SESSION['fs-session']))
 		<script src="scripts/infobox.js"></script>
         <script type="text/javascript">
              accesstoken='<?php echo($access_token); ?>';
-             baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org/familytree/v2/"); ?>';
+             baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org/platform/tree/"); ?>';
 	</script>
 	<script language="javascript" type="text/javascript">
   		$(window).load(function() {
