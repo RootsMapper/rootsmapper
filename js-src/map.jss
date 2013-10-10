@@ -18,6 +18,7 @@ var delay = 1;
 var baseurl;
 var userID;
 var expanding;
+var restAPI;
 
 // Create a rest service; this stores common ajax configurations
 // so that each ajax call doesn't need to handle this.
@@ -27,20 +28,32 @@ var expanding;
 
 function currentUser() {
 
-    restAPI.get("/platform/users/current").done(function (data) {
-        var xml = data.documentElement;
-        var name = xml.getElementsByTagName("contactName")[0].textContent;
-        var id = xml.getElementsByTagName("treeUserId")[0].textContent;
-        populateIdField(id);
-        userID = id;
-        var username = document.getElementById("username");
-        username.innerHTML = name;
+    var xhttp;
+    var url = baseurl + "/platform/tree/current-person?access_token=" + accesstoken;
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", url);
 
-        ancestorgens();
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert("Error: " + textStatus);
-        
-    });
+    xhttp.onload = function (e) {
+        if (xhttp.readyState === 4) {
+            if (xhttp.status === 200) {
+
+                var xmlDocument = xhttp.responseXML.documentElement;
+                var persons = xmlDocument.getElementsByTagName("person");
+                userID = persons[0].getAttribute("id");
+                var fullText = persons[0].getElementsByTagName("fullText");
+                var name = fullText[0].textContent;
+
+                populateIdField(userID);
+                var username = document.getElementById("username");
+                username.innerHTML = name;
+
+                ancestorgens();
+
+            }
+        }
+    }
+
+    xhttp.send();
 
 }
 
@@ -51,6 +64,7 @@ function initialize() {
             authorization: accesstoken,
             cache: false
         });
+
         restAPI.addOptions({ headers: { Authorization: "Bearer " + accesstoken } })
 
         var lat = 30.0;
@@ -95,7 +109,6 @@ function initialize() {
 
         if (accesstoken) {
             currentUser();
-            //populateUser();
         }
 
         google.maps.event.addListener(map, 'click', function () {
@@ -367,13 +380,11 @@ function initialize() {
             }
 
             // Get birth date and location
-            var events = xmlDocument.getElementsByTagName("fact");
-            if (events[0]) {
-                
+            var events = xmlDocument.getElementsByTagName("fact");              
                 for (var i = 0; i < events.length; i++) {
-                    var type = events[0].getAttribute("type");
-                    var dates = events[0].getElementsByTagName("date");
-                    var places = events[0].getElementsByTagName("place");
+                    var type = events[i].getAttribute("type");
+                    var dates = events[i].getElementsByTagName("date");
+                    var places = events[i].getElementsByTagName("place");
 
                     if (places[0]) {
                         if (places[0].childNodes[1]) {
@@ -396,7 +407,7 @@ function initialize() {
                             date: date,
                             place: place
                         }
-                    } else if (value[i].getAttribute("type") == "http://gedcomx.org/Death") {
+                    } else if (type == "http://gedcomx.org/Death") {
                         // Package death information
                         var death = {
                             date: date,
@@ -404,7 +415,7 @@ function initialize() {
                         }
                     }
                 }
-            }
+            
 
             var personObject = {
                 name: name,
@@ -815,7 +826,7 @@ function initialize() {
                     "<div class='person'>" +
                         "<div class='label'>DEATH</div>" +
                         "<div class='box'>" +
-                            "<div class='large'>" + (p.death.date || "Living") + "</div>" +
+                            "<div class='large'>" + (p.death.date || "") + "</div>" +
                             "<div class='small'>" + (p.death.place || "") + "</div>" +
                         "</div>" +
                     "</div>";
