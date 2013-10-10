@@ -6,11 +6,8 @@ $DEV_KEY = 'AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA';
 // OAUTH redirect URI
 $OAUTH2_REDIRECT_URI = 'http://mydomain.com/callback';
 
-// Set familysearch auth endpoint reference
-//   For Sandbox use 'sandbox'
-//   For Staging use 'identbeta'
-//   For Production use 'ident'
-$ENDPOINT_SUBDOMAIN = 'sandbox'; 
+// Set production, beta or sandbox mode
+$SITE_MODE = 'sandbox'; 
 
 // Choose a secret word that will be used to
 // secure sessions. Make sure to choose something
