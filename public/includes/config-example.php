@@ -16,15 +16,18 @@ $SECRET_WORD = 'mysecret';
 
 // Set the URL for the Feedback button on the lower
 // right of the page
-$FEEDBACK_URL = 'http://example.com/feedback';
+// Leave blank to disable button
+$FEEDBACK_URL = '';
 
 // Set the URL for the FAQ button on the lower
 // right of the page
-$FAQ_URL = 'http://example.com/faq';
+// Leave blank to disable button
+$FAQ_URL = '';
 
 // Set the URL for the Donate button on the lower
 // right of the page
-$DONATE_URL = 'http://example.com/donate';
+// Leave blank to disable button
+$DONATE_URL = '';
 
 // Tracking code
 // This allows for insertion of code such as
