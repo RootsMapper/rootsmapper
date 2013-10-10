@@ -385,19 +385,23 @@ function initialize() {
                     var type = events[i].getAttribute("type");
                     var dates = events[i].getElementsByTagName("date");
                     var places = events[i].getElementsByTagName("place");
-
+                    
                     if (places[0]) {
-                        if (places[0].childNodes[1]) {
-                            var place = places[0].childNodes[1].textContent;
-                        } else {
-                            var place = places[0].childNodes[0].textContent;
+                        var original = places[0].getElementsByTagName("original");
+                        var normalized = places[0].getElementsByTagName("normalized");
+                        if (normalized[0]) {
+                            var place = normalized[0].textContent;
+                        } else if (original[0]) {
+                            var place = original[0].textContent;
                         }
                     }
                     if (dates[0]) {
-                        if (dates[0].childNodes[1]) {
-                            var date = dates[0].childNodes[1].textContent;
-                        } else {
-                            var date = dates[0].childNodes[0].textContent;
+                        var original = dates[0].getElementsByTagName("original");
+                        var normalized = dates[0].getElementsByTagName("normalized");
+                        if (normalized[0]) {
+                            var date = normalized[0].textContent;
+                        } else if (original[0]) {
+                            var date = original[0].textContent;
                         }
                     }
 
