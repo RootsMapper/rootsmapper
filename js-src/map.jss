@@ -19,9 +19,39 @@ var baseurl;
 var userID;
 var expanding;
 
+// Create a rest service; this stores common ajax configurations
+// so that each ajax call doesn't need to handle this.
+// The authentication header is added when the user logs in.
+// This uses the jquery-rest plugin found at https://github.com/justincy/jquery-rest
+var restAPI = new $.rest('https://sandbox.familysearch.org', {
+    dataType: 'xml',
+    contentType: 'application/x-fs-v1+xml',
+    authorization: accesstoken,
+    cache: false
+});
 
+function currentUser() {
 
-    function initialize() {
+    restAPI.get("/platform/users/current").done(function (data) {
+        var xml = data.documentElement;
+        var name = xml.getElementsByTagName("contactName")[0].textContent;
+        var id = xml.getElementsByTagName("treeUserId")[0].textContent;
+        populateIdField(id);
+        userID = id;
+        var username = document.getElementById("username");
+        username.innerHTML = name;
+
+        ancestorgens();
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+       console.log(jqXHR.responseText);
+        
+    });
+
+}
+
+function initialize() {
+
+        restAPI.addOptions({ headers: { Authorization: "Bearer " + accesstoken } })
 
         var lat = 30.0;
         var lng = -30.0;
@@ -64,8 +94,8 @@ var expanding;
         }
 
         if (accesstoken) {
-            populateUser();
-            ancestorgens();
+            currentUser();
+            //populateUser();
         }
 
         google.maps.event.addListener(map, 'click', function () {
@@ -148,47 +178,68 @@ var expanding;
             var personId = querythis.value;
         }
 
-        var url = baseurl + "pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + accesstoken;
+        restAPI.get("/platform/tree/ancestry?person=" + personId + "&generations=" + generations).done(function (data) {
+            var xml = data.documentElement;
+            var persons = xml.getElementsByTagName("person");
+            var IDs = new Array();
+            for (var i = 0; i < persons.length; i++) {
+                var n = parseFloat(persons[i].getElementsByTagName("ascendancyNumber")[0].textContent);
+                IDs[n-1] = persons[i].getAttribute("id");
 
-        var xhttp;
-        xhttp = new XMLHttpRequest();
-        xhttp.open("GET", url);
-
-        xhttp.onload = function (e) {
-            if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
-
-                    var xmlDocument = xhttp.responseXML.documentElement;
-
-                    // Loop through first half of pedigree list and get IDs of their parents
-                    var persons = xmlDocument.getElementsByTagName("person");
-                    var IDs = new Array();
-                    IDs[0] = persons[0].getAttribute("id");
-                    for (var i = 0; i < Math.pow(2, generations) - 1; i++) {
-                        if (persons[i]) {
-                            var parents = persons[i].getElementsByTagName("parent");
-                            if (parents.length > 1) {
-                                IDs[(i + 1) * 2 - 1] = parents[0].getAttribute("id");
-                                IDs[(i + 1) * 2] = parents[1].getAttribute("id");
-                            } else {
-                                IDs[(i + 1) * 2 - 1] = undefined;
-                                IDs[(i + 1) * 2] = undefined;
-                            }
-                        } else {
-                            IDs[(i + 1) * 2 - 1] = undefined;
-                            IDs[(i + 1) * 2] = undefined;
-                        }
-                    }
-
-                    readPedigreeLoop(IDs,rootGen,paternal);
-                } else {
-                    completionEvents();
-                    alert("Error: " + xhttp.statusText);
+            }
+            for (var i = 0; i < Math.pow(2, generations+1) - 1; i++) {
+                if (!IDs[i]) {
+                    IDs[i] = undefined;
                 }
             }
-        };
+            readPedigreeLoop(IDs, rootGen, paternal);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            completionEvents();
+            alert("Error: " + textStatus);
+        });
 
-        xhttp.send();
+
+        //var url = baseurl + "pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + accesstoken;
+
+        //var xhttp;
+        //xhttp = new XMLHttpRequest();
+        //xhttp.open("GET", url);
+
+        //xhttp.onload = function (e) {
+        //    if (xhttp.readyState === 4) {
+        //        if (xhttp.status === 200) {
+
+        //            var xmlDocument = xhttp.responseXML.documentElement;
+
+        //            // Loop through first half of pedigree list and get IDs of their parents
+        //            var persons = xmlDocument.getElementsByTagName("person");
+        //            var IDs = new Array();
+        //            IDs[0] = persons[0].getAttribute("id");
+        //            for (var i = 0; i < Math.pow(2, generations) - 1; i++) {
+        //                if (persons[i]) {
+        //                    var parents = persons[i].getElementsByTagName("parent");
+        //                    if (parents.length > 1) {
+        //                        IDs[(i + 1) * 2 - 1] = parents[0].getAttribute("id");
+        //                        IDs[(i + 1) * 2] = parents[1].getAttribute("id");
+        //                    } else {
+        //                        IDs[(i + 1) * 2 - 1] = undefined;
+        //                        IDs[(i + 1) * 2] = undefined;
+        //                    }
+        //                } else {
+        //                    IDs[(i + 1) * 2 - 1] = undefined;
+        //                    IDs[(i + 1) * 2] = undefined;
+        //                }
+        //            }
+
+        //            //readPedigreeLoop(IDs,rootGen,paternal);
+        //        } else {
+        //            completionEvents();
+        //            alert("Error: " + xhttp.statusText);
+        //        }
+        //    }
+        //};
+
+        //xhttp.send();
         
     }
 
@@ -206,7 +257,7 @@ var expanding;
             var idx = loop.iteration();
             var ID = IDs[idx];
             if (ID) {
-                personRead(ID, function (result) {
+                personRead2(ID, function (result) {
                     if (result) {
                         if (result == 503) {
                             loop.prev();
@@ -291,7 +342,91 @@ var expanding;
         }, function () {});
     }
 
+    function personRead2(id, callback) {
+        restAPI.get("/platform/tree/persons/" + id).done(function (data) {
+            var xmlDocument = data.documentElement;
+
+            // Get full name of individual
+            var fullText = xmlDocument.getElementsByTagName("fullText");
+            if (fullText[0]) {
+                var name = fullText[0].textContent;
+            }
+
+            var genders = xmlDocument.getElementsByTagName("gender");
+            if (genders[1]) {
+                var gender = genders[1].textContent;
+            }
+
+            var death = {
+                date: null,
+                place: null
+            }
+            var birth = {
+                date: null,
+                place: null
+            }
+
+            // Get birth date and location
+            var events = xmlDocument.getElementsByTagName("fact");
+            if (events[0]) {
+                
+                for (var i = 0; i < events.length; i++) {
+                    var type = events[0].getAttribute("type");
+                    var dates = events[0].getElementsByTagName("date");
+                    var places = events[0].getElementsByTagName("place");
+
+                    if (places[0]) {
+                        if (places[0].childNodes[1]) {
+                            var place = places[0].childNodes[1].textContent;
+                        } else {
+                            var place = places[0].childNodes[0].textContent;
+                        }
+                    }
+                    if (dates[0]) {
+                        if (dates[0].childNodes[1]) {
+                            var date = dates[0].childNodes[1].textContent;
+                        } else {
+                            var date = dates[0].childNodes[0].textContent;
+                        }
+                    }
+
+                    if (type == "http://gedcomx.org/Birth") {
+                        // Package birth information
+                        var birth = {
+                            date: date,
+                            place: place
+                        }
+                    } else if (value[i].getAttribute("type") == "http://gedcomx.org/Death") {
+                        // Package death information
+                        var death = {
+                            date: date,
+                            place: place
+                        }
+                    }
+                }
+            }
+
+            var personObject = {
+                name: name,
+                id: id,
+                birth: birth,
+                death: death,
+                gender: gender
+            }
+
+            // Send reply
+            callback(personObject);
+
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            completionEvents();
+            alert("Error: " + textStatus);
+        });
+    }
+
     function personRead(id, callback) {
+
+       
+
 
         var url = baseurl + "person/" + id + "?&events=standard&sessionId=" + accesstoken;
 
@@ -501,7 +636,6 @@ var expanding;
 
         if (firstTime.plot == true) {
             makeInfoWindow(progenitors[0]);
-            firstTime.plot = false;
         }
 
         for (var i = 0; i < progenitors.length; i++) {
@@ -869,11 +1003,13 @@ var expanding;
         var runButton = document.getElementById('runButton');
         runButton.disabled = false;
         runButton.className = 'button green';
-		if (firstTime.box == true) {
-			var mark = markarray[0];
-			ib.setContent(mark.content1 +mark.content2);
-			ib.open(map, mark);
-			firstTime.box = false;
+        if (firstTime.box == true) {
+            if (markarray.length > 0) {
+                var mark = markarray[0];
+                ib.setContent(mark.content1 + mark.content2);
+                ib.open(map, mark);
+                firstTime.box = false;
+            }
 		}
     }
 
