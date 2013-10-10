@@ -32,6 +32,6 @@ $DONATE_URL = '';
 // Tracking code
 // This allows for insertion of code such as
 // Google Analyitics tracking
-$TRACKING_CODE = '';
+$TRACKING_CODE = "";
 
 ?>
