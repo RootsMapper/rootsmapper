@@ -32,16 +32,18 @@ function currentUser() {
     var url = baseurl + "/platform/tree/current-person?access_token=" + accesstoken;
     xhttp = new XMLHttpRequest();
     xhttp.open("GET", url);
+    //xhttp.setRequestHeader('Accept', 'application/json');
+   // xhttp.setRequestHeader('Authorization',accesstoken);
 
     xhttp.onload = function (e) {
         if (xhttp.readyState === 4) {
             if (xhttp.status === 200) {
 
                 var xmlDocument = xhttp.responseXML.documentElement;
-                var persons = xmlDocument.getElementsByTagName("person");
-                userID = persons[0].getAttribute("id");
-                var fullText = persons[0].getElementsByTagName("fullText");
-                var name = fullText[0].textContent;
+                var p = $(xmlDocument).find("gx\\:person, person");
+                userID = p[0].getAttribute("id");
+                var f = $(xmlDocument).find("gx\\:fullText, fullText");
+                var name = f[0].textContent;
 
                 populateIdField(userID);
                 var username = document.getElementById("username");
@@ -193,11 +195,13 @@ function initialize() {
 
         restAPI.get("/platform/tree/ancestry?person=" + personId + "&generations=" + generations).done(function (data) {
             var xml = data.documentElement;
-            var persons = xml.getElementsByTagName("person");
+            //var persons = xml.getElementsByTagName("person");
+            var p = $(xml).find("gx\\:person, person");
             var IDs = new Array();
-            for (var i = 0; i < persons.length; i++) {
-                var n = parseFloat(persons[i].getElementsByTagName("ascendancyNumber")[0].textContent);
-                IDs[n-1] = persons[i].getAttribute("id");
+            for (var i = 0; i < p.length; i++) {
+                var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
+                var n = parseFloat(num[0].textContent);
+                IDs[n-1] = p[i].getAttribute("id");
 
             }
             for (var i = 0; i < Math.pow(2, generations+1) - 1; i++) {
@@ -360,12 +364,15 @@ function initialize() {
             var xmlDocument = data.documentElement;
 
             // Get full name of individual
-            var fullText = xmlDocument.getElementsByTagName("fullText");
+
+            var fullText = $(xmlDocument).find("gx\\:fullText, fullText");
+            //var fullText = xmlDocument.getElementsByTagNameNS("fs","fullText");
             if (fullText[0]) {
                 var name = fullText[0].textContent;
             }
 
-            var genders = xmlDocument.getElementsByTagName("gender");
+            //var genders = xmlDocument.getElementsByTagName("fs", "gender");
+            var genders = $(xmlDocument).find("gx\\:gender, gender");
             if (genders[1]) {
                 var gender = genders[1].textContent;
             }
@@ -380,15 +387,16 @@ function initialize() {
             }
 
             // Get birth date and location
-            var events = xmlDocument.getElementsByTagName("fact");              
+            //var events = xmlDocument.getElementsByTagName("fact");
+            var events = $(xmlDocument).find("gx\\:fact, fact");
                 for (var i = 0; i < events.length; i++) {
                     var type = events[i].getAttribute("type");
-                    var dates = events[i].getElementsByTagName("date");
-                    var places = events[i].getElementsByTagName("place");
+                    var dates = $(events[i]).find("gx\\:date, date");
+                    var places = $(events[i]).find("gx\\:place, place");
                     
                     if (places[0]) {
-                        var original = places[0].getElementsByTagName("original");
-                        var normalized = places[0].getElementsByTagName("normalized");
+                        var original = $(places[0]).find("gx\\:original, original");
+                        var normalized = $(places[0]).find("gx\\:normalized, normalized");
                         if (normalized[0]) {
                             var place = normalized[0].textContent;
                         } else if (original[0]) {
@@ -396,8 +404,8 @@ function initialize() {
                         }
                     }
                     if (dates[0]) {
-                        var original = dates[0].getElementsByTagName("original");
-                        var normalized = dates[0].getElementsByTagName("normalized");
+                        var original = $(dates[0]).find("gx\\:original, original");
+                        var normalized = $(dates[0]).find("gx\\:normalized, normalized");
                         if (normalized[0]) {
                             var date = normalized[0].textContent;
                         } else if (original[0]) {
