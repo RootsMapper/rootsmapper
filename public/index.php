@@ -52,6 +52,7 @@ if (isset($_SESSION['fs-session']))
 	<!-- loading animation references -->
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/loading.js"></script>
+		<script src="scripts/jquery.rest.js"></script>
 	<!-- loading animation references -->
 
         <link href="css/map.css" rel="stylesheet" />
