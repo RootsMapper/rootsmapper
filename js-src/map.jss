@@ -32,7 +32,7 @@ function currentUser() {
     var url = baseurl + "/platform/tree/current-person?access_token=" + accesstoken;
     xhttp = new XMLHttpRequest();
     xhttp.open("GET", url);
-    //xhttp.setRequestHeader('Accept', 'application/json');
+    xhttp.setRequestHeader('Accept', 'application/xml');
    // xhttp.setRequestHeader('Authorization',accesstoken);
 
     xhttp.onload = function (e) {
@@ -87,26 +87,26 @@ function initialize() {
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
 
         if (document.getElementById("personid")) {
-            document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person",10); }
+            document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person","personid",10); }
         }
         if (document.getElementById("populateUser")) {
-            document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person",10); }
+            document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person", "populateUser", 10); }
         }
 
         if (document.getElementById("genSelect")) {
-            document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot",10); }
+            document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot","genSelect",10); }
         }
 
         if (document.getElementById("runButton")) {
-            document.getElementById("runButton").onmouseover = function () { tooltip("Begin the plotting process",10); }
+            document.getElementById("runButton").onmouseover = function () { tooltip("Begin the plotting process","runButton",10); }
         }
 
         if (document.getElementById("feedbackbutton")) {
-            document.getElementById("feedbackbutton").onmouseover = function () { tooltip("Leave some comments about your experience",-75,-100); }
+            document.getElementById("feedbackbutton").onmouseover = function () { tooltip("Leave some comments about your experience","feedbackbutton",-75,-100); }
         }
 
         if (document.getElementById("donatebutton")) {
-            document.getElementById("donatebutton").onmouseover = function () { tooltip("Help keep this site up and running",-65,-65); }
+            document.getElementById("donatebutton").onmouseover = function () { tooltip("Help keep this site up and running","donatebutton",-65,-65); }
         }
 
         if (accesstoken) {
@@ -118,13 +118,13 @@ function initialize() {
         });
     }
 
-    function tooltip(tip, v, h) {
+    function tooltip(tip,el, v, h) {
 		var vert;
 		var horiz;
     	if (v) {vert = v} else {vert = 0}
 		if (h) {horiz = h} else {horiz = 0}
 		var tt;
-		var that = this.event.toElement;
+		var that = document.getElementById(el);
 
 		var timeoutId = setTimeout(function () {
 		tt = document.createElement('div');
@@ -850,9 +850,9 @@ function initialize() {
                 google.maps.event.addListener(ib, 'domready', function () {
   
                     if ( document.getElementById("expandButton")){
-                        document.getElementById("expandButton").onmouseover = function () { tooltip("Plot the parents of this person",10); }
+                        document.getElementById("expandButton").onmouseover = function () { tooltip("Plot the parents of this person","expandButton",10); }
                     }
-                        document.getElementById("idButton").onmouseover = function () { tooltip("Set this person as the root person",10); }
+                    document.getElementById("idButton").onmouseover = function () { tooltip("Set this person as the root person","idButton",10); }
                     
                 });
                 oms.addListener('click', function (mark, event) {
