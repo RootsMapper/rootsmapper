@@ -26,4 +26,9 @@ $FAQ_URL = 'http://example.com/faq';
 // right of the page
 $DONATE_URL = 'http://example.com/donate';
 
+// Tracking code
+// This allows for insertion of code such as
+// Google Analyitics tracking
+$TRACKING_CODE = '';
+
 ?>
