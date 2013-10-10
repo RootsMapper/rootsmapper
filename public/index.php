@@ -83,7 +83,7 @@ if (isset($_SESSION['fs-session']))
 
     </head>
     <body>
-        
+        <?php echo($TRACKING_CODE); ?>
         <div id="rootGrid">
             <div id="mapdisplay"></div>
 	    <div id="inputFrame">
