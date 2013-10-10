@@ -23,12 +23,7 @@ var expanding;
 // so that each ajax call doesn't need to handle this.
 // The authentication header is added when the user logs in.
 // This uses the jquery-rest plugin found at https://github.com/justincy/jquery-rest
-var restAPI = new $.rest('https://sandbox.familysearch.org', {
-    dataType: 'xml',
-    contentType: 'application/x-fs-v1+xml',
-    authorization: accesstoken,
-    cache: false
-});
+
 
 function currentUser() {
 
@@ -43,14 +38,19 @@ function currentUser() {
 
         ancestorgens();
     }).fail(function (jqXHR, textStatus, errorThrown) {
-       console.log(jqXHR.responseText);
+        alert("Error: " + textStatus);
         
     });
 
 }
 
 function initialize() {
-
+        restAPI = new $.rest(baseurl, {
+            dataType: 'xml',
+            contentType: 'application/x-fs-v1+xml',
+            authorization: accesstoken,
+            cache: false
+        });
         restAPI.addOptions({ headers: { Authorization: "Bearer " + accesstoken } })
 
         var lat = 30.0;
