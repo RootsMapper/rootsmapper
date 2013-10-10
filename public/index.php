@@ -125,9 +125,26 @@ else
             	<div id="loading" class="square"></div>
 		</div>
 	    	<div id="lowerbuttonframe">
+<?php
+if (!empty($FAQ_URL))
+{
+?>
             	<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
+<?php
+}
+if (!empty($FEEDBACK_URL))
+{
+?>
             	<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
+<?php
+}
+if (!empty($DONATE_URL))
+{
+?>
             	<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
+<?php
+}
+?>
 		</div>
 </body>
 </html>
