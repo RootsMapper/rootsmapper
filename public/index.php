@@ -40,8 +40,12 @@ if( isset($_REQUEST['code']) ) {
 
 // If login is clicked, begin request
 else if (isset($_REQUEST['login'])) {
+	unset($_SESSION['fs-session']); //clear session variable
+	unset($_SESSION['fingerprint']); //clear fingerprint variable
+	session_destroy();
 	$url = $fs->RequestAccessCode($DEV_KEY, $OAUTH2_REDIRECT_URI);
 	header("Location: " . $url); //Redirect to FamilySearch auth page
+	exit;
 }
 
 // If we have both a valid auth token in our session and our fingerprint matches
@@ -62,18 +66,15 @@ else
     <head>
         <title><?php echo isset($TITLE)? $TITLE : ""; ?></title>
         <!-- Google Maps API reference -->
-        <script
-            src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry">
-        </script>
-        
+        <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry"></script>
 	<!-- map references -->
 
 	<!-- loading animation references -->
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/loading.js"></script>
-		<script src="scripts/jquery.rest.js"></script>
 	<!-- loading animation references -->
 
+	<script type="text/javascript" src="scripts/jquery.rest.js"></script>
         <link href="css/map.css" rel="stylesheet" />
         <script src="scripts/map.js"></script>
 		<script src="scripts/oms.js"></script>
