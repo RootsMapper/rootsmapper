@@ -1,5 +1,8 @@
 <?php
 
+// Site Title
+$TITLE = "New RootsMapper Site";
+
 // FamilySearch API KEY
 $DEV_KEY = 'AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA';
 

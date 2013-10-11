@@ -53,7 +53,7 @@ if (isset($_SESSION['fs-session']))
 <!DOCTYPE html>
 <html>
     <head>
-        <title>RootsMapper</title>
+        <title><?php echo isset($TITLE)? $TITLE : ""; ?></title>
         <!-- Google Maps API reference -->
         <script
             src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry">
@@ -72,7 +72,7 @@ if (isset($_SESSION['fs-session']))
 		<script src="scripts/oms.js"></script>
 		<script src="scripts/infobox.js"></script>
         <script type="text/javascript">
-             accesstoken='<?php echo($access_token); ?>';
+             accesstoken='<?php echo isset($access_token) ? $access_token : ""; ?>';
              baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
 	</script>
 	<script language="javascript" type="text/javascript">
