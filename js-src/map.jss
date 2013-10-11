@@ -108,9 +108,22 @@ function initialize() {
         if (document.getElementById("donatebutton")) {
             document.getElementById("donatebutton").onmouseover = function () { tooltip("Help keep this site up and running","donatebutton",-65,-65); }
         }
+        
+        var ua = navigator.userAgent.toLowerCase();
+        if (ua.indexOf('safari') != -1) {
+            if (ua.indexOf('chrome') > -1) {
+                var safari = false; // chrome
+            } else {
+                var safari = true; // saf
+            }
+        }
 
         if (accesstoken) {
-            currentUser();
+            if (!safari) {
+                currentUser();
+            } else {
+                populateUser();
+            }
         }
 
         google.maps.event.addListener(map, 'click', function () {
@@ -393,6 +406,8 @@ function initialize() {
                     var type = events[i].getAttribute("type");
                     var dates = $(events[i]).find("gx\\:date, date");
                     var places = $(events[i]).find("gx\\:place, place");
+                    var date = null;
+                    var place = null;
                     
                     if (places[0]) {
                         var original = $(places[0]).find("gx\\:original, original");
@@ -451,7 +466,7 @@ function initialize() {
        
 
 
-        var url = baseurl + "person/" + id + "?&events=standard&sessionId=" + accesstoken;
+        var url = baseurl + "/familytree/v2/person/" + id + "?&events=standard&sessionId=" + accesstoken;
 
         var xhttp;
         xhttp = new XMLHttpRequest();
@@ -995,6 +1010,7 @@ function initialize() {
                 userID = currentUser.id;
                 var username = document.getElementById("username");
                 username.innerHTML = currentUser.name;
+                ancestorgens();
             });
         } else {
             populateIdField(userID);
