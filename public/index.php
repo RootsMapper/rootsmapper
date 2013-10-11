@@ -91,7 +91,7 @@ else
 
     </head>
     <body>
-        <?php echo($TRACKING_CODE); ?>
+        <?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
         <div id="rootGrid">
             <div id="mapdisplay"></div>
 	    <div id="inputFrame">
