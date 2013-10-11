@@ -38,14 +38,21 @@ if( isset($_REQUEST['code']) ) {
 	  exit;
 } 
 
-// If don't already have access token and login is clicked, begin request
-else if (isset($_REQUEST['login']) && (!isset($_SESSION['fs-session']) || $_SESSION['fingerprint'] != md5($fingerprint))) {
+// If login is clicked, begin request
+else if (isset($_REQUEST['login'])) {
 	$url = $fs->RequestAccessCode($DEV_KEY, $OAUTH2_REDIRECT_URI);
 	header("Location: " . $url); //Redirect to FamilySearch auth page
 }
-if (isset($_SESSION['fs-session']))
+
+// If we have both a valid auth token in our session and our fingerprint matches
+// set the access token to a local variable, otherwise make sure it is unset
+if (isset($_SESSION['fs-session']) && $_SESSION['fingerprint'] == md5($fingerprint))
 {
 	$access_token = $_SESSION['fs-session']; //store access token in variable
+}
+else
+{
+	unset($access_token);
 }
 
 ?>
@@ -88,6 +95,7 @@ if (isset($_SESSION['fs-session']))
             <div id="mapdisplay"></div>
 	    <div id="inputFrame">
 <?php
+// If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
 { ?>
 			<div class="hoverdiv">
