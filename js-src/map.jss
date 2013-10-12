@@ -63,7 +63,6 @@ function initialize() {
         restAPI = new $.rest(baseurl, {
             dataType: 'xml',
             contentType: 'application/x-fs-v1+xml',
-            authorization: accesstoken,
             cache: false
         });
 
@@ -809,25 +808,26 @@ function initialize() {
                     var icon = 'images/female' + p.generation + '.png';
                     var src = 'images/woman.png';
                 }
-                var scaleFactor = .75;
+                var scaleFactor = .5;
                 var opts = {
                     map: map,
                     position: p.birth.latlng,
                     icon: {
                         url: icon,
                         origin: new google.maps.Point(0,0),
-                        anchor: new google.maps.Point(23*scaleFactor*0.5,28*scaleFactor*0.5),
-                        scaledSize: new google.maps.Size(23*scaleFactor,28*scaleFactor)
-                    }
+                        anchor: new google.maps.Point(36*scaleFactor*0.5,36*scaleFactor*0.5),
+                        scaledSize: new google.maps.Size(36*scaleFactor,36*scaleFactor)
+                    },
+                    zIndex: (50-p.generation)
                 }
 
                 var mark = new google.maps.Marker(opts);
                 mark.idx = markarray.length;
                 if (p.generation > genquery - 1) {
-                    var expandButton = "<button id='expandButton' class='button green' onclick='this.style.display=\"none\"; " +
+                    var expandButton = "<div style='height:30px'><button id='expandButton' class='button green' onclick='this.style.display=\"none\"; " +
                         "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
                         "\"," + p.generation + "," + p.isPaternal +
-                        "); ib.close();'>" + 'Expand Parents</button>';
+                        "); ib.close();'>" + 'Expand Parents</button></div>';
                     mark.expand = expandButton;
                     mark.isExpanded = false;
                 } else {
@@ -842,7 +842,7 @@ function initialize() {
                         "<div class='box'>" +
                             "<div class='xlarge'>" + p.name + "</div>" +
                             "<button id='idButton' class='buttonLink' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + p.id + '</button>' +
-                        "</div>" +
+                        "</div>" + 
                     "</div>" +
                     "<div class='person'>" +
                         "<div class='label'>BIRTH</div>" +
@@ -977,7 +977,7 @@ function initialize() {
     	if (ib) {
     		ib.close();
     	}
-    	ib = new InfoBox({ contents: "", maxWidth: 0, closeBoxURL: "" });
+    	ib = new InfoBox({ contents: "", maxWidth: 0});
     	markarray.length = 0;
     	polyarray.length = 0;
     	firstTime = {

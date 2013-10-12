@@ -7,7 +7,7 @@ html, body {
 
 #infow {
     white-space: nowrap;
-    overflow: auto;
+    max-height: 500px;
     background-color: white;
     border: 1px solid darkgray;
     padding: 15px;
