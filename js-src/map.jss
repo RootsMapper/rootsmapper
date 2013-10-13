@@ -18,7 +18,7 @@ var delay = 1;
 var baseurl;
 var userID;
 var expanding;
-var restAPI;
+//var restAPI;
 
 // Create a rest service; this stores common ajax configurations
 // so that each ajax call doesn't need to handle this.
@@ -51,6 +51,10 @@ function currentUser() {
 
                 ancestorgens();
 
+            } else if (xhttp.status === 401) {
+                //}).fail(function (jqXHR, textStatus, errorThrown) {
+                alert("Your session has expired. Please log in again.");
+                window.location = 'index.php?login=true';
             }
         }
     }
@@ -59,14 +63,44 @@ function currentUser() {
 
 }
 
-function initialize() {
-        restAPI = new $.rest(baseurl, {
-            dataType: 'xml',
-            contentType: 'application/x-fs-v1+xml',
-            cache: false
-        });
+function sessionHandler() {
+    setTimeout(function () {
+        var r = confirm("Your FamilySearch session is about to expire.\n\n Click OK to stay logged in.\n\n Click Cancel to log out.");
+        if (r == true) {
+            var xhttp;
+            var url = baseurl + "/platform/tree/current-person?access_token=" + accesstoken;
+            xhttp = new XMLHttpRequest();
+            xhttp.open("GET", url);
+            xhttp.setRequestHeader('Accept', 'application/xml');
 
-        restAPI.addOptions({ headers: { Authorization: "Bearer " + accesstoken } })
+            xhttp.onload = function (e) {
+                if (xhttp.readyState === 4) {
+                    if (xhttp.status === 200) {
+                    } else if (xhttp.status === 401) {
+                        alert("Sorry, your session has already expired. Please log in again.");
+                        window.location = 'index.php?login=true';
+                    }
+                }
+            }
+
+            xhttp.send();
+            sessionHandler();
+        } else {
+            window.location = 'logout.php';
+        }
+    }, 60*1000);
+
+}
+
+function initialize() {
+    //sessionHandler();
+        //restAPI = new $.rest(baseurl, {
+        //    dataType: 'xml',
+        //    contentType: 'application/x-fs-v1+xml',
+        //    cache: false
+        //});
+
+        //restAPI.addOptions({ headers: { Authorization: "Bearer " + accesstoken } })
 
         var lat = 30.0;
         var lng = -30.0;
@@ -205,28 +239,48 @@ function initialize() {
             var personId = querythis.value;
         }
 
-        restAPI.get("/platform/tree/ancestry?person=" + personId + "&generations=" + generations).done(function (data) {
-            var xml = data.documentElement;
-            //var persons = xml.getElementsByTagName("person");
-            var p = $(xml).find("gx\\:person, person");
-            var IDs = new Array();
-            for (var i = 0; i < p.length; i++) {
-                var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
-                var n = parseFloat(num[0].textContent);
-                IDs[n-1] = p[i].getAttribute("id");
+        //restAPI.get("/platform/tree/ancestry?person=" + personId + "&generations=" + generations).done(function (data) {
 
-            }
-            for (var i = 0; i < Math.pow(2, generations+1) - 1; i++) {
-                if (!IDs[i]) {
-                    IDs[i] = undefined;
+        var xhttp;
+        var url = baseurl + "/platform/tree/ancestry?person=" + personId + "&generations=" + generations + "&access_token=" + accesstoken;
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url);
+        xhttp.setRequestHeader('Accept', 'application/xml');
+        // xhttp.setRequestHeader('Authorization',accesstoken);
+
+        xhttp.onload = function (e) {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200) {
+
+                    var xml = xhttp.responseXML.documentElement;
+                    //var persons = xml.getElementsByTagName("person");
+                    var p = $(xml).find("gx\\:person, person");
+                    var IDs = new Array();
+                    for (var i = 0; i < p.length; i++) {
+                        var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
+                        var n = parseFloat(num[0].textContent);
+                        IDs[n - 1] = p[i].getAttribute("id");
+
+                    }
+                    for (var i = 0; i < Math.pow(2, generations + 1) - 1; i++) {
+                        if (!IDs[i]) {
+                            IDs[i] = undefined;
+                        }
+                    }
+                    readPedigreeLoop(IDs, rootGen, paternal);
+                } else if (xhttp.status === 401) {
+                    //}).fail(function (jqXHR, textStatus, errorThrown) {
+                    completionEvents();
+                    alert("Your session has expired. Please log in again.");
+                    window.location = 'index.php?login=true';
+                    //});
+                } else {
+                    completionEvents();
+                    alert("Error: " + xhttp.statusText);
                 }
             }
-            readPedigreeLoop(IDs, rootGen, paternal);
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            completionEvents();
-            alert("Error: " + textStatus);
-        });
-
+        }
+        xhttp.send();
 
         //var url = baseurl + "pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + accesstoken;
 
@@ -372,92 +426,113 @@ function initialize() {
     }
 
     function personRead2(id, callback) {
-        restAPI.get("/platform/tree/persons/" + id).done(function (data) {
-            var xmlDocument = data.documentElement;
+        //restAPI.get("/platform/tree/persons/" + id).done(function (data) {
+        var xhttp;
+        var url = baseurl + "/platform/tree/persons/" + id + "?access_token=" + accesstoken;
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url);
+        xhttp.setRequestHeader('Accept', 'application/xml');
+        // xhttp.setRequestHeader('Authorization',accesstoken);
 
-            // Get full name of individual
+        xhttp.onload = function (e) {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200) {
 
-            var fullText = $(xmlDocument).find("gx\\:fullText, fullText");
-            //var fullText = xmlDocument.getElementsByTagNameNS("fs","fullText");
-            if (fullText[0]) {
-                var name = fullText[0].textContent;
-            }
+                    var xmlDocument = xhttp.responseXML.documentElement;
 
-            //var genders = xmlDocument.getElementsByTagName("fs", "gender");
-            var genders = $(xmlDocument).find("gx\\:gender, gender");
-            if (genders[1]) {
-                var gender = genders[1].textContent;
-            }
+                    // Get full name of individual
 
-            var death = {
-                date: null,
-                place: null
-            }
-            var birth = {
-                date: null,
-                place: null
-            }
-
-            // Get birth date and location
-            //var events = xmlDocument.getElementsByTagName("fact");
-            var events = $(xmlDocument).find("gx\\:fact, fact");
-                for (var i = 0; i < events.length; i++) {
-                    var type = events[i].getAttribute("type");
-                    var dates = $(events[i]).find("gx\\:date, date");
-                    var places = $(events[i]).find("gx\\:place, place");
-                    var date = null;
-                    var place = null;
-                    
-                    if (places[0]) {
-                        var original = $(places[0]).find("gx\\:original, original");
-                        var normalized = $(places[0]).find("gx\\:normalized, normalized");
-                        if (normalized[0]) {
-                            var place = normalized[0].textContent;
-                        } else if (original[0]) {
-                            var place = original[0].textContent;
-                        }
-                    }
-                    if (dates[0]) {
-                        var original = $(dates[0]).find("gx\\:original, original");
-                        var normalized = $(dates[0]).find("gx\\:normalized, normalized");
-                        if (normalized[0]) {
-                            var date = normalized[0].textContent;
-                        } else if (original[0]) {
-                            var date = original[0].textContent;
-                        }
+                    var fullText = $(xmlDocument).find("gx\\:fullText, fullText");
+                    //var fullText = xmlDocument.getElementsByTagNameNS("fs","fullText");
+                    if (fullText[0]) {
+                        var name = fullText[0].textContent;
                     }
 
-                    if (type == "http://gedcomx.org/Birth") {
-                        // Package birth information
-                        var birth = {
-                            date: date,
-                            place: place
+                    //var genders = xmlDocument.getElementsByTagName("fs", "gender");
+                    var genders = $(xmlDocument).find("gx\\:gender, gender");
+                    if (genders[1]) {
+                        var gender = genders[1].textContent;
+                    }
+
+                    var death = {
+                        date: null,
+                        place: null
+                    }
+                    var birth = {
+                        date: null,
+                        place: null
+                    }
+
+                    // Get birth date and location
+                    //var events = xmlDocument.getElementsByTagName("fact");
+                    var events = $(xmlDocument).find("gx\\:fact, fact");
+                    for (var i = 0; i < events.length; i++) {
+                        var type = events[i].getAttribute("type");
+                        var dates = $(events[i]).find("gx\\:date, date");
+                        var places = $(events[i]).find("gx\\:place, place");
+                        var date = null;
+                        var place = null;
+
+                        if (places[0]) {
+                            var original = $(places[0]).find("gx\\:original, original");
+                            var normalized = $(places[0]).find("gx\\:normalized, normalized");
+                            if (normalized[0]) {
+                                var place = normalized[0].textContent;
+                            } else if (original[0]) {
+                                var place = original[0].textContent;
+                            }
                         }
-                    } else if (type == "http://gedcomx.org/Death") {
-                        // Package death information
-                        var death = {
-                            date: date,
-                            place: place
+                        if (dates[0]) {
+                            var original = $(dates[0]).find("gx\\:original, original");
+                            var normalized = $(dates[0]).find("gx\\:normalized, normalized");
+                            if (normalized[0]) {
+                                var date = normalized[0].textContent;
+                            } else if (original[0]) {
+                                var date = original[0].textContent;
+                            }
+                        }
+
+                        if (type == "http://gedcomx.org/Birth") {
+                            // Package birth information
+                            var birth = {
+                                date: date,
+                                place: place
+                            }
+                        } else if (type == "http://gedcomx.org/Death") {
+                            // Package death information
+                            var death = {
+                                date: date,
+                                place: place
+                            }
                         }
                     }
+
+
+                    var personObject = {
+                        name: name,
+                        id: id,
+                        birth: birth,
+                        death: death,
+                        gender: gender
+                    }
+
+                    // Send reply
+                    callback(personObject);
+                } else if (xhttp.status === 401) {
+                    //}).fail(function (jqXHR, textStatus, errorThrown) {
+                    completionEvents();
+                    alert("Your session has expired. Please log in again.");
+                    window.location = 'index.php?login=true';
+                    //});
+                } else if (xhttp.status === 503) {
+                    callback(xhttp.status);
+                } else {
+                    completionEvents();
+                    alert("Error: " + xhttp.statusText);
                 }
-            
-
-            var personObject = {
-                name: name,
-                id: id,
-                birth: birth,
-                death: death,
-                gender: gender
             }
-
-            // Send reply
-            callback(personObject);
-
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            completionEvents();
-            alert("Error: " + textStatus);
-        });
+        }
+        xhttp.send();
     }
 
     function personRead(id, callback) {
