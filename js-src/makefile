@@ -9,7 +9,7 @@
 
 COMPILER=java -jar ~/compiler.jar
 
-SOURCES=map.js keyfilter.js oms.js loading.js infobox.js jquery.rest.js
+SOURCES=map.js keyfilter.js oms.js loading.js infobox.js
 JS=$(SOURCES:.jss=.js)
 OUTPUT=../public/scripts/
 

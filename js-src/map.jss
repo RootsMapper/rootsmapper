@@ -18,7 +18,6 @@ var delay = 1;
 var baseurl;
 var userID;
 var expanding;
-//var restAPI;
 
 // Create a rest service; this stores common ajax configurations
 // so that each ajax call doesn't need to handle this.
@@ -33,7 +32,6 @@ function currentUser() {
     xhttp = new XMLHttpRequest();
     xhttp.open("GET", url);
     xhttp.setRequestHeader('Accept', 'application/xml');
-   // xhttp.setRequestHeader('Authorization',accesstoken);
 
     xhttp.onload = function (e) {
         if (xhttp.readyState === 4) {
@@ -52,7 +50,6 @@ function currentUser() {
                 ancestorgens();
 
             } else if (xhttp.status === 401) {
-                //}).fail(function (jqXHR, textStatus, errorThrown) {
                 alert("Your session has expired. Please log in again.");
                 window.location = 'index.php?login=true';
             }
@@ -93,15 +90,6 @@ function sessionHandler() {
 }
 
 function initialize() {
-    //sessionHandler();
-        //restAPI = new $.rest(baseurl, {
-        //    dataType: 'xml',
-        //    contentType: 'application/x-fs-v1+xml',
-        //    cache: false
-        //});
-
-        //restAPI.addOptions({ headers: { Authorization: "Bearer " + accesstoken } })
-
         var lat = 30.0;
         var lng = -30.0;
         var place = new google.maps.LatLng(lat, lng);
@@ -239,21 +227,18 @@ function initialize() {
             var personId = querythis.value;
         }
 
-        //restAPI.get("/platform/tree/ancestry?person=" + personId + "&generations=" + generations).done(function (data) {
 
         var xhttp;
         var url = baseurl + "/platform/tree/ancestry?person=" + personId + "&generations=" + generations + "&access_token=" + accesstoken;
         xhttp = new XMLHttpRequest();
         xhttp.open("GET", url);
         xhttp.setRequestHeader('Accept', 'application/xml');
-        // xhttp.setRequestHeader('Authorization',accesstoken);
 
         xhttp.onload = function (e) {
             if (xhttp.readyState === 4) {
                 if (xhttp.status === 200) {
 
                     var xml = xhttp.responseXML.documentElement;
-                    //var persons = xml.getElementsByTagName("person");
                     var p = $(xml).find("gx\\:person, person");
                     var IDs = new Array();
                     for (var i = 0; i < p.length; i++) {
@@ -269,11 +254,9 @@ function initialize() {
                     }
                     readPedigreeLoop(IDs, rootGen, paternal);
                 } else if (xhttp.status === 401) {
-                    //}).fail(function (jqXHR, textStatus, errorThrown) {
                     completionEvents();
                     alert("Your session has expired. Please log in again.");
                     window.location = 'index.php?login=true';
-                    //});
                 } else {
                     completionEvents();
                     alert("Error: " + xhttp.statusText);
@@ -281,49 +264,6 @@ function initialize() {
             }
         }
         xhttp.send();
-
-        //var url = baseurl + "pedigree/" + personId + "?ancestors=" + generations + "&properties=all&sessionId=" + accesstoken;
-
-        //var xhttp;
-        //xhttp = new XMLHttpRequest();
-        //xhttp.open("GET", url);
-
-        //xhttp.onload = function (e) {
-        //    if (xhttp.readyState === 4) {
-        //        if (xhttp.status === 200) {
-
-        //            var xmlDocument = xhttp.responseXML.documentElement;
-
-        //            // Loop through first half of pedigree list and get IDs of their parents
-        //            var persons = xmlDocument.getElementsByTagName("person");
-        //            var IDs = new Array();
-        //            IDs[0] = persons[0].getAttribute("id");
-        //            for (var i = 0; i < Math.pow(2, generations) - 1; i++) {
-        //                if (persons[i]) {
-        //                    var parents = persons[i].getElementsByTagName("parent");
-        //                    if (parents.length > 1) {
-        //                        IDs[(i + 1) * 2 - 1] = parents[0].getAttribute("id");
-        //                        IDs[(i + 1) * 2] = parents[1].getAttribute("id");
-        //                    } else {
-        //                        IDs[(i + 1) * 2 - 1] = undefined;
-        //                        IDs[(i + 1) * 2] = undefined;
-        //                    }
-        //                } else {
-        //                    IDs[(i + 1) * 2 - 1] = undefined;
-        //                    IDs[(i + 1) * 2] = undefined;
-        //                }
-        //            }
-
-        //            //readPedigreeLoop(IDs,rootGen,paternal);
-        //        } else {
-        //            completionEvents();
-        //            alert("Error: " + xhttp.statusText);
-        //        }
-        //    }
-        //};
-
-        //xhttp.send();
-        
     }
 
     function readPedigreeLoop(IDs, rootGen, paternal) {
@@ -402,7 +342,6 @@ function initialize() {
                                         placequery = undefined;
                                         callLoopNext(loop, progenitors);
                                     } else {
-                                        //console.log("Google Maps search for birthplace \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " returned successful.");
                                         tryagain = true;
                                         placequery = undefined;
                                         callLoopNext(loop, progenitors);
@@ -426,13 +365,11 @@ function initialize() {
     }
 
     function personRead2(id, callback) {
-        //restAPI.get("/platform/tree/persons/" + id).done(function (data) {
         var xhttp;
         var url = baseurl + "/platform/tree/persons/" + id + "?access_token=" + accesstoken;
         xhttp = new XMLHttpRequest();
         xhttp.open("GET", url);
         xhttp.setRequestHeader('Accept', 'application/xml');
-        // xhttp.setRequestHeader('Authorization',accesstoken);
 
         xhttp.onload = function (e) {
             if (xhttp.readyState === 4) {
@@ -443,12 +380,10 @@ function initialize() {
                     // Get full name of individual
 
                     var fullText = $(xmlDocument).find("gx\\:fullText, fullText");
-                    //var fullText = xmlDocument.getElementsByTagNameNS("fs","fullText");
                     if (fullText[0]) {
                         var name = fullText[0].textContent;
                     }
 
-                    //var genders = xmlDocument.getElementsByTagName("fs", "gender");
                     var genders = $(xmlDocument).find("gx\\:gender, gender");
                     if (genders[1]) {
                         var gender = genders[1].textContent;
@@ -464,7 +399,6 @@ function initialize() {
                     }
 
                     // Get birth date and location
-                    //var events = xmlDocument.getElementsByTagName("fact");
                     var events = $(xmlDocument).find("gx\\:fact, fact");
                     for (var i = 0; i < events.length; i++) {
                         var type = events[i].getAttribute("type");
@@ -519,11 +453,9 @@ function initialize() {
                     // Send reply
                     callback(personObject);
                 } else if (xhttp.status === 401) {
-                    //}).fail(function (jqXHR, textStatus, errorThrown) {
                     completionEvents();
                     alert("Your session has expired. Please log in again.");
                     window.location = 'index.php?login=true';
-                    //});
                 } else if (xhttp.status === 503) {
                     callback(xhttp.status);
                 } else {
@@ -617,61 +549,6 @@ function initialize() {
                         }
                     }
 
-                    //    if (value[0].getAttribute("type") == "Birth") {
-
-                    //        var dates = value[0].getElementsByTagName("date");
-                    //        var places = value[0].getElementsByTagName("place");
-
-                    //        if (places[0]) {
-                    //            if (places[0].childNodes[1]) {
-                    //                var birthPlace = places[0].childNodes[1].textContent;
-                    //            } else {
-                    //                var birthPlace = places[0].childNodes[0].textContent;
-                    //            }
-                    //        }
-                    //        if (dates[0]) {
-                    //            if (dates[0].childNodes[1]) {
-                    //                var birthDate = dates[0].childNodes[1].textContent;
-                    //            } else {
-                    //                var birthDate = dates[0].childNodes[0].textContent;
-                    //            }
-                    //        }
-                    //    }
-
-                    //    if (value[0].getAttribute("type") == "Death") {
-
-                    //        var dates = value[0].getElementsByTagName("date");
-                    //        var places = value[0].getElementsByTagName("place");
-
-                    //        if (places[0]) {
-                    //            if (places[0].childNodes[1]) {
-                    //                var deathPlace = places[0].childNodes[1].textContent;
-                    //            } else {
-                    //                var deathPlace = places[0].childNodes[0].textContent;
-                    //            }
-                    //        }
-                    //        if (dates[0]) {
-                    //            if (dates[0].childNodes[1]) {
-                    //                var deathDate = dates[0].childNodes[1].textContent;
-                    //            } else {
-                    //                var deathDate = dates[0].childNodes[0].textContent;
-                    //            }
-                    //        }
-                    //    }
-                    //}
-
-                    //// Package birth information
-                    //var birth = {
-                    //    date: birthDate,
-                    //    place: birthPlace
-                    //}
-
-                    //// Package death information
-                    //var death = {
-                    //    date: deathDate,
-                    //    place: deathPlace
-                    //}
-
                     // Package individual summary
                     var personObject = {
                         name: name,
@@ -707,7 +584,6 @@ function initialize() {
                 address: place
             };
 
-            //setTimeout( function () {
 
             geocoder.geocode(georequest, function (result, status) {
                 if (status == google.maps.GeocoderStatus.OK) {

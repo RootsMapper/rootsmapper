@@ -74,7 +74,6 @@ else
 	<script type="text/javascript" src="scripts/loading.js"></script>
 	<!-- loading animation references -->
 
-	<script type="text/javascript" src="scripts/jquery.rest.js"></script>
         <link href="css/map.css" rel="stylesheet" />
         <script src="scripts/map.js"></script>
 		<script src="scripts/oms.js"></script>
@@ -111,13 +110,14 @@ if (isset($access_token))
 			</div>
 			<div class="hoverdiv">
 				<select id="genSelect" class="boxes">
-					<option value="1">1 generation</option>
+					<option selected="selected" value="1">1 generation</option>
 					<option value="2">2 generations</option>
-					<option selected="selected" value="3">3 generations</option>
+					<option value="3">3 generations</option>
 					<option value="4">4 generations</option>
 					<option value="5">5 generations</option>
 					<option value="6">6 generations</option>
 					<option value="7">7 generations</option>
+					<option value="8">8 generations</option>
 				</select>
 				<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
 <?php
