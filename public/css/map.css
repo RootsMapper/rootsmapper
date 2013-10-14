@@ -5,6 +5,28 @@ html, body {
     padding: 0;
 }
 
+#alertDiv {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+    background-color:rgba(0,0,0,0.5);
+    z-index: 9999;
+}
+
+#alertText {
+    position:absolute;
+    top: 40%;
+    left: 40%;
+    width: 20%;
+    background-color: white;
+    padding: 5px;
+    border-radius: 4px;
+    color: black;
+    font: bold 14px arial;
+}
+
 #infow {
     white-space: nowrap;
     max-height: 500px;
@@ -84,7 +106,7 @@ html, body {
     top: 5px;
     left: 0px;
     margin: 0 auto;
-    width: 100%;
+    white-space: nowrap;
     z-index: 1;
     background-color: transparent;
     max-height: 608px;
@@ -161,18 +183,46 @@ html, body {
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
 }
 
-.buttonLink {
-    color: blue;
-    background-color: white;
-    border: none;
-    text-decoration: underline;
-    font: 14px arial;
-    margin: 0;
-    padding:0;
+#copyButton {
+    margin-left: 5px;
+    width: 15px;
+    height: 15px;
+    opacity: 0.5;
 }
 
-    .buttonLink:hover {
-        color: dodgerblue;
+    #copyButton:hover {
+        opacity: 1;
+    }
+
+#fsButton {
+    margin-left: 5px;
+    width: 22px;
+    height: 22px;
+    opacity: 0.5;
+    vertical-align: top;
+}
+
+    #fsButton:hover {
+        opacity: 1;
+    }
+
+#ebutton {
+    height:38px;
+    width:55px;
+    float:right;
+    opacity:0.5;
+}
+
+    #ebutton:hover {
+        opacity: 1;
+    }
+
+#trashcan {
+    opacity: 0.5;
+}
+
+    #trashcan:hover {
+        opacity:1;
     }
 
 .button {
@@ -265,6 +315,7 @@ html, body {
     width: 100px;
     float: left;
     margin: 0;
+    white-space: normal;
 }
 
         #loginbutton:hover {
@@ -301,7 +352,7 @@ html, body {
     bottom: 20px;
     right: 5px;
     margin: 0 auto;
-    width: 1000px;
+    white-space: nowrap;
     z-index: 1;
     background-color: transparent;
     max-height: 608px;

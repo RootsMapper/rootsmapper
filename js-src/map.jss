@@ -19,12 +19,6 @@ var baseurl;
 var userID;
 var expanding;
 
-// Create a rest service; this stores common ajax configurations
-// so that each ajax call doesn't need to handle this.
-// The authentication header is added when the user logs in.
-// This uses the jquery-rest plugin found at https://github.com/justincy/jquery-rest
-
-
 function currentUser() {
 
     var xhttp;
@@ -60,36 +54,77 @@ function currentUser() {
 
 }
 
-function sessionHandler() {
-    setTimeout(function () {
-        var r = confirm("Your FamilySearch session is about to expire.\n\n Click OK to stay logged in.\n\n Click Cancel to log out.");
-        if (r == true) {
-            var xhttp;
-            var url = baseurl + "/platform/tree/current-person?access_token=" + accesstoken;
-            xhttp = new XMLHttpRequest();
-            xhttp.open("GET", url);
-            xhttp.setRequestHeader('Accept', 'application/xml');
 
-            xhttp.onload = function (e) {
-                if (xhttp.readyState === 4) {
-                    if (xhttp.status === 200) {
-                    } else if (xhttp.status === 401) {
-                        alert("Sorry, your session has already expired. Please log in again.");
-                        window.location = 'index.php?login=true';
-                    }
-                }
-            }
+function customAlert() {
+    var div = document.createElement("div");
+    div.setAttribute('id', 'alertDiv');
+    var child = document.createElement("div");
+    child.setAttribute('id','alertText');
+    var message = "Your FamilySearch session is about to expire. You will be automatically logged out in <span id='timer'></span></br></br>";
+    var b = "<button class='button red' onclick='" + "window.location = 'logout.php'" + "';>Logout</button>";
+   
+    var count = 5;
+    var counter = setInterval(function () {
+        count = count - 1;
+        if (count <= 0) {
+            clearInterval(counter);
+            var div = document.getElementById("alertDiv");
+            document.body.removeChild(div);
+            var root = document.getElementById("rootGrid");
+            var inputFrame = document.getElementById("inputFrame");
+            root.removeChild(inputFrame);
+            var div = document.createElement("div");
+            div.setAttribute("id","inputFrame");
+            div.innerHTML = "<div class='hoverdiv'><button id='loginbutton' onclick='window.location='index.php?login=true''>Login to FamilySearch</button></div>";
+            root.appendChild(div);
 
-            xhttp.send();
-            sessionHandler();
+            // Also need to disable functions requiring sessionid or access token
         } else {
-            window.location = 'logout.php';
+            // Adjust this to actually say minutes and seconds, appropriately
+            document.getElementById("timer").innerHTML = count + " seconds."; // watch for spelling
         }
-    }, 60*1000);
+    }, 1000);
+
+    var c = "<button class='button green' onclick='emptyQuery(); clearInterval(" + counter + ")';>Keep me logged in</button>";
+    var d = "<span id='timer'></span>";
+    child.innerHTML = message + c;
+    div.appendChild(child);
+    document.body.appendChild(div);
 
 }
 
+function emptyQuery() {
+    var div = document.getElementById("alertDiv");
+    document.body.removeChild(div);
+
+    var xhttp;
+    var url = baseurl + "/platform/tree/persons/" + userID + "?access_token=" + accesstoken;
+    xhttp = new XMLHttpRequest();
+    xhttp.open("GET", url);
+    xhttp.setRequestHeader('Accept', 'application/xml');
+
+    xhttp.onload = function (e) {
+        if (xhttp.readyState === 4) {
+            if (xhttp.status === 200) {
+            } else if (xhttp.status === 401) {
+                alert("Sorry, your session has already expired. Please log in again.");
+                window.location = 'index.php?login=true';
+            }
+        }
+    }
+
+    xhttp.send();
+    sessionHandler();
+}
+
+function sessionHandler() {
+    var handler = setTimeout(function () {
+        customAlert();
+    }, 10*1000);
+}
+
 function initialize() {
+ 
         var lat = 30.0;
         var lng = -30.0;
         var place = new google.maps.LatLng(lat, lng);
@@ -145,6 +180,7 @@ function initialize() {
             } else {
                 populateUser();
             }
+            //sessionHandler();
         }
 
         google.maps.event.addListener(map, 'click', function () {
@@ -190,9 +226,9 @@ function initialize() {
 				that.onmouseout = function () {
 					clearTimeout(timeoutId);
 					if (document.getElementById('tt')) {
-                var m = document.getElementById('tt');
-                document.body.removeChild(tt);
-            }
+                        var m = document.getElementById('tt');
+                        document.body.removeChild(m);
+                    }
         };
 
     }
@@ -201,8 +237,8 @@ function initialize() {
 
         clearOverlays();
         startEvents();
-	var select = document.getElementById('genSelect');
-	genquery = parseFloat(select.value);
+	    var select = document.getElementById('genSelect');
+	    genquery = parseFloat(select.value);
         getPedigree(genquery, undefined, undefined);
 
     }
@@ -226,7 +262,6 @@ function initialize() {
             var querythis = document.getElementById('personid');
             var personId = querythis.value;
         }
-
 
         var xhttp;
         var url = baseurl + "/platform/tree/ancestry?person=" + personId + "&generations=" + generations + "&access_token=" + accesstoken;
@@ -263,7 +298,7 @@ function initialize() {
                 }
             }
         }
-        xhttp.send();
+        xhttp.send();      
     }
 
     function readPedigreeLoop(IDs, rootGen, paternal) {
@@ -342,6 +377,7 @@ function initialize() {
                                         placequery = undefined;
                                         callLoopNext(loop, progenitors);
                                     } else {
+                                        //console.log("Google Maps search for birthplace \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " returned successful.");
                                         tryagain = true;
                                         placequery = undefined;
                                         callLoopNext(loop, progenitors);
@@ -365,6 +401,7 @@ function initialize() {
     }
 
     function personRead2(id, callback) {
+
         var xhttp;
         var url = baseurl + "/platform/tree/persons/" + id + "?access_token=" + accesstoken;
         xhttp = new XMLHttpRequest();
@@ -380,10 +417,12 @@ function initialize() {
                     // Get full name of individual
 
                     var fullText = $(xmlDocument).find("gx\\:fullText, fullText");
+                    //var fullText = xmlDocument.getElementsByTagNameNS("fs","fullText");
                     if (fullText[0]) {
                         var name = fullText[0].textContent;
                     }
 
+                    //var genders = xmlDocument.getElementsByTagName("fs", "gender");
                     var genders = $(xmlDocument).find("gx\\:gender, gender");
                     if (genders[1]) {
                         var gender = genders[1].textContent;
@@ -399,6 +438,7 @@ function initialize() {
                     }
 
                     // Get birth date and location
+                    //var events = xmlDocument.getElementsByTagName("fact");
                     var events = $(xmlDocument).find("gx\\:fact, fact");
                     for (var i = 0; i < events.length; i++) {
                         var type = events[i].getAttribute("type");
@@ -441,6 +481,12 @@ function initialize() {
                         }
                     }
 
+                    var alive = $(xmlDocument).find("gx\\:living, living");
+                    if (alive[0]) {
+                        if (alive[0].textContent == "true") {
+                            death.date = "Living";
+                        }
+                    }
 
                     var personObject = {
                         name: name,
@@ -453,9 +499,11 @@ function initialize() {
                     // Send reply
                     callback(personObject);
                 } else if (xhttp.status === 401) {
+                    //}).fail(function (jqXHR, textStatus, errorThrown) {
                     completionEvents();
                     alert("Your session has expired. Please log in again.");
                     window.location = 'index.php?login=true';
+                    //});
                 } else if (xhttp.status === 503) {
                     callback(xhttp.status);
                 } else {
@@ -468,9 +516,6 @@ function initialize() {
     }
 
     function personRead(id, callback) {
-
-       
-
 
         var url = baseurl + "/familytree/v2/person/" + id + "?&events=standard&sessionId=" + accesstoken;
 
@@ -583,8 +628,7 @@ function initialize() {
             var georequest = {
                 address: place
             };
-
-
+            
             geocoder.geocode(georequest, function (result, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     var latlng = result[0].geometry.location;
@@ -759,6 +803,9 @@ function initialize() {
                     var icon = 'images/female' + p.generation + '.png';
                     var src = 'images/woman.png';
                 }
+                var self = "<img style='width: 18px; height: 18px; margin-top: 10px;' src='" + icon + "'>";
+                var father = "<img style='width: 18px; height: 18px; margin-bottom:1px;' src='images/male" + (p.generation + 1) + ".png'>";
+                var mother = "<img style='width: 18px; height: 18px; margin-top:1px;' src='images/female" + (p.generation + 1) + ".png'>";
                 var scaleFactor = .5;
                 var opts = {
                     map: map,
@@ -779,21 +826,30 @@ function initialize() {
                         "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
                         "\"," + p.generation + "," + p.isPaternal +
                         "); ib.close();'>" + 'Expand Parents</button></div>';
-                    mark.expand = expandButton;
+                    var ebutton = "<div id='ebutton' onclick='markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
+                                    "\"," + p.generation + "," + p.isPaternal + "); ib.close();'>" +
+                                        "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
+                                        "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
+                                        "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
+                                    '</div>';
+                                
+                    mark.expand = ebutton;
                     mark.isExpanded = false;
                 } else {
                     mark.isExpanded = true;
                     mark.expand = "";
                 }
-
+                mark.personID = p.id;
+                var url = 'https://familysearch.org/tree/#view=ancestor&person=' + p.id;
                 var contents1 =
                 "<div id='infow'>" +
                     "<div class='person'>" +
-                        "<img class='profile-image' src='" + src + "'>" +
+                        "<img id='portrait' class='profile-image' src='" + src + "'>" +
                         "<div class='box'>" +
                             "<div class='xlarge'>" + p.name + "</div>" +
-                            "<button id='idButton' class='buttonLink' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + p.id + '</button>' +
-                        "</div>" + 
+                            "<div class='large'>" + p.id +
+                            "<img id='copyButton' src='images/copy.png' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
+                        "</div>" + "<img id='fsButton' class='profile-image' src='images/fs_logo_favicon.ico' onclick='window.open(\"" + url + "\");'>" +
                     "</div>" +
                     "<div class='person'>" +
                         "<div class='label'>BIRTH</div>" +
@@ -808,18 +864,23 @@ function initialize() {
                             "<div class='large'>" + (p.death.date || "") + "</div>" +
                             "<div class='small'>" + (p.death.place || "") + "</div>" +
                         "</div>" +
-                    "</div>";
-                var contents2 = '</div>';
+                    "</div>" +
+                    "<div  style='height:38px;'>";
+                        
+                var contents2 = "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png' style='width:25px; height:26px; margin-top: 12px;' onclick='markarray[" + mark.idx + "].setVisible(false); polyarray[" + (mark.idx - 1) + "].setVisible(false); ib.close()'</div>" +
+                            '</div></div>';
                 
                 mark.content1 = contents1;
                 mark.content2 = contents2;
                 google.maps.event.addListener(ib, 'domready', function () {
   
-                    if ( document.getElementById("expandButton")){
-                        document.getElementById("expandButton").onmouseover = function () { tooltip("Plot the parents of this person","expandButton",10); }
+                    if ( document.getElementById("ebutton")){
+                        document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person","ebutton",10); }
                     }
-                    document.getElementById("idButton").onmouseover = function () { tooltip("Set this person as the root person","idButton",10); }
-                    
+                    document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID","copyButton",10); }
+                    document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", 10); }
+                    document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
+
                 });
                 oms.addListener('click', function (mark, event) {
                     if (mark.isExpanded) {
@@ -829,6 +890,7 @@ function initialize() {
                     }
                   
                     ib.open(map, mark);
+                    //getPortrait(mark.personID);
                 });
 
                 oms.addListener('spiderfy', function (mark) {
@@ -839,6 +901,37 @@ function initialize() {
                 markarray.push(mark);
             }
         }
+    }
+
+    function getPortrait(id) {
+        var xhttp;
+        var url = baseurl + "/platform/tree/persons/" + id + "/media?access_token=" + accesstoken;
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url);
+        xhttp.setRequestHeader('Accept', 'application/xml');
+
+        xhttp.onload = function (e) {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200) {
+                    var xml = xhttp.responseXML.documentElement;
+                    var source = $(xml).find("gx\\:sourceDescription, sourceDescription");
+
+                    if (source[0]) {
+                        var url = source[0].getAttribute('about');
+                        var portrait = document.getElementById('portrait');
+                        portrait.setAttribute('src', url);
+                    }
+
+                } else if (xhttp.status === 401) {
+                    alert("Sorry, your session has already expired. Please log in again.");
+                    window.location = 'index.php?login=true';
+                } else {
+                    alert("Error: " + xhttp.statusText);
+                }
+            }
+        }
+
+        xhttp.send();
     }
 
     function getChildBirthPlace(progenitors, idx) {
