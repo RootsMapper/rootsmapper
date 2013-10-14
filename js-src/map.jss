@@ -826,12 +826,15 @@ function initialize() {
                         "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
                         "\"," + p.generation + "," + p.isPaternal +
                         "); ib.close();'>" + 'Expand Parents</button></div>';
-                    var ebutton = "<div id='ebutton' onclick='markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
+                    var ebutton = "<div  style='height:38px;'>" +
+                                    "<div id='ebutton' onclick='markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
                                     "\"," + p.generation + "," + p.isPaternal + "); ib.close();'>" +
                                         "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
                                         "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
                                         "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
-                                    '</div>';
+                                    '</div>'+
+                                  "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png' style='width:25px; height:26px; margin-top: 12px;' onclick='markarray[" + mark.idx + "].setVisible(false); polyarray[" + (mark.idx - 1) + "].setVisible(false); ib.close()'</div>" +
+                                '</div>';
                                 
                     mark.expand = ebutton;
                     mark.isExpanded = false;
@@ -840,7 +843,7 @@ function initialize() {
                     mark.expand = "";
                 }
                 mark.personID = p.id;
-                var url = 'https://familysearch.org/tree/#view=ancestor&person=' + p.id;
+                var url = baseurl + '/tree/#view=ancestor&person=' + p.id;
                 var contents1 =
                 "<div id='infow'>" +
                     "<div class='person'>" +
@@ -864,11 +867,9 @@ function initialize() {
                             "<div class='large'>" + (p.death.date || "") + "</div>" +
                             "<div class='small'>" + (p.death.place || "") + "</div>" +
                         "</div>" +
-                    "</div>" +
-                    "<div  style='height:38px;'>";
+                    "</div>";
                         
-                var contents2 = "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png' style='width:25px; height:26px; margin-top: 12px;' onclick='markarray[" + mark.idx + "].setVisible(false); polyarray[" + (mark.idx - 1) + "].setVisible(false); ib.close()'</div>" +
-                            '</div></div>';
+                var contents2 = '</div>';
                 
                 mark.content1 = contents1;
                 mark.content2 = contents2;
@@ -876,11 +877,12 @@ function initialize() {
   
                     if ( document.getElementById("ebutton")){
                         document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person","ebutton",10); }
+                        document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
+
                     }
                     document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID","copyButton",10); }
                     document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", 10); }
-                    document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
-
+                    
                 });
                 oms.addListener('click', function (mark, event) {
                     if (mark.isExpanded) {
