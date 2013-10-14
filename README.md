@@ -33,4 +33,3 @@ Point your webserver at the public folder.
 * Neteye Activity Indicator (MIT License) https://github.com/neteye/jquery-plugins
 * php-sample-person-browser https://github.com/justincy/php-sample-person-browser
 * Journalness https://github.com/dawithers/journalness
-* REST plugins to jQuery (MIT License) https://github.com/justincy/jquery-rest
