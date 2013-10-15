@@ -73,6 +73,13 @@ else
 
 	</head>
 	<body>
+		<script type="text/javascript" src="scripts/map.js"></script>
+			<script src="scripts/oms.js"></script>
+			<script src="scripts/infobox.js"></script>
+		<script language="javascript" type="text/javascript">
+			accesstoken='<?php echo $access_token; ?>';
+			baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
+		</script>		
 		<?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
 		<div id="rootGrid">
 		<div id="mapdisplay"></div>
@@ -90,13 +97,7 @@ if (isset($access_token))
 				});
 			</script>
 			<!-- loading animation references -->
-			<script type="text/javascript" src="scripts/map.js"></script>
-				<script src="scripts/oms.js"></script>
-				<script src="scripts/infobox.js"></script>
-			<script language="javascript" type="text/javascript">
-				accesstoken='<?php echo $access_token; ?>';
-				baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
-			</script>
+
 
 
 			<div class="hoverdiv">
