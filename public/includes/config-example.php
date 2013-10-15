@@ -3,6 +3,13 @@
 // Site Title
 $TITLE = "New RootsMapper Site";
 
+// Site version
+// Used for file cache invalidating
+// Use something like the following to invalidate with
+// git commit hashes:
+// $VERSION = file_get_contents( '../../.git/refs/heads/master' );
+$VERSION = '1';
+
 // FamilySearch API KEY
 $DEV_KEY = 'AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA-AAAA';
 
