@@ -70,16 +70,25 @@ else
 		<!-- Google Maps API reference -->
 		<script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry"></script>
 		<!-- map references -->
-
-	</head>
-	<body>
+		<!-- loading animation references -->
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+		<script src="scripts/loading.js"></script>
+		<script language="javascript" type="text/javascript">
+			$(window).load(function() {
+			$('#loading').hide();
+			});
+		</script>
+		<!-- loading animation references -->
 		<script type="text/javascript" src="scripts/map.js"></script>
 			<script src="scripts/oms.js"></script>
 			<script src="scripts/infobox.js"></script>
 		<script language="javascript" type="text/javascript">
-			accesstoken='<?php echo $access_token; ?>';
+			accesstoken='<?php isset($access_token) ? $access_token : ""; ?>';
 			baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
-		</script>		
+		</script>
+	</head>
+	<body>
+		
 		<?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
 		<div id="rootGrid">
 		<div id="mapdisplay"></div>
@@ -88,18 +97,6 @@ else
 // If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
 { ?>
-			<!-- loading animation references -->
-			<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-			<script src="scripts/loading.js"></script>
-			<script language="javascript" type="text/javascript">
-				$(window).load(function() {
-				$('#loading').hide();
-				});
-			</script>
-			<!-- loading animation references -->
-
-
-
 			<div class="hoverdiv">
 				<label id="username" class="labelbox" for"logoutbutton">User Name</label>
 				<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
