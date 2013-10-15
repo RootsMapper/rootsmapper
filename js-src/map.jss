@@ -16,6 +16,7 @@ var genquery;
 var nSearches;
 var delay = 1;
 var baseurl;
+var version;
 var userID;
 var expanding;
 
@@ -796,16 +797,16 @@ function initialize() {
 
                 if (p.gender == "Male") {
                     var bgcolor = 'lightblue'; //rgbToHex(0, 176, 240);
-                    var icon = 'images/male' + p.generation + '.png';
-                    var src = 'images/man.png';
+                    var icon = 'images/male' + p.generation + '.png?v=' + version;
+                    var src = 'images/man.png?v=' + version;
                 } else {
                     var bgcolor = 'pink'; // rgbToHex(245, 139, 237);
-                    var icon = 'images/female' + p.generation + '.png';
-                    var src = 'images/woman.png';
+                    var icon = 'images/female' + p.generation + '.png?v=' + version;
+                    var src = 'images/woman.png?v=' + version;
                 }
                 var self = "<img style='width: 18px; height: 18px; margin-top: 10px;' src='" + icon + "'>";
-                var father = "<img style='width: 18px; height: 18px; margin-bottom:1px;' src='images/male" + (p.generation + 1) + ".png'>";
-                var mother = "<img style='width: 18px; height: 18px; margin-top:1px;' src='images/female" + (p.generation + 1) + ".png'>";
+                var father = "<img style='width: 18px; height: 18px; margin-bottom:1px;' src='images/male" + (p.generation + 1) + ".png?v=" + version + "'>";
+                var mother = "<img style='width: 18px; height: 18px; margin-top:1px;' src='images/female" + (p.generation + 1) + ".png?v=" + version + "'>";
                 var scaleFactor = .5;
                 var opts = {
                     map: map,
@@ -833,7 +834,7 @@ function initialize() {
                                         "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
                                         "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
                                     '</div>'+
-                                  "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png' style='width:25px; height:26px; margin-top: 12px;' onclick='markarray[" + mark.idx + "].setVisible(false); polyarray[" + (mark.idx - 1) + "].setVisible(false); ib.close()'</div>" +
+                                  "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version + "' style='width:25px; height:26px; margin-top: 12px;' onclick='markarray[" + mark.idx + "].setVisible(false); polyarray[" + (mark.idx - 1) + "].setVisible(false); ib.close()'</div>" +
                                 '</div>';
                                 
                     mark.expand = ebutton;
@@ -851,8 +852,8 @@ function initialize() {
                         "<div class='box'>" +
                             "<div class='xlarge'>" + p.name + "</div>" +
                             "<div class='large'>" + p.id +
-                            "<img id='copyButton' src='images/copy.png' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
-                        "</div>" + "<img id='fsButton' class='profile-image' src='images/fs_logo_favicon.ico' onclick='window.open(\"" + url + "\");'>" +
+                            "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
+                        "</div>" + "<img id='fsButton' class='profile-image' src='images/fs_logo_favicon.ico?v=" + version + "' onclick='window.open(\"" + url + "\");'>" +
                     "</div>" +
                     "<div class='person'>" +
                         "<div class='label'>BIRTH</div>" +
