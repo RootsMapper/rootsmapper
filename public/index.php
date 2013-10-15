@@ -31,11 +31,11 @@ for ($i=0; $i<2; $i++)
 // If we're returning from the oauth2 redirect, capture the code and store session
 // this way we don't have to reauthenticate after every reload
 if( isset($_REQUEST['code']) ) {
-	  session_regenerate_id(true); //Regenerate session ID
-	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
-	  $_SESSION['fingerprint'] = md5($fingerprint);
-	  header('Location: ' . basename(__FILE__)); //Refresh page to clear POST variables
-	  exit;
+	session_regenerate_id(true); //Regenerate session ID
+	$_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
+	$_SESSION['fingerprint'] = md5($fingerprint);
+	header('Location: ' . basename(__FILE__)); //Refresh page to clear POST variables
+	exit;
 } 
 
 // If login is clicked, begin request
@@ -63,41 +63,42 @@ else
 
 <!DOCTYPE html>
 <html>
-    <head>
-        <title><?php echo isset($TITLE)? $TITLE : ""; ?></title>
-        <!-- Google Maps API reference -->
-        <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry"></script>
-	<!-- map references -->
+	<head>
+		<title><?php echo isset($TITLE)? $TITLE : ""; ?></title>
 
-	<!-- loading animation references -->
-	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-	<script type="text/javascript" src="scripts/loading.js"></script>
-	<!-- loading animation references -->
+		<link href="css/map.css" rel="stylesheet" />
+		<!-- Google Maps API reference -->
+		<script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry"></script>
+		<!-- map references -->
 
-        <link href="css/map.css" rel="stylesheet" />
-        <script src="scripts/map.js"></script>
-		<script src="scripts/oms.js"></script>
-		<script src="scripts/infobox.js"></script>
-        <script type="text/javascript">
-             accesstoken='<?php echo isset($access_token) ? $access_token : ""; ?>';
-             baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
-	</script>
-	<script language="javascript" type="text/javascript">
-  		$(window).load(function() {
-    		$('#loading').hide();
- 	 });
-	</script>
-
-    </head>
-    <body>
-        <?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
-        <div id="rootGrid">
-            <div id="mapdisplay"></div>
-	    <div id="inputFrame">
+	</head>
+	<body>
+		<?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
+		<div id="rootGrid">
+		<div id="mapdisplay"></div>
+		<div id="inputFrame">
 <?php
 // If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
 { ?>
+			<!-- loading animation references -->
+			<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+			<script src="scripts/loading.js"></script>
+			<script language="javascript" type="text/javascript">
+				$(window).load(function() {
+				$('#loading').hide();
+				});
+			</script>
+			<!-- loading animation references -->
+			<script type="text/javascript" src="scripts/map.js"></script>
+				<script src="scripts/oms.js"></script>
+				<script src="scripts/infobox.js"></script>
+			<script language="javascript" type="text/javascript">
+				accesstoken='<?php echo $access_token; ?>';
+				baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
+			</script>
+
+
 			<div class="hoverdiv">
 				<label id="username" class="labelbox" for"logoutbutton">User Name</label>
 				<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
@@ -105,7 +106,7 @@ if (isset($access_token))
 			<div class="hoverdiv">
 				<label id="prompt" class="labelbox" for="personid">Root Person ID:</label>
 				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-				<script type="text/javascript" src="scripts/keyfilter.js"></script>
+				<script src="scripts/keyfilter.js"></script>
 				<button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
 			</div>
 			<div class="hoverdiv">
@@ -131,29 +132,29 @@ else
 }
 ?>
 			</div>
-            	<div id="loading" class="square"></div>
-		</div>
-	    	<div id="lowerbuttonframe">
+			<div id="loading" class="square"></div>
+			</div>
+			<div id="lowerbuttonframe">
 <?php
 if (!empty($FAQ_URL))
 {
 ?>
-            	<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
+			<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
 <?php
 }
 if (!empty($FEEDBACK_URL))
 {
 ?>
-            	<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
+			<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
 <?php
 }
 if (!empty($DONATE_URL))
 {
 ?>
-            	<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
+			<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
 <?php
 }
 ?>
 		</div>
-</body>
+	</body>
 </html>
