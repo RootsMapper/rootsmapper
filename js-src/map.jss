@@ -878,7 +878,7 @@ function initialize() {
   
                     if ( document.getElementById("ebutton")){
                         document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person","ebutton",10); }
-                        document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
+                        //document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
 
                     }
                     document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID","copyButton",10); }
