@@ -834,7 +834,7 @@ function initialize() {
                                         "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
                                         "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
                                     '</div>'+
-                                  "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version + "' style='width:25px; height:26px; margin-top: 12px;' onclick='markarray[" + mark.idx + "].setVisible(false); polyarray[" + (mark.idx - 1) + "].setVisible(false); ib.close()'</div>" +
+                                  //"<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version + "' style='width:25px; height:26px; margin-top: 12px;' onclick='markarray[" + mark.idx + "].setVisible(false); polyarray[" + (mark.idx - 1) + "].setVisible(false); ib.close()'</div>" +
                                 '</div>';
                                 
                     mark.expand = ebutton;
