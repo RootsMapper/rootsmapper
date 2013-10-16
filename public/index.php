@@ -65,6 +65,7 @@ else
 <html>
     <head>
         <title><?php echo isset($TITLE)? $TITLE : ""; ?></title>
+        <link href="css/map.css?v=<?php echo isset($VERSION)? $VERSION : ""; ?>" rel="stylesheet" />
         <!-- Google Maps API reference -->
         <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry"></script>
 	<!-- map references -->
@@ -74,7 +75,6 @@ else
 	<script type="text/javascript" src="scripts/loading.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 	<!-- loading animation references -->
 
-        <link href="css/map.css?v=<?php echo isset($VERSION)? $VERSION : ""; ?>" rel="stylesheet" />
         <script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
@@ -118,7 +118,6 @@ if (isset($access_token))
 					<option value="5">5 generations</option>
 					<option value="6">6 generations</option>
 					<option value="7">7 generations</option>
-					<option value="8">8 generations</option>
 				</select>
 				<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
 <?php
