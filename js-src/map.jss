@@ -46,7 +46,7 @@ function currentUser() {
 
             } else if (xhttp.status === 401) {
                 alert("Your session has expired. Please log in again.");
-                window.location = 'index.php?login=true';
+                window.location = '?login';
             }
         }
     }
