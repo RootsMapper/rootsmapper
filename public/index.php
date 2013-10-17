@@ -34,7 +34,7 @@ if( isset($_REQUEST['code']) ) {
 	  session_regenerate_id(true); //Regenerate session ID
 	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
 	  $_SESSION['fingerprint'] = md5($fingerprint);
-	  header('Location: ' . basename(__FILE__)); //Refresh page to clear POST variables
+	  header('Location: ' . $_SERVER['SERVER_NAME'] . dirname($_SERVER['PHP_SELF'])); //Refresh page to clear POST variables
 	  exit;
 } 
 
