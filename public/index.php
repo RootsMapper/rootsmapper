@@ -126,7 +126,7 @@ else
 {
 ?>
 			<div class="hoverdiv">
-				<button id="loginbutton" onclick="window.location='index.php?login=true'">Login to FamilySearch</button>
+				<button id="loginbutton" onclick="window.location='?login=true'">Login to FamilySearch</button>
 <?php
 }
 ?>
