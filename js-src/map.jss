@@ -345,7 +345,7 @@ function initialize() {
                             if (placequery) {
                                 var place = placequery;
                             } else {
-                                var place = progenitors[idx].birth.place;
+                                var place = progenitors[idx].place;
                             }
 
                             setTimeout(function () {
@@ -357,20 +357,46 @@ function initialize() {
                                         loop.prev();
                                         loop.next();
                                     } else if (res == "other") {
-                                        var loc = place.split(",");
+                                        var placestring = progenitors[idx].place;
 
-                                        if (tryagain == true) { // Try one more query with City,Country as search text
-                                            placequery = loc[0] + "," + loc[loc.length - 1];
-                                            tryagain = false;
-                                            loop.prev();
-                                            loop.next();
-                                        } else {
-                                            console.log("Unable to find location \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
-                                            progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
-                                            tryagain = true;
-                                            placequery = undefined;
-                                            callLoopNext(loop, progenitors);
+                                        var xhttp;
+                                        var url = "https://sandbox.familysearch.org/authorities/v1/place?place=" + placestring + "&locale=en&sessionId=" + accesstoken;
+                                        xhttp = new XMLHttpRequest();
+                                        xhttp.open("GET", url);
+                                        xhttp.setRequestHeader('Accept', 'application/xml');
+
+                                        xhttp.onload = function (e) {
+                                            if (xhttp.readyState === 4) {
+                                                if (xhttp.status === 200) {
+                                                    var xmlDocument = xhttp.responseXML.documentElement;
+                                                    var point = $(xmlDocument).find("point");
+                                                    var lat = point[0].childNodes[0].textContent;
+                                                    var lng = point[0].childNodes[1].textContent;
+                                                    var latlng = new google.maps.LatLng(lat, lng);
+                                                    progenitors[idx].birth.latlng = latlng;
+                                                    callLoopNext(loop, progenitors);
+                                                } else {
+                                                    progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
+                                                    callLoopNext(loop, progenitors);
+
+                                                }
+                                            }
                                         }
+                                        xhttp.send();
+                                        //var loc = place.split(",");
+
+                                        //if (tryagain == true) { // Try one more query with City,Country as search text
+                                        //    placequery = loc[0] + "," + loc[loc.length - 1];
+                                        //    tryagain = false;
+                                        //    loop.prev();
+                                        //    loop.next();
+                                        //} else {
+                                        //    console.log("Unable to find location \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
+                                        //    progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
+                                        //    tryagain = true;
+                                        //    placequery = undefined;
+                                        //    callLoopNext(loop, progenitors);
+                                        //}
                                     } else if (!res) {
                                         console.log("Undefined birthplace for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
                                         progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
@@ -385,7 +411,10 @@ function initialize() {
                                     }
                                 })
                             }, delay);
+
+                            
                         }
+                        //}
 
                     } else {
                         progenitors[idx] = undefined;
@@ -401,10 +430,28 @@ function initialize() {
         }, function () {});
     }
 
+    function getPlaceAuthority(id, callback) {
+        var xhttp;
+        var url = baseurl + "/platform/tree/persons/" + id + "?&events=standard&access_token=" + accesstoken;
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url);
+        xhttp.setRequestHeader('Accept', 'application/xml');
+
+        xhttp.onload = function (e) {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200) {
+                    var xmlDocument = xhttp.responseXML.documentElement;
+                }
+            }
+        }
+        xhttp.send();
+    }
+
+
     function personRead2(id, callback) {
 
         var xhttp;
-        var url = baseurl + "/platform/tree/persons/" + id + "?access_token=" + accesstoken;
+        var url = baseurl + "/platform/tree/persons/" + id + "?&events=standard&access_token=" + accesstoken;
         xhttp = new XMLHttpRequest();
         xhttp.open("GET", url);
         xhttp.setRequestHeader('Accept', 'application/xml');
@@ -414,21 +461,7 @@ function initialize() {
                 if (xhttp.status === 200) {
 
                     var xmlDocument = xhttp.responseXML.documentElement;
-
-                    // Get full name of individual
-
-                    var fullText = $(xmlDocument).find("gx\\:fullText, fullText");
-                    //var fullText = xmlDocument.getElementsByTagNameNS("fs","fullText");
-                    if (fullText[0]) {
-                        var name = fullText[0].textContent;
-                    }
-
-                    //var genders = xmlDocument.getElementsByTagName("fs", "gender");
-                    var genders = $(xmlDocument).find("gx\\:gender, gender");
-                    if (genders[1]) {
-                        var gender = genders[1].textContent;
-                    }
-
+                    
                     var death = {
                         date: null,
                         place: null
@@ -438,49 +471,41 @@ function initialize() {
                         place: null
                     }
 
-                    // Get birth date and location
-                    //var events = xmlDocument.getElementsByTagName("fact");
-                    var events = $(xmlDocument).find("gx\\:fact, fact");
-                    for (var i = 0; i < events.length; i++) {
-                        var type = events[i].getAttribute("type");
-                        var dates = $(events[i]).find("gx\\:date, date");
-                        var places = $(events[i]).find("gx\\:place, place");
+
+                    var display = $(xmlDocument).find("gx\\:display, display");
+                    if (display[0]) {
+                        var birthdate = $(display[0]).find("gx\\:birthDate, birthDate");
+                        var birthplace = $(display[0]).find("gx\\:birthPlace, birthPlace");
+                        var deathdate = $(display[0]).find("gx\\:deathDate, deathDate");
+                        var deathplace = $(display[0]).find("gx\\:deathPlace, deathPlace");
+                        var gend = $(display[0]).find("gx\\:gender, gender");
+                        var lifespan = $(display[0]).find("gx\\:lifespan, lifespan");
+                        var namer = $(display[0]).find("gx\\:name, name");
+
+                        if (birthdate[0]) { var date = birthdate[0].textContent; }
+                        if (birthplace[0]) { var place = birthplace[0].textContent; }
+                        var birth = { date: date, place: place }
+
                         var date = null;
                         var place = null;
+                        if (deathdate[0]) { var date = deathdate[0].textContent; }
+                        if (deathplace[0]) { var place = deathplace[0].textContent; }
+                        var death = { date: date, place: place }
 
-                        if (places[0]) {
-                            var original = $(places[0]).find("gx\\:original, original");
-                            var normalized = $(places[0]).find("gx\\:normalized, normalized");
-                            if (normalized[0]) {
-                                var place = normalized[0].textContent;
-                            } else if (original[0]) {
-                                var place = original[0].textContent;
-                            }
-                        }
-                        if (dates[0]) {
-                            var original = $(dates[0]).find("gx\\:original, original");
-                            var normalized = $(dates[0]).find("gx\\:normalized, normalized");
-                            if (normalized[0]) {
-                                var date = normalized[0].textContent;
-                            } else if (original[0]) {
-                                var date = original[0].textContent;
-                            }
-                        }
-
-                        if (type == "http://gedcomx.org/Birth") {
-                            // Package birth information
-                            var birth = {
-                                date: date,
-                                place: place
-                            }
-                        } else if (type == "http://gedcomx.org/Death") {
-                            // Package death information
-                            var death = {
-                                date: date,
-                                place: place
-                            }
-                        }
+                        if (gend[0]) { var gender = gend[0].textContent; }
+                        if (namer[0]) { var name = namer[0].textContent; }
                     }
+
+                    if (xmlDocument.childNodes[3]) {
+                        if (xmlDocument.childNodes[3].childNodes[1]) {
+                            var placeString = xmlDocument.childNodes[3].childNodes[1].textContent;
+                        } else {
+                            var placeString = birth.place;
+                        }
+                    } else {
+                        var placeString = birth.place;
+                    }
+                    
 
                     var alive = $(xmlDocument).find("gx\\:living, living");
                     if (alive[0]) {
@@ -494,7 +519,8 @@ function initialize() {
                         id: id,
                         birth: birth,
                         death: death,
-                        gender: gender
+                        gender: gender,
+                        place: placeString
                     }
 
                     // Send reply
@@ -899,6 +925,10 @@ function initialize() {
                 oms.addListener('spiderfy', function (mark) {
                     ib.close();
                 });
+
+                //google.maps.event.addListener(mark, 'mouseover', function () {
+                //    tooltip("This is a test", "map", 10);
+                //});
 
                 oms.addMarker(mark);
                 markarray.push(mark);
