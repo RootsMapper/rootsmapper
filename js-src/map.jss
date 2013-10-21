@@ -731,6 +731,8 @@ function initialize() {
                                 var lng = point[0].childNodes[1].textContent;
                                 var latlng = new google.maps.LatLng(lat, lng);
                                 result.birth.latlng = latlng;
+                                familyTree.setNode(result, gen, node);
+                                plotParent(node, gen);
                                 next();
                                 //callLoopNext(loop, progenitors);
                             } else {
