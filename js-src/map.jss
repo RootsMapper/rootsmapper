@@ -21,6 +21,9 @@ var userID;
 var expanding;
 var familyTree;
 
+
+
+
 function BinaryTree() {
     this.Nodes = new Array();
     this.generation = 0;
