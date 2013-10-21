@@ -21,9 +21,6 @@ var userID;
 var expanding;
 var familyTree;
 
-
-
-
 function BinaryTree() {
     this.Nodes = new Array();
     this.generation = 0;
@@ -720,7 +717,7 @@ function initialize() {
                     var placestring = result.birth.place;
 
                     var xhttp;
-                    var url = "https://sandbox.familysearch.org/authorities/v1/place?place=" + placestring + "&locale=en&sessionId=" + accesstoken;
+                    var url = "https://api.familysearch.org/authorities/v1/place?place=" + placestring + "&locale=en&sessionId=" + accesstoken;
                     xhttp = new XMLHttpRequest();
                     xhttp.open("GET", url);
                     xhttp.setRequestHeader('Accept', 'application/xml');
@@ -737,9 +734,12 @@ function initialize() {
                                 next();
                                 //callLoopNext(loop, progenitors);
                             } else {
-                                result.birth.latlng = getChildBirthPlace(progenitors, idx);
-                                //callLoopNext(loop, progenitors);
-                                next();
+                                getChildBirthPlace2(node, gen, function (e) {
+                                    result.birth.latlng = e;
+                                    familyTree.setNode(result, gen, node);
+                                    plotParent(node, gen);
+                                    next();
+                                });
                             }
                         }
                     }
