@@ -19,6 +19,131 @@ var baseurl;
 var version;
 var userID;
 var expanding;
+var familyTree;
+
+function BinaryTree() {
+    this.Nodes = new Array();
+    this.generation = 0;
+    this.node = 0;
+
+    this.traverse = function (run, index, callback) {
+        var that = this;
+        if (index < this.stage.length) {
+            run(this.stage[index], function () {
+                index++;
+                that.traverse(run, index, callback)
+            });
+        } else {
+            callback();
+        }
+    }
+
+    this.IDDFS = function (run,callback) {
+        this.stage = new Array();
+        for (var i = 0; i < this.generations() + 2; i++) {
+            if (i < this.generations() + 1) {
+                this.root();
+                this.DLS(i);
+            } else {
+                this.traverse(run, 0, callback);
+            }
+        }
+    }
+
+    this.DLS = function (depth) {
+        if (depth == 0) {
+            this.stage.push({node: this.node, generation: this.generation});
+        } else {
+            if (this.father() !== undefined) {
+                this.DLS(depth - 1);
+            }
+            this.child();
+            if (this.mother() !== undefined) {
+                this.DLS(depth - 1);
+            }
+            this.child();
+        }
+    }
+
+    this.generations = function () {
+        return Math.ceil(log2(this.Nodes.length))-1;
+    }
+
+    this.setNode = function (value, generation, node) {
+        if (generation === undefined) {
+            this.Nodes[this.btSMF(this.generation, this.node)] = value;
+        } else {
+            this.Nodes[this.btSMF(generation, node)] = value;
+        }
+    }
+
+    this.getNode = function (generation, node) {
+        if (generation === undefined) {
+            return this.Nodes[this.btSMF(this.generation, this.node)];
+        } else {
+            return this.Nodes[this.btSMF(generation, node)];
+        }
+    }
+
+    this.setNodeByLocation = function (value, location) {
+        this.Nodes[location] = value;
+    }
+
+    this.getNodeByLocation = function (location) {
+        if (location === undefined) {
+            return this.Nodes[this.btSMF(this.generation, this.node)];
+        } else {
+            this.generation = Math.floor(log2(location));
+            this.node = location - Math.pow(2, this.generation);
+            return this.Nodes[location];
+        }
+    }
+
+    this.root = function (value) {
+        this.generation = 0;
+        this.node = 0;
+        if (value !== undefined) {
+            this.Nodes[this.btSMF(this.generation, this.node)] = value;
+        }
+        return this.Nodes[this.btSMF(this.generation, this.node)];
+
+    }
+
+    this.mother = function (value) {
+        this.generation++
+        this.node = this.node * 2 + 1;
+        if (value !== undefined) {
+            this.Nodes[this.btSMF(this.generation, this.node)] = value;
+        }
+        return this.Nodes[this.btSMF(this.generation, this.node)];
+    }
+
+    this.father = function (value) {
+        this.generation++
+        this.node = this.node * 2;
+        if (value !== undefined) {
+            this.Nodes[this.btSMF(this.generation, this.node)] = value;
+        }
+        return this.Nodes[this.btSMF(this.generation, this.node)];
+    }
+
+    this.child = function (value) {
+        this.generation--;
+        this.node = this.node >> 1;
+        if (value !== undefined) {
+            this.Nodes[this.btSMF(this.generation, this.node)] = value;
+        }
+        return this.Nodes[this.btSMF(this.generation, this.node)];
+    }
+
+    this.getChild = function (gen,node) {
+        return this.Nodes[this.btSMF(gen - 1, (node >> 1))];
+    }
+
+    this.btSMF = function (generation, node) {
+        return node + (1 << generation);
+    }
+}
 
 function currentUser() {
 
@@ -187,6 +312,9 @@ function initialize() {
         google.maps.event.addListener(map, 'click', function () {
             ib.close();
         });
+
+        
+
     }
 
     function tooltip(tip,el, v, h) {
@@ -244,17 +372,19 @@ function initialize() {
 
     }
 
-    function ancestorExpand(id, rootGen, paternal) {
+    function ancestorExpand(id, rootGen, rootNode) {
 
         startEvents();
         genquery = 1;
-        getPedigree(1, id, rootGen, paternal);
+        getPedigree(1, id, rootGen, rootNode);
 
     }
 
-    function getPedigree(gen, root, rootGen, paternal) {
+    function getPedigree(gen, root, rootGen, rootNode) {
         var generations = gen;
 
+        if (!rootGen) { rootGen = 0; }
+        if (!rootNode) { rootNode = 0; }
 
         if (root) {
             personId = root;
@@ -276,19 +406,17 @@ function initialize() {
 
                     var xml = xhttp.responseXML.documentElement;
                     var p = $(xml).find("gx\\:person, person");
-                    var IDs = new Array();
                     for (var i = 0; i < p.length; i++) {
                         var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
                         var n = parseFloat(num[0].textContent);
-                        IDs[n - 1] = p[i].getAttribute("id");
-
-                    }
-                    for (var i = 0; i < Math.pow(2, generations + 1) - 1; i++) {
-                        if (!IDs[i]) {
-                            IDs[i] = undefined;
+                        var gen = Math.floor(log2(n));
+                        var node = n + Math.pow(2, gen) * (rootNode - 1);
+                        if (!familyTree.getNode(gen + rootGen, node)) {
+                            familyTree.setNode(p[i].getAttribute("id"), (gen+rootGen), node);
                         }
                     }
-                    readPedigreeLoop(IDs, rootGen, paternal);
+                    
+                    readPedigreeLoop();
                 } else if (xhttp.status === 401) {
                     completionEvents();
                     alert("Your session has expired. Please log in again.");
@@ -302,132 +430,36 @@ function initialize() {
         xhttp.send();      
     }
 
-    function readPedigreeLoop(IDs, rootGen, paternal) {
-
-        var tryagain = true;
-        var placequery;
+    function readPedigreeLoop() {
         delay = 1;
-        var num = IDs.length;
-        var progenitors = new Array();
-        if (!rootGen) { rootGen = 0; }
-
-        asyncLoop(num, function (loop) {
-
-            var idx = loop.iteration();
-            var ID = IDs[idx];
+        familyTree.IDDFS(function (tree, cont) {
+            
+            var node = tree.node;
+            var gen = tree.generation;
+            var ID = familyTree.getNode(gen, node);
+            var pause = true;
             if (ID) {
-                personRead2(ID, function (result) {
-                    if (result) {
-                        if (result == 503) {
-                            loop.prev();
-                            loop.next();
-                        } else {
-                            progenitors[idx] = result;
-                            progenitors[idx].generation = Math.ceil(log2(idx + 2)) - 1 + rootGen;
-                            if (idx == 0) {
-                                progenitors[idx].isPaternal = paternal;
-                            } else if (idx == 1 && progenitors[idx].generation == 1) {
-                                progenitors[idx].isPaternal = true;
-                            } else if (idx == 2 && progenitors[idx].generation == 1) {
-                                progenitors[idx].isPaternal = false;
-                            } else {
-                                if (progenitors[idx].gender == "Male") {
-                                    if (progenitors[(idx + 1) / 2 - 1]) {
-                                        progenitors[idx].isPaternal = progenitors[(idx + 1) / 2 - 1].isPaternal;
-                                    }
-                                } else {
-                                    if (progenitors[idx / 2 - 1]) {
-                                        progenitors[idx].isPaternal = progenitors[idx / 2 - 1].isPaternal;
-                                    }
-                                }
-                            }
-
-                            if (placequery) {
-                                var place = placequery;
-                            } else {
-                                var place = progenitors[idx].place;
-                            }
-
-                            setTimeout(function () {
-                                getLatLng(place, function (res) {
-
-                                    progenitors[idx].birth.latlng = res;
-                                    if (res == "empty") {
-                                        delay++
-                                        loop.prev();
-                                        loop.next();
-                                    } else if (res == "other") {
-                                        var placestring = progenitors[idx].place;
-
-                                        var xhttp;
-                                        var url = "https://sandbox.familysearch.org/authorities/v1/place?place=" + placestring + "&locale=en&sessionId=" + accesstoken;
-                                        xhttp = new XMLHttpRequest();
-                                        xhttp.open("GET", url);
-                                        xhttp.setRequestHeader('Accept', 'application/xml');
-
-                                        xhttp.onload = function (e) {
-                                            if (xhttp.readyState === 4) {
-                                                if (xhttp.status === 200) {
-                                                    var xmlDocument = xhttp.responseXML.documentElement;
-                                                    var point = $(xmlDocument).find("point");
-                                                    var lat = point[0].childNodes[0].textContent;
-                                                    var lng = point[0].childNodes[1].textContent;
-                                                    var latlng = new google.maps.LatLng(lat, lng);
-                                                    progenitors[idx].birth.latlng = latlng;
-                                                    callLoopNext(loop, progenitors);
-                                                } else {
-                                                    progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
-                                                    callLoopNext(loop, progenitors);
-
-                                                }
-                                            }
-                                        }
-                                        xhttp.send();
-                                        //var loc = place.split(",");
-
-                                        //if (tryagain == true) { // Try one more query with City,Country as search text
-                                        //    placequery = loc[0] + "," + loc[loc.length - 1];
-                                        //    tryagain = false;
-                                        //    loop.prev();
-                                        //    loop.next();
-                                        //} else {
-                                        //    console.log("Unable to find location \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
-                                        //    progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
-                                        //    tryagain = true;
-                                        //    placequery = undefined;
-                                        //    callLoopNext(loop, progenitors);
-                                        //}
-                                    } else if (!res) {
-                                        console.log("Undefined birthplace for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
-                                        progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
-                                        tryagain = true;
-                                        placequery = undefined;
-                                        callLoopNext(loop, progenitors);
-                                    } else {
-                                        //console.log("Google Maps search for birthplace \"" + progenitors[idx].birth.place + "\" for " + progenitors[idx].name + " returned successful.");
-                                        tryagain = true;
-                                        placequery = undefined;
-                                        callLoopNext(loop, progenitors);
-                                    }
-                                })
-                            }, delay);
-
-                            
+                if (ID.isPlotted !== true) {
+                    personRead2(ID, function (result) {
+                        result.generation = gen;
+                        result.node = node;
+                        if (node < Math.pow(2, gen - 1)) {
+                            result.isPaternal = true;
                         }
-                        //}
-
-                    } else {
-                        progenitors[idx] = undefined;
-                        callLoopNext(loop, progenitors);
-                    }
-                    
-                });
+                        var place = result.birth.place;
+                        getMeABirthLatLng(place, result, gen, node, cont);
+                    });
+                } else {
+                    cont();
+                }
             } else {
-                progenitors[idx] = undefined;
-                callLoopNext(loop, progenitors);
+                cont();
             }
-
-        }, function () {});
+        }, function () {
+            setTimeout(function () {
+                completionEvents();
+            }, 1000);
+        });
     }
 
     function getPlaceAuthority(id, callback) {
@@ -673,12 +705,114 @@ function initialize() {
         }
     }
 
+    function getMeABirthLatLng(place,result,gen,node,next) {
+        setTimeout(function () {
+            getLatLng(place, function (res) {
+
+                
+                if (res == "empty") {
+                    delay++
+                    getMeABirthLatLng(place, result, gen, node, next);
+                } else if (res == "other") {
+                    var placestring = result.birth.place;
+
+                    var xhttp;
+                    var url = "https://sandbox.familysearch.org/authorities/v1/place?place=" + placestring + "&locale=en&sessionId=" + accesstoken;
+                    xhttp = new XMLHttpRequest();
+                    xhttp.open("GET", url);
+                    xhttp.setRequestHeader('Accept', 'application/xml');
+
+                    xhttp.onload = function (e) {
+                        if (xhttp.readyState === 4) {
+                            if (xhttp.status === 200) {
+                                var xmlDocument = xhttp.responseXML.documentElement;
+                                var point = $(xmlDocument).find("point");
+                                var lat = point[0].childNodes[0].textContent;
+                                var lng = point[0].childNodes[1].textContent;
+                                var latlng = new google.maps.LatLng(lat, lng);
+                                result.birth.latlng = latlng;
+                                next();
+                                //callLoopNext(loop, progenitors);
+                            } else {
+                                result.birth.latlng = getChildBirthPlace(progenitors, idx);
+                                //callLoopNext(loop, progenitors);
+                                next();
+                            }
+                        }
+                    }
+                    xhttp.send();
+
+                } else if (!res) {
+                    //console.log("Undefined birthplace for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
+                    //progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
+                    getChildBirthPlace2(node, gen, function (e) {
+                        result.birth.latlng = e;
+                        familyTree.setNode(result, gen, node);
+                        plotParent(node, gen);
+                        next();
+                    });
+                    //tryagain = true;
+                    //placequery = undefined;
+                    //callLoopNext(loop, progenitors);
+                } else {
+                    result.birth.latlng = res;
+                    familyTree.setNode(result, gen, node);
+                    //tryagain = true;
+                    //placequery = undefined;
+                    //callLoopNext(loop, progenitors);
+                    if (gen == 0 && node == 0) {
+                        makeInfoWindow(result);
+                        familyTree.root().isPlotted = true;
+                        next();
+                    } else {
+                        plotParent(node, gen);
+                        next();
+                    }
+                }
+            });
+        }, delay);
+    }
+
+    function plotParent(node,gen) { 
+        var parent = familyTree.getNode(gen, node);
+        var child = familyTree.getChild(gen,node);
+
+        if (parent.isPaternal == true) {
+            var color = rgbToHex(74, 96, 255);
+        } else {
+            var color = rgbToHex(255, 96, 182);
+        }
+
+        if (child.birth && parent.birth) {
+
+            if (child.birth.latlng && parent.birth.latlng) {
+                polymap([child.birth.latlng, parent.birth.latlng], color, "", 0, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
+                    makeInfoWindow(familyTree.getNode(gen, node));
+                    familyTree.getNode(gen, node).isPlotted = true;
+                });
+            } else {
+                console.log("Recursion waiting for " + child.name + " ... ");
+                setTimeout(function () {
+                    plotParent(node, gen);
+                }, 1000);
+            }
+        } else {
+            console.log("Recursion waiting for " + child + " ... ");
+            setTimeout(function () {
+                plotParent(node, gen);
+            }, 1000);
+        }
+            
+
+    }
+
     function callLoopNext(loop,progenitors) {
 
         var idx = loop.iteration();
         if ( log2(idx+2) == Math.round(log2(idx + 2)) ) { // Finished a complete generation
             if (idx !== 0) {
-                checkBounds(progenitors,loop);
+                //checkBounds(progenitors, loop);
+                loop.next()
             } else {
                 loop.next();
             }
@@ -799,7 +933,7 @@ function initialize() {
             polyarray.push(geodesicPoly);
 
             var step = 0;
-            var numSteps = 250; //Change this to set animation resolution
+            var numSteps = 100; //Change this to set animation resolution
             var timePerStep = 1; //Change this to alter animation speed
             var interval = setInterval(function () {
                 step += 1;
@@ -851,11 +985,11 @@ function initialize() {
                 if (p.generation > genquery - 1) {
                     var expandButton = "<div style='height:30px'><button id='expandButton' class='button green' onclick='this.style.display=\"none\"; " +
                         "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
-                        "\"," + p.generation + "," + p.isPaternal +
+                        "\"," + (p.generation + 1) + "," + p.node +
                         "); ib.close();'>" + 'Expand Parents</button></div>';
                     var ebutton = "<div  style='height:38px;'>" +
                                     "<div id='ebutton' onclick='markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
-                                    "\"," + p.generation + "," + p.isPaternal + "); ib.close();'>" +
+                                    "\"," + p.generation + "," + p.node + "); ib.close();'>" +
                                         "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
                                         "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
                                         "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
@@ -900,17 +1034,7 @@ function initialize() {
                 
                 mark.content1 = contents1;
                 mark.content2 = contents2;
-                google.maps.event.addListener(ib, 'domready', function () {
-  
-                    if ( document.getElementById("ebutton")){
-                        document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person","ebutton",10); }
-                        //document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
-
-                    }
-                    document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID","copyButton",10); }
-                    document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", 10); }
-                    
-                });
+                
                 oms.addListener('click', function (mark, event) {
                     if (mark.isExpanded) {
                         ib.setContent(mark.content1 + mark.content2);
@@ -989,6 +1113,28 @@ function initialize() {
 
     }
 
+    function getChildBirthPlace2(node, gen,cb) {
+        // Call this function if you can't find a person's birthplace
+        // It will check if the person has children, and if so, returns the child's birthplace instead
+
+        var child = familyTree.getChild(gen, node);
+        if (child.birth) {
+            if (child.birth.latlng) {
+                var e = child.birth.latlng;
+                cb(e);
+            } else {
+                setTimeout(function () {
+                    getChildBirthPlace2(node, gen,cb)
+                }, 1000);
+            }
+        } else {
+            setTimeout(function () {
+                getChildBirthPlace2(node, gen,cb)
+            }, 1000);
+        }
+
+    }
+
     function asyncLoop(iterations, func, callback) {
         var index = 0;
         var done = false;
@@ -1054,6 +1200,7 @@ function initialize() {
     	if (ib) {
     		ib.close();
     	}
+    	familyTree = new BinaryTree();
     	ib = new InfoBox({ contents: "", maxWidth: 0});
     	markarray.length = 0;
     	polyarray.length = 0;
@@ -1064,6 +1211,17 @@ function initialize() {
         nSearches = 0;
         oms.clearMarkers();
 
+        google.maps.event.addListener(ib, 'domready', function () {
+
+            if (document.getElementById("ebutton")) {
+                document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", 10); }
+                //document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
+
+            }
+            document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", 10); }
+            document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", 10); }
+
+        });
     }
 
     function componentToHex(c) {
