@@ -420,7 +420,7 @@ function initialize() {
                         var gen = Math.floor(log2(n));
                         var node = n + Math.pow(2, gen) * (rootNode - 1);
                         if (!familyTree.getNode(gen + rootGen, node)) {
-                            familyTree.setNode(p[i].getAttribute("id"), (gen+rootGen), node);
+                            familyTree.setNode({id: p[i].getAttribute("id")}, (gen+rootGen), node);
                         }
                     }
                     
@@ -448,7 +448,7 @@ function initialize() {
             var pause = true;
             if (ID) {
                 if (ID.isPlotted !== true) {
-                    personRead2(ID, function (result) {
+                    personRead2(ID.id, function (result) {
                         result.generation = gen;
                         result.node = node;
                         if (node < Math.pow(2, gen - 1)) {
