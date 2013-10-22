@@ -998,26 +998,23 @@ function initialize() {
                 mark.idx = markarray.length;
                 mark.generation = p.generation;
                 mark.node = p.node;
-                if (p.generation > genquery - 1) {
-                    var expandButton = "<div style='height:30px'><button id='expandButton' class='button green' onclick='this.style.display=\"none\"; " +
-                        "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
-                        "\"," + (p.generation + 1) + "," + p.node +
-                        "); ib.close();'>" + 'Expand Parents</button></div>';
-                    var ebutton = "<div  style='height:38px;'>" +
-                                    "<div id='ebutton' onclick='markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
-                                    "\"," + p.generation + "," + p.node + "); ib.close();'>" +
-                                        "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
+                var ebutton = "<div  style='height:38px;'>" +
+                                    "<div id='ebutton' onclick='familyTree.getNode(" +p.generation + "," +p.node + ").marker.isExpanded=true; ancestorExpand(\"" + p.id +
+                                    "\"," + p.generation + "," +p.node + "); ib.close();'>" +
+                                        "<div style='height: 38px; display:inline-block; vertical-align:top;'>" +self + "</div>" +
                                         "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
-                                        "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
+                                        "<div style='height: 38px; display:inline-block;'>" + father + "</br>" +mother + "</div>" +
                                     '</div>'+
-                                  "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version + "' style='width:25px; height:26px; margin-top: 12px;' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.setVisible(false); familyTree.getNode(" + p.generation + "," + p.node + ").polyline.setVisible(false); familyTree.getChild(" + p.generation + "," + p.node + ").marker.isExpanded = false; ib.close()'</div>" +
+                                  "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version +
+                                  "' style='width:25px; height:26px; margin-top: 12px;' onclick='familyTree.getNode(" +p.generation + "," +p.node +
+                                  ").marker.setVisible(false); familyTree.getNode(" +p.generation + "," +p.node +
+                                  ").polyline.setVisible(false); familyTree.getChild(" + p.generation + "," +p.node + ").marker.isExpanded = false; ib.close()'</div>" +
                                 '</div>';
-                                
-                    mark.expand = ebutton;
+                mark.expand = ebutton;
+                if (p.generation > genquery - 1) {  
                     mark.isExpanded = false;
                 } else {
                     mark.isExpanded = true;
-                    //mark.expand = "";
                 }
                 mark.personID = p.id;
                 var url = baseurl + '/tree/#view=ancestor&person=' + p.id;
