@@ -1008,7 +1008,8 @@ function initialize() {
                                   "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version +
                                   "' style='width:25px; height:26px; margin-top: 12px;' onclick='familyTree.getNode(" +p.generation + "," +p.node +
                                   ").marker.setVisible(false); familyTree.getNode(" +p.generation + "," +p.node +
-                                  ").polyline.setVisible(false); familyTree.getChild(" + p.generation + "," +p.node + ").marker.isExpanded = false; ib.close()'</div>" +
+                                  ").polyline.setVisible(false); familyTree.getChild(" + p.generation + "," + p.node +
+                                  ").marker.isExpanded = false; familyTree.getNode(" +p.generation + "," +p.node + ").isPlotted = false; ib.close() '</div>" +
                                 '</div>';
                 mark.expand = ebutton;
                 if (p.generation > genquery - 1) {  
