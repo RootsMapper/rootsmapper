@@ -118,6 +118,10 @@ function BinaryTree() {
         return this.Nodes[this.btSMF(this.generation, this.node)];
     }
 
+    this.getMother = function (gen, node) {
+        return this.Nodes[this.btSMF(gen + 1, node * 2 + 1)];
+    }
+
     this.father = function (value) {
         this.generation++
         this.node = this.node * 2;
@@ -125,6 +129,10 @@ function BinaryTree() {
             this.Nodes[this.btSMF(this.generation, this.node)] = value;
         }
         return this.Nodes[this.btSMF(this.generation, this.node)];
+    }
+
+    this.getFather = function (gen,node) {
+        return this.Nodes[this.btSMF(gen + 1, node * 2)];
     }
 
     this.child = function (value) {
@@ -791,7 +799,7 @@ function initialize() {
         if (child.birth && parent.birth) {
 
             if (child.birth.latlng && parent.birth.latlng) {
-                polymap([child.birth.latlng, parent.birth.latlng], color, "", 0, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
+                polymap([child.birth.latlng, parent.birth.latlng], color, node, gen, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
                     makeInfoWindow(familyTree.getNode(gen, node));
                     familyTree.getNode(gen, node).isPlotted = true;
                 });
@@ -918,7 +926,7 @@ function initialize() {
 
     }
 
-    function polymap(coords, color, thick, idx, callback) {
+    function polymap(coords, color, node, gen, callback) {
 
         var c1 = coords[0];
         var c2 = coords[1];
@@ -935,6 +943,7 @@ function initialize() {
             };
 
             var geodesicPoly = new google.maps.Polyline(geodesicOptions);
+            familyTree.getNode(gen, node).polyline = geodesicPoly;
             polyarray.push(geodesicPoly);
 
             var step = 0;
@@ -944,7 +953,7 @@ function initialize() {
                 step += 1;
                 if (step > numSteps) {
                     clearInterval(interval);
-                    callback(idx);
+                    callback();
                 } else {
                     var are_we_there_yet = google.maps.geometry.spherical.interpolate(c1, c2, step / numSteps);
                     geodesicPoly.setPath([c1, are_we_there_yet]);
@@ -987,6 +996,8 @@ function initialize() {
 
                 var mark = new google.maps.Marker(opts);
                 mark.idx = markarray.length;
+                mark.generation = p.generation;
+                mark.node = p.node;
                 if (p.generation > genquery - 1) {
                     var expandButton = "<div style='height:30px'><button id='expandButton' class='button green' onclick='this.style.display=\"none\"; " +
                         "markarray[" + mark.idx + "].isExpanded=true; ancestorExpand(\"" + p.id +
@@ -999,14 +1010,14 @@ function initialize() {
                                         "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
                                         "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
                                     '</div>'+
-                                  //"<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version + "' style='width:25px; height:26px; margin-top: 12px;' onclick='markarray[" + mark.idx + "].setVisible(false); polyarray[" + (mark.idx - 1) + "].setVisible(false); ib.close()'</div>" +
+                                  "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version + "' style='width:25px; height:26px; margin-top: 12px;' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.setVisible(false); familyTree.getNode(" + p.generation + "," + p.node + ").polyline.setVisible(false); familyTree.getChild(" + p.generation + "," + p.node + ").marker.isExpanded = false; ib.close()'</div>" +
                                 '</div>';
                                 
                     mark.expand = ebutton;
                     mark.isExpanded = false;
                 } else {
                     mark.isExpanded = true;
-                    mark.expand = "";
+                    //mark.expand = "";
                 }
                 mark.personID = p.id;
                 var url = baseurl + '/tree/#view=ancestor&person=' + p.id;
@@ -1041,6 +1052,7 @@ function initialize() {
                 mark.content2 = contents2;
                 
                 oms.addListener('click', function (mark, event) {
+
                     if (mark.isExpanded) {
                         ib.setContent(mark.content1 + mark.content2);
                     } else {
@@ -1061,6 +1073,7 @@ function initialize() {
 
                 oms.addMarker(mark);
                 markarray.push(mark);
+                familyTree.getNode(p.generation, p.node).marker = mark;
             }
         }
     }
