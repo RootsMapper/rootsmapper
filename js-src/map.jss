@@ -14,7 +14,7 @@ var accesstoken;
 var ib;
 var genquery;
 var nSearches;
-var delay = 1;
+var delay = 100;
 var baseurl;
 var version;
 var userID;
@@ -491,88 +491,134 @@ function initialize() {
     function personRead2(id, callback) {
 
         var xhttp;
-        var url = baseurl + "/platform/tree/persons/" + id + "?&events=standard&access_token=" + accesstoken;
+        var url = baseurl + "/platform/tree/persons/" + id + "?&access_token=" + accesstoken;
         xhttp = new XMLHttpRequest();
         xhttp.open("GET", url);
-        xhttp.setRequestHeader('Accept', 'application/xml');
+        xhttp.setRequestHeader('Accept', 'application/json');
 
         xhttp.onload = function (e) {
-            if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
+            if (this.readyState === 4) {
+                if (this.status === 200) {
 
-                    var xmlDocument = xhttp.responseXML.documentElement;
-                    
-                    var death = {
-                        date: null,
-                        place: null
-                    }
+                    var result = JSON.parse(this.response);
+                    var person = result.persons[0];
+                    var display = person.display;
+                    var places = result.places;
+
                     var birth = {
-                        date: null,
-                        place: null
-                    }
-
-
-                    var display = $(xmlDocument).find("gx\\:display, display");
-                    if (display[0]) {
-                        var birthdate = $(display[0]).find("gx\\:birthDate, birthDate");
-                        var birthplace = $(display[0]).find("gx\\:birthPlace, birthPlace");
-                        var deathdate = $(display[0]).find("gx\\:deathDate, deathDate");
-                        var deathplace = $(display[0]).find("gx\\:deathPlace, deathPlace");
-                        var gend = $(display[0]).find("gx\\:gender, gender");
-                        var lifespan = $(display[0]).find("gx\\:lifespan, lifespan");
-                        var namer = $(display[0]).find("gx\\:name, name");
-
-                        if (birthdate[0]) { var date = birthdate[0].textContent; }
-                        if (birthplace[0]) { var place = birthplace[0].textContent; }
-                        var birth = { date: date, place: place }
-
-                        var date = null;
-                        var place = null;
-                        if (deathdate[0]) { var date = deathdate[0].textContent; }
-                        if (deathplace[0]) { var place = deathplace[0].textContent; }
-                        var death = { date: date, place: place }
-
-                        if (gend[0]) { var gender = gend[0].textContent; }
-                        if (namer[0]) { var name = namer[0].textContent; }
-                    }
-
-                    if (xmlDocument.childNodes[3]) {
-                        if (xmlDocument.childNodes[3].childNodes[1]) {
-                            var placeString = xmlDocument.childNodes[3].childNodes[1].textContent;
-                        } else {
-                            var placeString = birth.place;
+                        date: display.birthDate,
+                        place: display.birthPlace
                         }
+
+                    var death = {
+                        date: display.deathDate,
+                        place: display.deathPlace
+                        }
+
+                    var living = person.living;
+
+                    if (living == true) {
+                        death.date = "Living";
+                    }
+
+                    if (places) {
+                        var placestring = places[0].names[0].value;
                     } else {
-                        var placeString = birth.place;
+                        var placestring = birth.place;
                     }
-                    
 
-                    var alive = $(xmlDocument).find("gx\\:living, living");
-                    if (alive[0]) {
-                        if (alive[0].textContent == "true") {
-                            death.date = "Living";
-                        }
-                    }
 
                     var personObject = {
-                        name: name,
-                        id: id,
+                        name: display.name,
+                        id: person.id,
                         birth: birth,
                         death: death,
-                        gender: gender,
-                        place: placeString
+                        gender: display.gender,
+                        place: placestring
                     }
+
+
+//                    var xmlDocument = xhttp.responseXML.documentElement;
+
+//                    var death = {
+//                            date: null,
+//                        place: null
+//                        }
+//                    var birth = {
+//                            date : null,
+//                            place: null
+//                    }
+
+
+//                    var display = $(xmlDocument).find("gx\\:display, display");
+//                    if (display[0]) {
+//                        var birthdate = $(display[0]).find("gx\\:birthDate, birthDate");
+//                        var birthplace = $(display[0]).find("gx\\:birthPlace, birthPlace");
+//                        var deathdate = $(display[0]).find("gx\\:deathDate, deathDate");
+//                        var deathplace = $(display[0]).find("gx\\:deathPlace, deathPlace");
+//                        var gend = $(display[0]).find("gx\\:gender, gender");
+//                        var lifespan = $(display[0]).find("gx\\:lifespan, lifespan");
+//                        var namer = $(display[0]).find("gx\\:name, name");
+
+//                        if (birthdate[0]) {
+//var date = birthdate[0].textContent; }
+//                        if (birthplace[0]) { var place = birthplace[0].textContent;
+//                    }
+//                        var birth = { date : date, place: place
+//                    }
+
+//                        var date = null;
+//                        var place = null;
+//                        if (deathdate[0]) { var date = deathdate[0].textContent;
+//                        }
+//                        if (deathplace[0]) { var place = deathplace[0].textContent; }
+//                        var death = { date: date, place: place
+//                        }
+
+//                        if (gend[0]) {
+//var gender = gend[0].textContent; }
+//                        if (namer[0]) {
+//var name = namer[0].textContent;
+//                        }
+//                        }
+
+//                        if (xmlDocument.childNodes[3]) {
+//                        if (xmlDocument.childNodes[3].childNodes[1]) {
+//                            var placeString = xmlDocument.childNodes[3].childNodes[1].textContent;
+//                            } else {
+//                            var placeString = birth.place;
+//                            }
+//                } else {
+//                    var placeString = birth.place;
+//                    }
+
+
+//                    var alive = $(xmlDocument).find("gx\\:living, living");
+//                    if (alive[0]) {
+//                        if (alive[0].textContent == "true") {
+//                            death.date = "Living";
+//                }
+//                }
+
+//                    var personObject = {
+//                        name: name,
+//                        id: id,
+//                        birth: birth,
+//        death: death,
+//    gender: gender,
+//        place : placeString
+//}
 
                     // Send reply
                     callback(personObject);
                 } else if (xhttp.status === 401) {
-                    //}).fail(function (jqXHR, textStatus, errorThrown) {
+        //}).fail(function (jqXHR, textStatus, errorThrown) {
                     completionEvents();
                     alert("Your session has expired. Please log in again.");
                     window.location = 'index.php?login=true';
                     //});
-                } else if (xhttp.status === 503) {
-                    callback(xhttp.status);
+                } else if (this.status === 503) {
+                    callback(this.status);
                 } else {
                     completionEvents();
                     alert("Error: " + xhttp.statusText);
