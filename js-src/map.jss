@@ -1078,7 +1078,7 @@ function initialize() {
         familyTree.getNode(gen,node).polyline.setVisible(false);
         familyTree.getChild(gen,node).marker.isExpanded = false;
         familyTree.getNode(gen,node).isPlotted = false;
-        familyTree.getNode(gen, node) = null;
+        familyTree.setNode(null, gen, node);
         ib.close();
     }
 
