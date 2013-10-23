@@ -309,11 +309,11 @@ function initialize() {
         }
 
         if (accesstoken) {
-            if (!safari) {
+            //if (!safari) {
                 currentUser();
-            } else {
-                populateUser();
-            }
+            //} else {
+            //    populateUser();
+            //}
             //sessionHandler();
         }
 
