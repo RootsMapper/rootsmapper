@@ -1006,10 +1006,7 @@ function initialize() {
                                         "<div style='height: 38px; display:inline-block;'>" + father + "</br>" +mother + "</div>" +
                                     '</div>'+
                                   "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version +
-                                  "' style='width:25px; height:26px; margin-top: 12px;' onclick='familyTree.getNode(" +p.generation + "," +p.node +
-                                  ").marker.setVisible(false); familyTree.getNode(" +p.generation + "," +p.node +
-                                  ").polyline.setVisible(false); familyTree.getChild(" + p.generation + "," + p.node +
-                                  ").marker.isExpanded = false; familyTree.getNode(" +p.generation + "," +p.node + ").isPlotted = false; ib.close() '</div>" +
+                                  "' style='width:25px; height:26px; margin-top: 12px;' onclick='unPlot(" +p.generation + "," +p.node +") ;'</div>" +
                                 '</div>';
                 mark.expand = ebutton;
                 if (p.generation > genquery - 1) {  
@@ -1074,6 +1071,15 @@ function initialize() {
                 familyTree.getNode(p.generation, p.node).marker = mark;
             }
         }
+    }
+
+    function unPlot(gen, node) {
+        familyTree.getNode(gen,node).marker.setVisible(false);
+        familyTree.getNode(gen,node).polyline.setVisible(false);
+        familyTree.getChild(gen,node).marker.isExpanded = false;
+        familyTree.getNode(gen,node).isPlotted = false;
+        familyTree.getNode(gen, node) = null;
+        ib.close();
     }
 
     function getPortrait(id) {
