@@ -1156,7 +1156,9 @@ function initialize() {
                         var bigurl = sourceDescriptions[0].links.image.href;
                         var portrait = document.getElementById('portrait');
                         portrait.setAttribute('src', url);
-                        portrait.onclick = function () { window.open(bigurl);};
+                        portrait.onclick = function () { window.open(bigurl); };
+                        var imageHTML = "<img style='height:300px;' src='" + bigurl + "'>";
+                        document.getElementById("portrait").onmouseover = function () { tooltip(imageHTML, "portrait", 100); }
                     }
 
                     
