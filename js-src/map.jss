@@ -1159,7 +1159,7 @@ function initialize() {
                     var result = JSON.parse(this.response);
                     var sourceDescriptions = result.sourceDescriptions;
                     if (sourceDescriptions) {
-                        var url = sourceDescriptions[0].links.image-icon.href;
+                        var url = sourceDescriptions[0].links["image-icon"].href;
                         var portrait = document.getElementById('portrait');
                         portrait.setAttribute('src', url);
                     }
