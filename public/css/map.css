@@ -330,16 +330,12 @@ html, body {
         }
 
 
-
-
-
 #tt {
      position:absolute;
      display:block;
      z-index: 99;
-     background-color: black;
+     background-color: rgba(0,0,0,0.7);
      border-radius: 3px;
-     opacity: 0.7;
      padding: 6px 8px 6px 8px;
      color: #eeeeee;
      font-family: helvetica, arial, sans serif;
