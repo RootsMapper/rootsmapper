@@ -451,7 +451,7 @@ function initialize() {
                             result.isPaternal = true;
                         }
                         familyTree.setNode(result, gen, node);
-                        getPortraitStore(result.id, gen, node);
+                        getPhoto(result.id, gen, node);
                         getMeABirthLatLng(gen, node, cont);
                     });
                 } else {
@@ -625,7 +625,7 @@ function initialize() {
         xhttp.send();
     }
 
-    function getPortraitStore(id,gen,node) {
+    function getPhoto(id,gen,node) {
         var xhttp;
         var url = baseurl + "/platform/tree/persons/" + id + "/memories?&type=\"photo\"&access_token=" + accesstoken;
         xhttp = new XMLHttpRequest();
@@ -1154,7 +1154,7 @@ function initialize() {
                     }
                   
                     ib.open(map, mark);
-                    setPortrait(mark.generation, mark.node);
+                    setPhoto(mark.generation, mark.node);
                 });
 
                 oms.addListener('spiderfy', function (mark) {
@@ -1180,7 +1180,7 @@ function initialize() {
         ib.close();
     }
     
-    function setPortrait(gen,node) {
+    function setPhoto(gen,node) {
         setTimeout(function () {
             var portrait = document.getElementById('portrait');
             if (portrait) {
@@ -1192,48 +1192,12 @@ function initialize() {
                 } else if (person.image == "" && person.imageIcon == "") {
                     // do nothing
                 } else {
-                    setPortrait(gen, node)
+                    setPhoto(gen, node)
                 }
             } else {
-                setPortrait(gen, node)
+                setPhoto(gen, node)
             }
         }, 50);
-    }
-
-    function getPortrait(id) {
-        var xhttp;
-        var url = baseurl + "/platform/tree/persons/" + id + "/memories?&type=\"photo\"&access_token=" + accesstoken;
-        xhttp = new XMLHttpRequest();
-        xhttp.open("GET", url);
-        xhttp.setRequestHeader('Accept', 'application/json');
-
-        xhttp.onload = function (e) {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-
-                    var result = JSON.parse(this.response);
-                    var sourceDescriptions = result.sourceDescriptions;
-                    if (sourceDescriptions[0]) {
-                        var url = sourceDescriptions[0].links["image-icon"].href;
-                        var bigurl = sourceDescriptions[0].links.image.href;
-                        var portrait = document.getElementById('portrait');
-                        portrait.setAttribute('src', url);
-                        //portrait.onclick = function () { window.open(bigurl); };
-                        var imageHTML = "<img style='height:300px;' src='" + bigurl + "'>";
-                        document.getElementById("portrait").onmouseover = function () { tooltip(imageHTML, "portrait", 10); }
-                    }
-
-                    
-                } else if (this.status === 401) {
-                    alert("Sorry, your session has already expired. Please log in again.");
-                    window.location = 'index.php?login=true';
-                } else {
-                    alert("Error: " + this.statusText);
-                }
-            }
-        }
-
-        xhttp.send();
     }
 
     function getChildBirthPlace(progenitors, idx) {
@@ -1438,7 +1402,7 @@ function initialize() {
                 var mark = familyTree.root().marker;
                 ib.setContent(mark.infoBoxContent + '</div>');
                 ib.open(map, mark);
-                setPortrait(0,0);
+                setPhoto(0,0);
                 firstTime.box = false;
             }
 		}
