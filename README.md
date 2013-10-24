@@ -1,5 +1,7 @@
 # RootsMapper
 
+## [Donate](http://blog.rootsmapper.com/p/donate.html)
+
 ## Setup
 
 ### Edit Config file
