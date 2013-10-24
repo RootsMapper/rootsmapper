@@ -450,8 +450,9 @@ function initialize() {
                         if (node < Math.pow(2, gen - 1)) {
                             result.isPaternal = true;
                         }
-                        var place = result.birth.place;
-                        getMeABirthLatLng(place, result, gen, node, cont);
+                        familyTree.setNode(result, gen, node);
+                        getPortraitStore(result.id, gen, node);
+                        getMeABirthLatLng(gen, node, cont);
                     });
                 } else {
                     cont();
@@ -624,6 +625,44 @@ function initialize() {
         xhttp.send();
     }
 
+    function getPortraitStore(id,gen,node) {
+        var xhttp;
+        var url = baseurl + "/platform/tree/persons/" + id + "/memories?&type=\"photo\"&access_token=" + accesstoken;
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url);
+        xhttp.setRequestHeader('Accept', 'application/json');
+
+        xhttp.onload = function (e) {
+            if (this.readyState === 4) {
+                if (this.status === 200) {
+
+                    var result = JSON.parse(this.response);
+                    var sourceDescriptions = result.sourceDescriptions;
+                    if (sourceDescriptions[0]) {
+                        var url = sourceDescriptions[0].links["image-icon"].href;
+                        var bigurl = sourceDescriptions[0].links.image.href;
+                        familyTree.getNode(gen, node).imageIcon = url;
+                        familyTree.getNode(gen, node).image = bigurl;
+                    } else {
+                        familyTree.getNode(gen, node).imageIcon = "";
+                        familyTree.getNode(gen, node).image = "";
+                    }
+
+
+                } else if (this.status === 401) {
+                    alert("Sorry, your session has already expired. Please log in again.");
+                    window.location = 'index.php?login=true';
+                } else {
+                    alert("Error: " + this.statusText);
+                    familyTree.getNode(gen, node).imageIcon = "";
+                    familyTree.getNode(gen, node).image = "";
+                }
+            }
+        }
+
+        xhttp.send();
+    }
+
     function personRead(id, callback) {
 
         var url = baseurl + "/familytree/v2/person/" + id + "?&events=standard&sessionId=" + accesstoken;
@@ -755,16 +794,16 @@ function initialize() {
         }
     }
 
-    function getMeABirthLatLng(place,result,gen,node,next) {
+    function getMeABirthLatLng(gen,node,next) {
         setTimeout(function () {
-            getLatLng(place, function (res) {
+            getLatLng(familyTree.getNode(gen,node).birth.place, function (res) {
 
                 
                 if (res == "empty") {
                     delay++
-                    getMeABirthLatLng(place, result, gen, node, next);
+                    getMeABirthLatLng(gen, node, next);
                 } else if (res == "other") {
-                    var placestring = result.birth.place;
+                    var placestring = familyTree.getNode(gen, node).birth.place;
 
                     var xhttp;
                     var url = "https://api.familysearch.org/authorities/v1/place?place=" + placestring + "&locale=en&sessionId=" + accesstoken;
@@ -780,15 +819,16 @@ function initialize() {
                                 var lat = point[0].childNodes[0].textContent;
                                 var lng = point[0].childNodes[1].textContent;
                                 var latlng = new google.maps.LatLng(lat, lng);
-                                result.birth.latlng = latlng;
-                                familyTree.setNode(result, gen, node);
+                                //result.birth.latlng = latlng;
+                                //familyTree.setNode(result, gen, node);
+                                familyTree.getNode(gen, node).birth.latlng = latlng;
                                 plotParent(node, gen);
                                 next();
-                                //callLoopNext(loop, progenitors);
                             } else {
-                                getChildBirthPlace2(node, gen, function (e) {
-                                    result.birth.latlng = e;
-                                    familyTree.setNode(result, gen, node);
+                                getChildBirthPlace2(node, gen, function (ref) {
+                                    //result.birth.latlng = e;
+                                    //familyTree.setNode(result, gen, node);
+                                    familyTree.getNode(gen, node).birth.latlng = ref;
                                     plotParent(node, gen);
                                     next();
                                 });
@@ -800,9 +840,10 @@ function initialize() {
                 } else if (!res) {
                     //console.log("Undefined birthplace for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
                     //progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
-                    getChildBirthPlace2(node, gen, function (e) {
-                        result.birth.latlng = e;
-                        familyTree.setNode(result, gen, node);
+                    getChildBirthPlace2(node, gen, function (ref) {
+                        //result.birth.latlng = e;
+                        //familyTree.setNode(result, gen, node);
+                        familyTree.getNode(gen, node).birth.latlng = ref;
                         plotParent(node, gen);
                         next();
                     });
@@ -810,13 +851,14 @@ function initialize() {
                     //placequery = undefined;
                     //callLoopNext(loop, progenitors);
                 } else {
-                    result.birth.latlng = res;
-                    familyTree.setNode(result, gen, node);
+                    //result.birth.latlng = res;
+                    //familyTree.setNode(result, gen, node);
+                    familyTree.getNode(gen, node).birth.latlng = res;
                     //tryagain = true;
                     //placequery = undefined;
                     //callLoopNext(loop, progenitors);
                     if (gen == 0 && node == 0) {
-                        makeInfoWindow(result);
+                        makeInfoWindow(familyTree.root());
                         familyTree.root().isPlotted = true;
                         next();
                     } else {
@@ -1112,7 +1154,7 @@ function initialize() {
                     }
                   
                     ib.open(map, mark);
-                    getPortrait(mark.personID);
+                    setPortrait(mark.generation, mark.node);
                 });
 
                 oms.addListener('spiderfy', function (mark) {
@@ -1136,6 +1178,26 @@ function initialize() {
         familyTree.getNode(gen,node).isPlotted = false;
         familyTree.setNode(undefined, gen, node);
         ib.close();
+    }
+    
+    function setPortrait(gen,node) {
+        setTimeout(function () {
+            var portrait = document.getElementById('portrait');
+            if (portrait) {
+                var person = familyTree.getNode(gen, node);
+                if (person.image && person.imageIcon) {
+                    var imageHTML = "<img style='height:300px;' src='" + person.image + "'>";
+                    portrait.setAttribute('src', person.imageIcon);
+                    portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 10); }
+                } else if (person.image == "" && person.imageIcon == "") {
+                    // do nothing
+                } else {
+                    setPortrait(gen, node)
+                }
+            } else {
+                setPortrait(gen, node)
+            }
+        }, 50);
     }
 
     function getPortrait(id) {
@@ -1376,7 +1438,7 @@ function initialize() {
                 var mark = familyTree.root().marker;
                 ib.setContent(mark.infoBoxContent + '</div>');
                 ib.open(map, mark);
-                getPortrait(mark.personID);
+                setPortrait(0,0);
                 firstTime.box = false;
             }
 		}
