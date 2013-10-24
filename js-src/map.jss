@@ -1156,9 +1156,7 @@ function initialize() {
                         var bigurl = sourceDescriptions[0].links.image.href;
                         var portrait = document.getElementById('portrait');
                         portrait.setAttribute('src', url);
-                        portrait.onclick(function () {
-                            window.open(bigurl);
-                        });
+                        portrait.onclick = function () { window.open(bigurl);};
                     }
 
                     
