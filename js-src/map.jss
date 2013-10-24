@@ -7,9 +7,6 @@
 
 var map;
 var oms;
-var polyarray = [];
-var markarray = [];
-var infoarray = [];
 var accesstoken;
 var ib;
 var genquery;
@@ -18,7 +15,6 @@ var delay = 100;
 var baseurl;
 var version;
 var userID;
-var expanding;
 var familyTree;
 
 function BinaryTree() {
@@ -990,7 +986,6 @@ function initialize() {
 
             var geodesicPoly = new google.maps.Polyline(geodesicOptions);
             familyTree.getNode(gen, node).polyline = geodesicPoly;
-            polyarray.push(geodesicPoly);
 
             var step = 0;
             var numSteps = 100; //Change this to set animation resolution
@@ -1041,7 +1036,6 @@ function initialize() {
                 }
 
                 var mark = new google.maps.Marker(opts);
-                mark.idx = markarray.length;
                 mark.generation = p.generation;
                 mark.node = p.node;
                 mark.expandButton = "<div  style='height:38px;'>" +
@@ -1130,7 +1124,6 @@ function initialize() {
                 //});
 
                 oms.addMarker(mark);
-                markarray.push(mark);
                 familyTree.getNode(p.generation, p.node).marker = mark;
             }
         }
@@ -1141,7 +1134,7 @@ function initialize() {
         familyTree.getNode(gen,node).polyline.setVisible(false);
         familyTree.getChild(gen,node).marker.isExpanded = false;
         familyTree.getNode(gen,node).isPlotted = false;
-        familyTree.setNode(null, gen, node);
+        familyTree.setNode(undefined, gen, node);
         ib.close();
     }
 
@@ -1158,29 +1151,18 @@ function initialize() {
 
                     var result = JSON.parse(this.response);
                     var sourceDescriptions = result.sourceDescriptions;
-                    if (sourceDescriptions) {
+                    if (sourceDescriptions[0]) {
                         var url = sourceDescriptions[0].links["image-icon"].href;
                         var portrait = document.getElementById('portrait');
                         portrait.setAttribute('src', url);
                     }
 
-                    //var display = person.display;
-                    //var places = result.places;
-
-                    //var xml = xhttp.responseXML.documentElement;
-                    //var source = $(xml).find("gx\\:sourceDescription, sourceDescription");
-
-                    //if (source[0]) {
-                    //    var url = source[0].getAttribute('about');
-                    //    var portrait = document.getElementById('portrait');
-                    //    portrait.setAttribute('src', url);
-                    //}
-
-                } else if (xhttp.status === 401) {
+                    
+                } else if (this.status === 401) {
                     alert("Sorry, your session has already expired. Please log in again.");
                     window.location = 'index.php?login=true';
                 } else {
-                    alert("Error: " + xhttp.statusText);
+                    alert("Error: " + this.statusText);
                 }
             }
         }
@@ -1287,36 +1269,46 @@ function initialize() {
     }
 
     function clearOverlays() {
-    	for (var i = 0; i < markarray.length; i++) {
-    		markarray[i].setMap(null);
-    	}
 
-    	for (var i = 0; i < polyarray.length; i++) {
-    		polyarray[i].setMap(null);
-    	}
+        if (familyTree) {
+            familyTree.IDDFS(function (tree, cont) {
+                var node = tree.node;
+                var gen = tree.generation;
+                if (familyTree.getNode(gen, node).marker) {
+                    familyTree.getNode(gen, node).marker.setMap(null);
+                }
+                if (familyTree.getNode(gen, node).polyline) {
+                    familyTree.getNode(gen, node).polyline.setMap(null);
+                }
+                cont();
+            }, function() {
+        });
+        }
+
     	if (ib) {
     		ib.close();
     	}
+
     	familyTree = new BinaryTree();
-    	ib = new InfoBox({ contents: "", maxWidth: 0});
-    	markarray.length = 0;
-    	polyarray.length = 0;
-    	firstTime = {
-    		plot: true,
-			box: true
-	    };
+    	ib = new InfoBox({ contents: "", maxWidth: 0 });
+
+        firstTime = {
+            plot: true,
+		    box: true
+		};
         nSearches = 0;
         oms.clearMarkers();
 
         google.maps.event.addListener(ib, 'domready', function () {
 
             if (document.getElementById("ebutton")) {
-                document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", 10); }
-                //document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
-
+                document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", 10); }    
+			}
+            if (document.getElementById("trashcan")) { 
+                document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
             }
-            document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", 10); }
-            document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", 10); }
+        document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", 10); }
+        document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", 10); }
 
         });
     }
@@ -1376,10 +1368,11 @@ function initialize() {
         runButton.disabled = false;
         runButton.className = 'button green';
         if (firstTime.box == true) {
-            if (markarray.length > 0) {
-                var mark = markarray[0];
+            if (familyTree.root().marker) {
+                var mark = familyTree.root().marker;
                 ib.setContent(mark.infoBoxContent + '</div>');
                 ib.open(map, mark);
+                getPortrait(mark.personID);
                 firstTime.box = false;
             }
 		}
