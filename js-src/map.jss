@@ -467,18 +467,39 @@ function initialize() {
         });
     }
 
-    function getPlaceAuthority(id, callback) {
+    function getPlaceAuthority(gen,node) {
+        var place = familyTree.getNode(gen, node).birth.place;
+
         var xhttp;
-        var url = baseurl + "/platform/tree/persons/" + id + "?&events=standard&access_token=" + accesstoken;
+        var url = "https://api.familysearch.org/authorities/v1/place?place=" + place + "&locale=en&sessionId=" + accesstoken;
         xhttp = new XMLHttpRequest();
         xhttp.open("GET", url);
         xhttp.setRequestHeader('Accept', 'application/xml');
 
         xhttp.onload = function (e) {
-            if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
-                    var xmlDocument = xhttp.responseXML.documentElement;
+            if (this.readyState === 4) {
+                if (this.status === 200) {
+                    var xmlDocument = this.responseXML.documentElement;
+                    var point = $(xmlDocument).find("point");
+                    var lat = point[0].childNodes[0].textContent;
+                    var lng = point[0].childNodes[1].textContent;
+                    var latlng = new google.maps.LatLng(lat, lng);
+                    familyTree.getNode(gen, node).birth.latlng = latlng;
+                    plotParent(node, gen);
+                    //next();
+                } else {
+                    getChildBirthPlace2(node, gen, function (ref) {
+                        familyTree.getNode(gen, node).birth.latlng = ref;
+                        plotParent(node, gen);
+                        //next();
+                    });
                 }
+            } else {
+                getChildBirthPlace2(node, gen, function (ref) {
+                    familyTree.getNode(gen, node).birth.latlng = ref;
+                    plotParent(node, gen);
+                    //next();
+                });
             }
         }
         xhttp.send();
@@ -534,86 +555,12 @@ function initialize() {
                         place: placestring
                     }
 
-
-//                    var xmlDocument = xhttp.responseXML.documentElement;
-
-//                    var death = {
-//                            date: null,
-//                        place: null
-//                        }
-//                    var birth = {
-//                            date : null,
-//                            place: null
-//                    }
-
-
-//                    var display = $(xmlDocument).find("gx\\:display, display");
-//                    if (display[0]) {
-//                        var birthdate = $(display[0]).find("gx\\:birthDate, birthDate");
-//                        var birthplace = $(display[0]).find("gx\\:birthPlace, birthPlace");
-//                        var deathdate = $(display[0]).find("gx\\:deathDate, deathDate");
-//                        var deathplace = $(display[0]).find("gx\\:deathPlace, deathPlace");
-//                        var gend = $(display[0]).find("gx\\:gender, gender");
-//                        var lifespan = $(display[0]).find("gx\\:lifespan, lifespan");
-//                        var namer = $(display[0]).find("gx\\:name, name");
-
-//                        if (birthdate[0]) {
-//var date = birthdate[0].textContent; }
-//                        if (birthplace[0]) { var place = birthplace[0].textContent;
-//                    }
-//                        var birth = { date : date, place: place
-//                    }
-
-//                        var date = null;
-//                        var place = null;
-//                        if (deathdate[0]) { var date = deathdate[0].textContent;
-//                        }
-//                        if (deathplace[0]) { var place = deathplace[0].textContent; }
-//                        var death = { date: date, place: place
-//                        }
-
-//                        if (gend[0]) {
-//var gender = gend[0].textContent; }
-//                        if (namer[0]) {
-//var name = namer[0].textContent;
-//                        }
-//                        }
-
-//                        if (xmlDocument.childNodes[3]) {
-//                        if (xmlDocument.childNodes[3].childNodes[1]) {
-//                            var placeString = xmlDocument.childNodes[3].childNodes[1].textContent;
-//                            } else {
-//                            var placeString = birth.place;
-//                            }
-//                } else {
-//                    var placeString = birth.place;
-//                    }
-
-
-//                    var alive = $(xmlDocument).find("gx\\:living, living");
-//                    if (alive[0]) {
-//                        if (alive[0].textContent == "true") {
-//                            death.date = "Living";
-//                }
-//                }
-
-//                    var personObject = {
-//                        name: name,
-//                        id: id,
-//                        birth: birth,
-//        death: death,
-//    gender: gender,
-//        place : placeString
-//}
-
                     // Send reply
                     callback(personObject);
                 } else if (xhttp.status === 401) {
-        //}).fail(function (jqXHR, textStatus, errorThrown) {
                     completionEvents();
                     alert("Your session has expired. Please log in again.");
                     window.location = 'index.php?login=true';
-                    //});
                 } else if (this.status === 503) {
                     callback(this.status);
                 } else {
@@ -627,7 +574,7 @@ function initialize() {
 
     function getPhoto(id,gen,node) {
         var xhttp;
-        var url = baseurl + "/platform/tree/persons/" + id + "/memories?&type=\"photo\"&access_token=" + accesstoken;
+        var url = baseurl + "/platform/tree/persons/" + id + "/memories?&type=photo&access_token=" + accesstoken;
         xhttp = new XMLHttpRequest();
         xhttp.open("GET", url);
         xhttp.setRequestHeader('Accept', 'application/json');
@@ -657,6 +604,9 @@ function initialize() {
                     familyTree.getNode(gen, node).imageIcon = "";
                     familyTree.getNode(gen, node).image = "";
                 }
+            } else {
+                familyTree.getNode(gen, node).imageIcon = "";
+                familyTree.getNode(gen, node).image = "";
             }
         }
 
@@ -797,66 +747,21 @@ function initialize() {
     function getMeABirthLatLng(gen,node,next) {
         setTimeout(function () {
             getLatLng(familyTree.getNode(gen,node).birth.place, function (res) {
-
-                
                 if (res == "empty") {
                     delay++
                     getMeABirthLatLng(gen, node, next);
                 } else if (res == "other") {
-                    var placestring = familyTree.getNode(gen, node).birth.place;
-
-                    var xhttp;
-                    var url = "https://api.familysearch.org/authorities/v1/place?place=" + placestring + "&locale=en&sessionId=" + accesstoken;
-                    xhttp = new XMLHttpRequest();
-                    xhttp.open("GET", url);
-                    xhttp.setRequestHeader('Accept', 'application/xml');
-
-                    xhttp.onload = function (e) {
-                        if (xhttp.readyState === 4) {
-                            if (xhttp.status === 200) {
-                                var xmlDocument = xhttp.responseXML.documentElement;
-                                var point = $(xmlDocument).find("point");
-                                var lat = point[0].childNodes[0].textContent;
-                                var lng = point[0].childNodes[1].textContent;
-                                var latlng = new google.maps.LatLng(lat, lng);
-                                //result.birth.latlng = latlng;
-                                //familyTree.setNode(result, gen, node);
-                                familyTree.getNode(gen, node).birth.latlng = latlng;
-                                plotParent(node, gen);
-                                next();
-                            } else {
-                                getChildBirthPlace2(node, gen, function (ref) {
-                                    //result.birth.latlng = e;
-                                    //familyTree.setNode(result, gen, node);
-                                    familyTree.getNode(gen, node).birth.latlng = ref;
-                                    plotParent(node, gen);
-                                    next();
-                                });
-                            }
-                        }
-                    }
-                    xhttp.send();
+                    getPlaceAuthority(gen, node);
+                    next();
 
                 } else if (!res) {
-                    //console.log("Undefined birthplace for " + progenitors[idx].name + " (" + progenitors[idx].id + ")");
-                    //progenitors[idx].birth.latlng = getChildBirthPlace(progenitors, idx);
                     getChildBirthPlace2(node, gen, function (ref) {
-                        //result.birth.latlng = e;
-                        //familyTree.setNode(result, gen, node);
                         familyTree.getNode(gen, node).birth.latlng = ref;
                         plotParent(node, gen);
                         next();
                     });
-                    //tryagain = true;
-                    //placequery = undefined;
-                    //callLoopNext(loop, progenitors);
                 } else {
-                    //result.birth.latlng = res;
-                    //familyTree.setNode(result, gen, node);
                     familyTree.getNode(gen, node).birth.latlng = res;
-                    //tryagain = true;
-                    //placequery = undefined;
-                    //callLoopNext(loop, progenitors);
                     if (gen == 0 && node == 0) {
                         makeInfoWindow(familyTree.root());
                         familyTree.root().isPlotted = true;
