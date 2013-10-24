@@ -1044,25 +1044,26 @@ function initialize() {
                 mark.idx = markarray.length;
                 mark.generation = p.generation;
                 mark.node = p.node;
-                var ebutton = "<div  style='height:38px;'>" +
-                                    "<div id='ebutton' onclick='familyTree.getNode(" +p.generation + "," +p.node + ").marker.isExpanded=true; ancestorExpand(\"" + p.id +
-                                    "\"," + p.generation + "," +p.node + "); ib.close();'>" +
-                                        "<div style='height: 38px; display:inline-block; vertical-align:top;'>" +self + "</div>" +
+                mark.expandButton = "<div  style='height:38px;'>" +
+                                    "<div id='ebutton' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.isExpanded=true; ancestorExpand(\"" + p.id +
+                                    "\"," + p.generation + "," + p.node + "); ib.close();'>" +
+                                        "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
                                         "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
-                                        "<div style='height: 38px; display:inline-block;'>" + father + "</br>" +mother + "</div>" +
-                                    '</div>'+
-                                  "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version +
-                                  "' style='width:25px; height:26px; margin-top: 12px;' onclick='unPlot(" +p.generation + "," +p.node +") ;'</div>" +
-                                '</div>';
-                mark.expand = ebutton;
-                if (p.generation > genquery - 1) {  
-                    mark.isExpanded = false;
-                } else {
-                    mark.isExpanded = true;
-                }
+                                        "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
+                                    '</div>';
+                                
+                mark.deleteButton = "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version +
+                                  "' style='width:25px; height:26px; margin-top: 12px;' onclick='unPlot(" +p.generation + "," +p.node +") ;'</div>";
+                
+                //if (p.generation > genquery - 1) {  
+                //    mark.isExpanded = false;
+                //} else {
+                //    mark.isExpanded = true;
+                //}
                 mark.personID = p.id;
                 var url = baseurl + '/tree/#view=ancestor&person=' + p.id;
-                var contents1 =
+
+                mark.infoBoxContent =
                 "<div id='infow'>" +
                     "<div class='person'>" +
                         "<img id='portrait' class='profile-image' src='" + src + "'>" +
@@ -1087,21 +1088,37 @@ function initialize() {
                         "</div>" +
                     "</div>";
                         
-                var contents2 = '</div>';
-                
-                mark.content1 = contents1;
-                mark.content2 = contents2;
-                
                 oms.addListener('click', function (mark, event) {
+                    var fatherPlotted = false;
+                    var motherPlotted = false;
+                    if (familyTree.getFather(mark.generation, mark.node)) {
+                        if (familyTree.getFather(mark.generation, mark.node).isPlotted == true) {
+                            fatherPlotted = true;
+                        }
+                    }
+
+                    if (familyTree.getMother(mark.generation, mark.node)) {
+                        if (familyTree.getMother(mark.generation, mark.node).isPlotted == true) {
+                            motherPlotted = true;
+                        }
+                    }
+
+                    if (motherPlotted == false && fatherPlotted == false) { // neither parent is plotted, okay to show delete button
+                        var buttons = mark.expandButton + mark.deleteButton + '</div>';
+                    } else if (motherPlotted == true && fatherPlotted == true) {
+                        var buttons = "";
+                    } else {
+                        var buttons = mark.expandButton + '</div>';
+                    }
 
                     if (mark.isExpanded) {
-                        ib.setContent(mark.content1 + mark.content2);
+                        ib.setContent(mark.infoBoxContent + '</div>');
                     } else {
-                        ib.setContent(mark.content1 + mark.expand + mark.content2);
+                        ib.setContent(mark.infoBoxContent + buttons + '</div>');
                     }
                   
                     ib.open(map, mark);
-                    //getPortrait(mark.personID);
+                    getPortrait(mark.personID);
                 });
 
                 oms.addListener('spiderfy', function (mark) {
@@ -1130,22 +1147,34 @@ function initialize() {
 
     function getPortrait(id) {
         var xhttp;
-        var url = baseurl + "/platform/tree/persons/" + id + "/media?access_token=" + accesstoken;
+        var url = baseurl + "/platform/tree/persons/" + id + "/memories?&type=\"photo\"&access_token=" + accesstoken;
         xhttp = new XMLHttpRequest();
         xhttp.open("GET", url);
-        xhttp.setRequestHeader('Accept', 'application/xml');
+        xhttp.setRequestHeader('Accept', 'application/json');
 
         xhttp.onload = function (e) {
-            if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
-                    var xml = xhttp.responseXML.documentElement;
-                    var source = $(xml).find("gx\\:sourceDescription, sourceDescription");
+            if (this.readyState === 4) {
+                if (this.status === 200) {
 
-                    if (source[0]) {
-                        var url = source[0].getAttribute('about');
+                    var result = JSON.parse(this.response);
+                    var sourceDescriptions = result.sourceDescriptions;
+                    if (sourceDescriptions) {
+                        var url = sourceDescriptions[0].links.image-icon.href;
                         var portrait = document.getElementById('portrait');
                         portrait.setAttribute('src', url);
                     }
+
+                    //var display = person.display;
+                    //var places = result.places;
+
+                    //var xml = xhttp.responseXML.documentElement;
+                    //var source = $(xml).find("gx\\:sourceDescription, sourceDescription");
+
+                    //if (source[0]) {
+                    //    var url = source[0].getAttribute('about');
+                    //    var portrait = document.getElementById('portrait');
+                    //    portrait.setAttribute('src', url);
+                    //}
 
                 } else if (xhttp.status === 401) {
                     alert("Sorry, your session has already expired. Please log in again.");
@@ -1349,7 +1378,7 @@ function initialize() {
         if (firstTime.box == true) {
             if (markarray.length > 0) {
                 var mark = markarray[0];
-                ib.setContent(mark.content1 + mark.content2);
+                ib.setContent(mark.infoBoxContent + '</div>');
                 ib.open(map, mark);
                 firstTime.box = false;
             }
