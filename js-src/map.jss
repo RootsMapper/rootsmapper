@@ -1153,8 +1153,12 @@ function initialize() {
                     var sourceDescriptions = result.sourceDescriptions;
                     if (sourceDescriptions[0]) {
                         var url = sourceDescriptions[0].links["image-icon"].href;
+                        var bigurl = sourceDescriptions[0].links.image.href;
                         var portrait = document.getElementById('portrait');
                         portrait.setAttribute('src', url);
+                        portrait.onclick(function () {
+                            window.open(bigurl);
+                        });
                     }
 
                     
