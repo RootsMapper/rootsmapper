@@ -575,13 +575,13 @@ function initialize() {
                     familyTree.getNode(gen, node).image = bigurl;
                     typeof callback === 'function' && callback();
                 } else {
-                    familyTree.getNode(gen, node).imageIcon = "";
-                    familyTree.getNode(gen, node).image = "";
+                    familyTree.getNode(gen, node).imageIcon = "none";
+                    familyTree.getNode(gen, node).image = "none";
                     typeof callback === 'function' && callback();
                 }
             } else {
-                familyTree.getNode(gen, node).imageIcon = "";
-                familyTree.getNode(gen, node).image = "";
+                familyTree.getNode(gen, node).imageIcon = "none";
+                familyTree.getNode(gen, node).image = "none";
                 typeof callback === 'function' && callback();
             }
         },3000);
@@ -1003,7 +1003,7 @@ function initialize() {
             if (portrait) {
                 var person = familyTree.getNode(gen, node);
                 if (person.image && person.imageIcon) {
-                    if (person.image == "" && person.imageIcon == "") {
+                    if (person.image == "none" && person.imageIcon == "none") {
                         portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", 10); }
                     } else {
                         var imageHTML = "<img style='height:300px;' src='" + person.image + "'>";
