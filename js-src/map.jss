@@ -393,7 +393,7 @@ function initialize() {
         // Generic function for FamilySearch API requests
         // options.url = API url (Required)
         // options.media = "xml" for xml, else JSON
-        if (processingTime > 1800) {
+        if (processingTime > 800) {
             fsdelay = 1000;
         } else {
             fsdelay = 0;
