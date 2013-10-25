@@ -389,23 +389,33 @@ function initialize() {
         }, 1000);
     }
 
-    function fsAPI(options, callback) {
+    function fsAPI(options, callback, timeout) {
         // Generic function for FamilySearch API requests
         // options.url = API url (Required)
         // options.media = "xml" for xml, else JSON
+        //wait || (wait = 0);
         if (processingTime > 800) {
             fsdelay = 1000;
         } else {
             fsdelay = 0;
         }
-        setTimeout(function() {
+        fsdelay = Math.round(processingTime / 60);
+        setTimeout(function () {
             var xhttp;
             xhttp = new XMLHttpRequest();
             xhttp.open("GET", options.url);
-            xhttp.setRequestHeader('Accept', 'application/' +(options.media || 'json'));
+            xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
+            if (timeout) {
+                xhttp.timeout = timeout;
+                xhttp.ontimeout = function () {
+                    processingTime = processingTime + timeout;
+                    typeof callback === 'function' && callback(undefined, "Operation Timed Out");
+                }
+            }
             xhttp.onload = function (e) {
-                processingTime = processingTime + 43;
-                setTimeout(function(){processingTime = processingTime - 43},60*1000)
+                //clearTimeout(aborter);
+                processingTime = processingTime + 50;
+                setTimeout(function () { processingTime = processingTime - 50 }, 60 * 1000)
                 if (this.readyState === 4) {
                     if (this.status === 200) { // works
                         var status = this.statusText;
@@ -416,7 +426,7 @@ function initialize() {
                         }
                         typeof callback === 'function' && callback(result, status);
                     } else if (this.status === 429) { // throttled
-                        fsdelay = fsdelay +1000;
+                        //fsdelay = fsdelay + 1000;
                         fsAPI(options, callback);
                     } else if (this.status === 401) { // session expired
                         alert("Your session has expired. Please log in again.");
@@ -427,34 +437,40 @@ function initialize() {
                     }
                 }
             }
+            xhttp.onabort = function() {
+                typeof callback === 'function' && callback(undefined, "Aborted");
+            }
             xhttp.send();
-        }, fsdelay);
+    }, fsdelay);
     }
 
     function getPedigree(generations, id, rootGen, rootNode) {
-        rootGen  || (rootGen = 0);
+        rootGen || (rootGen = 0);
         rootNode || (rootNode = 0);
-        id = id ? id : document.getElementById('personid').value;
+        id = id ? id: document.getElementById('personid').value;
 
         var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
             generations: generations,
-            person: id,
-            access_token: accesstoken
+                person: id,
+        access_token: accesstoken
         });
-       
-        fsAPI({ media: 'xml', url: url }, function (result, status) {
-            if (status == "OK") {
-                var p = $(result).find("gx\\:person, person");
-                for (var i = 0; i < p.length; i++) {
-                    var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
-                    var n = parseFloat(num[0].textContent);
-                    var gen = Math.floor(log2(n));
-                    var node = n + Math.pow(2, gen) * (rootNode - 1);
-                    if (!familyTree.getNode(gen + rootGen, node)) {
-                        familyTree.setNode({ id: p[i].getAttribute("id") }, (gen + rootGen), node);
+
+    fsAPI({
+        media: 'xml', url: url
+    }, function (result, status) {
+        if (status == "OK") {
+            var p = $(result).find("gx\\:person, person");
+            for (var i = 0; i < p.length; i++) {
+                var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
+                var n = parseFloat(num[0].textContent);
+                var gen = Math.floor(log2(n));
+                var node = n +Math.pow(2, gen) * (rootNode -1);
+                if (!familyTree.getNode(gen +rootGen, node)) {
+                        familyTree.setNode({ id: p[i].getAttribute("id")
+                }, (gen +rootGen), node);
                     }
-                }
-                readPedigreeLoop();
+    }
+            readPedigreeLoop();
             } else {
                 completionEvents();
             }
@@ -579,7 +595,7 @@ function initialize() {
                 familyTree.getNode(gen, node).imageIcon = "";
                 familyTree.getNode(gen, node).image = "";
             }
-        });
+        },3000);
 
     }
 
