@@ -472,6 +472,8 @@ function initialize() {
                         if (node < Math.pow(2, gen - 1)) {
                             result.isPaternal = true;
                         }
+                        result.image = "";
+                        result.imageIcon = "";
                         familyTree.setNode(result, gen, node);
                         //getPhoto(result.id, gen, node);
                         getMeABirthLatLng(gen, node, cont);
@@ -997,12 +999,12 @@ function initialize() {
             var portrait = document.getElementById('portrait');
             if (portrait) {
                 var person = familyTree.getNode(gen, node);
-                if (person.image && person.imageIcon) {
+                if (person.image == "" && person.imageIcon == "") {
+                    // do nothing
+                } else if (person.image && person.imageIcon) {
                     var imageHTML = "<img style='height:300px;' src='" + person.image + "'>";
                     portrait.setAttribute('src', person.imageIcon);
                     portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 10); }
-                } else if (person.image == "" && person.imageIcon == "") {
-                    // do nothing
                 } else {
                     setPhoto(gen, node)
                 }
