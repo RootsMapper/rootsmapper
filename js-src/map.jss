@@ -472,10 +472,7 @@ function initialize() {
                         if (node < Math.pow(2, gen - 1)) {
                             result.isPaternal = true;
                         }
-                        //result.image = "";
-                        //result.imageIcon = "";
                         familyTree.setNode(result, gen, node);
-                        //getPhoto(result.id, gen, node);
                         getMeABirthLatLng(gen, node, cont);
                     });
                 } else {
@@ -485,15 +482,15 @@ function initialize() {
                 cont();
             }
         }, function () {
-            //familyTree.IDDFS(function (tree, cont) {
-            //    var node = tree.node;
-            //    var gen = tree.generation;
-            //    var ID = familyTree.getNode(gen, node).id;
-            //    getPhoto(ID, gen, node, cont);
-                setTimeout(function () {
-                    completionEvents();
-                }, 1000);
-            //}, function () {});
+            setTimeout(function () {
+                completionEvents();
+            }, 1000);
+            familyTree.IDDFS(function (tree, cont) {
+                var node = tree.node;
+                var gen = tree.generation;
+                var ID = familyTree.getNode(gen, node).id;
+                getPhoto(ID, gen, node, cont);
+            }, function () {});
         });
     }
 
