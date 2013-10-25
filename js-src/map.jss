@@ -472,8 +472,8 @@ function initialize() {
                         if (node < Math.pow(2, gen - 1)) {
                             result.isPaternal = true;
                         }
-                        result.image = "";
-                        result.imageIcon = "";
+                        //result.image = "";
+                        //result.imageIcon = "";
                         familyTree.setNode(result, gen, node);
                         //getPhoto(result.id, gen, node);
                         getMeABirthLatLng(gen, node, cont);
@@ -485,15 +485,15 @@ function initialize() {
                 cont();
             }
         }, function () {
-            familyTree.IDDFS(function (tree, cont) {
-                var node = tree.node;
-                var gen = tree.generation;
-                var ID = familyTree.getNode(gen, node).id;
-                getPhoto(ID, gen, node, cont);
+            //familyTree.IDDFS(function (tree, cont) {
+            //    var node = tree.node;
+            //    var gen = tree.generation;
+            //    var ID = familyTree.getNode(gen, node).id;
+            //    getPhoto(ID, gen, node, cont);
                 setTimeout(function () {
                     completionEvents();
-                }, 2000);
-            }, function () {});
+                }, 1000);
+            //}, function () {});
         });
     }
 
@@ -573,16 +573,16 @@ function initialize() {
                     var bigurl = sourceDescriptions[0].links.image.href;
                     familyTree.getNode(gen, node).imageIcon = url;
                     familyTree.getNode(gen, node).image = bigurl;
-                    callback();
+                    typeof callback === 'function' && callback();
                 } else {
                     familyTree.getNode(gen, node).imageIcon = "";
                     familyTree.getNode(gen, node).image = "";
-                    callback();
+                    typeof callback === 'function' && callback();
                 }
             } else {
                 familyTree.getNode(gen, node).imageIcon = "";
                 familyTree.getNode(gen, node).image = "";
-                callback();
+                typeof callback === 'function' && callback();
             }
         },3000);
 
@@ -939,6 +939,9 @@ function initialize() {
                     "</div>";
                         
                 oms.addListener('click', function (mark, event) {
+
+                    getPhoto(mark.personID,mark.generation, mark.node);
+
                     var fatherPlotted = false;
                     var motherPlotted = false;
                     if (familyTree.getFather(mark.generation, mark.node)) {
@@ -968,7 +971,7 @@ function initialize() {
                     }
                   
                     ib.open(map, mark);
-                    setPhoto(mark.generation, mark.node);
+                    setPhoto(mark.generation, mark.node,0);
                 });
 
                 oms.addListener('spiderfy', function (mark) {
@@ -994,24 +997,26 @@ function initialize() {
         ib.close();
     }
     
-    function setPhoto(gen,node) {
+    function setPhoto(gen,node,timer) {
         setTimeout(function () {
             var portrait = document.getElementById('portrait');
             if (portrait) {
                 var person = familyTree.getNode(gen, node);
-                if (person.image == "" && person.imageIcon == "") {
-                    // do nothing
-                } else if (person.image && person.imageIcon) {
-                    var imageHTML = "<img style='height:300px;' src='" + person.image + "'>";
-                    portrait.setAttribute('src', person.imageIcon);
-                    portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 10); }
+                if (person.image && person.imageIcon) {
+                    if (person.image == "" && person.imageIcon == "") {
+                        portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", 10); }
+                    } else {
+                        var imageHTML = "<img style='height:300px;' src='" + person.image + "'>";
+                        portrait.setAttribute('src', person.imageIcon);
+                        portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 10); }
+                    }
                 } else {
-                    setPhoto(gen, node)
+                    setPhoto(gen, node,50)
                 }
             } else {
-                setPhoto(gen, node)
+                setPhoto(gen, node,50)
             }
-        }, 50);
+        }, timer);
     }
 
     function getChildBirthPlace2(node, gen,cb) {
@@ -1157,7 +1162,8 @@ function initialize() {
                 var mark = familyTree.root().marker;
                 ib.setContent(mark.infoBoxContent + '</div>');
                 ib.open(map, mark);
-                setPhoto(0,0);
+                getPhoto(mark.personID, 0, 0);
+                setPhoto(0,0,0);
                 firstTime.box = false;
             }
 		}
