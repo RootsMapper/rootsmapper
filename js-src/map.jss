@@ -18,7 +18,7 @@ var userID;
 var familyTree;
 var discovery;
 var processingTime = 0;
-var queue = 0;
+var queue = 1;
 
 function BinaryTree() {
     this.Nodes = new Array();
@@ -395,7 +395,7 @@ function initialize() {
         }
         fsdelay = Math.round(processingTime / 60);
         fsdelay = queue * 1000;
-        setTimeout(function () {
+        //setTimeout(function () {
             var xhttp;
             xhttp = new XMLHttpRequest();
             xhttp.open("GET", options.url);
@@ -414,6 +414,7 @@ function initialize() {
                 setTimeout(function () { processingTime = processingTime - 50 }, 60 * 1000)
                 if (this.readyState === 4) {
                     if (this.status === 200) { // works
+                        queue = 1;
                         var status = this.statusText;
                         if (options.media == "xml") {
                             var result = this.responseXML.documentElement;
@@ -425,7 +426,9 @@ function initialize() {
                         //fsdelay = fsdelay + 1000;
                         console.log(processingTime + " " + queue);
                         queue++;
-                        fsAPI(options, callback);
+                        setTimeout(function () {
+                            fsAPI(options, callback);
+                        }, queue * 1000);
                     } else if (this.status === 401) { // session expired
                         alert("Your session has expired. Please log in again.");
                         window.location = 'index.php?login=true';
@@ -439,7 +442,7 @@ function initialize() {
                 typeof callback === 'function' && callback(undefined, "Aborted");
             }
             xhttp.send();
-    }, fsdelay);
+    //}, fsdelay);
     }
 
     function getPedigree(generations, id, rootGen, rootNode) {
