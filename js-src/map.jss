@@ -563,29 +563,30 @@ function initialize() {
     }
 
     function getPhoto(id, gen, node, callback) {
-
-        var url = discovery.persons.href + '/' + id + '/memories?&type=photo&access_token=' + accesstoken;
-        fsAPI({ url: url }, function (result, status) {
-            if (status == "OK") {
-                var sourceDescriptions = result.sourceDescriptions;
-                if (sourceDescriptions[0]) {
-                    var url = sourceDescriptions[0].links["image-icon"].href;
-                    var bigurl = sourceDescriptions[0].links.image.href;
-                    familyTree.getNode(gen, node).imageIcon = url;
-                    familyTree.getNode(gen, node).image = bigurl;
-                    typeof callback === 'function' && callback();
+        var person = familyTree.getNode(gen, node);
+        if (!person.image && !person.imageIcon) {
+            var url = discovery.persons.href + '/' + id + '/memories?&type=photo&access_token=' + accesstoken;
+            fsAPI({ url: url }, function (result, status) {
+                if (status == "OK") {
+                    var sourceDescriptions = result.sourceDescriptions;
+                    if (sourceDescriptions[0]) {
+                        var url = sourceDescriptions[0].links["image-icon"].href;
+                        var bigurl = sourceDescriptions[0].links.image.href;
+                        familyTree.getNode(gen, node).imageIcon = url;
+                        familyTree.getNode(gen, node).image = bigurl;
+                        typeof callback === 'function' && callback();
+                    } else {
+                        familyTree.getNode(gen, node).imageIcon = "none";
+                        familyTree.getNode(gen, node).image = "none";
+                        typeof callback === 'function' && callback();
+                    }
                 } else {
                     familyTree.getNode(gen, node).imageIcon = "none";
                     familyTree.getNode(gen, node).image = "none";
                     typeof callback === 'function' && callback();
                 }
-            } else {
-                familyTree.getNode(gen, node).imageIcon = "none";
-                familyTree.getNode(gen, node).image = "none";
-                typeof callback === 'function' && callback();
-            }
-        },3000);
-
+            }, 3000);
+        }
     }
 
     function personRead(id, callback) {
