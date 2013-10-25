@@ -10,12 +10,13 @@ var oms;
 var accesstoken;
 var ib;
 var genquery;
-var nSearches;
 var delay = 100;
+var fsdelay = 0;
 var baseurl;
 var version;
 var userID;
 var familyTree;
+var discovery;
 
 function BinaryTree() {
     this.Nodes = new Array();
@@ -150,38 +151,23 @@ function BinaryTree() {
 }
 
 function currentUser() {
-
-    var xhttp;
-    var url = baseurl + "/platform/tree/current-person?access_token=" + accesstoken;
-    xhttp = new XMLHttpRequest();
-    xhttp.open("GET", url);
-    xhttp.setRequestHeader('Accept', 'application/xml');
-
-    xhttp.onload = function (e) {
-        if (xhttp.readyState === 4) {
-            if (xhttp.status === 200) {
-
-                var xmlDocument = xhttp.responseXML.documentElement;
-                var p = $(xmlDocument).find("gx\\:person, person");
-                userID = p[0].getAttribute("id");
-                var f = $(xmlDocument).find("gx\\:fullText, fullText");
-                var name = f[0].textContent;
-
-                populateIdField(userID);
-                var username = document.getElementById("username");
-                username.innerHTML = name;
-
-                ancestorgens();
-
-            } else if (xhttp.status === 401) {
-                alert("Your session has expired. Please log in again.");
-                window.location = '?login';
-            }
-        }
+    var options = {
+        media: 'xml',
+        url: discovery["current-user-person"].href + '?&access_token=' + accesstoken
     }
 
-    xhttp.send();
+    fsAPI(options, function (result, status) {
+        if (status == "OK") {
+            var p = $(result).find("gx\\:person, person");
+            var f = $(result).find("gx\\:fullText, fullText");
+            userID = p[0].getAttribute("id");
+            populateIdField(userID);
+            document.getElementById("username").innerHTML = f[0].textContent;
 
+            ancestorgens();
+        }
+    });
+    
 }
 
 
@@ -306,11 +292,13 @@ function initialize() {
 
         if (accesstoken) {
             //if (!safari) {
-                currentUser();
+                //currentUser();
             //} else {
             //    populateUser();
             //}
             //sessionHandler();
+                discoveryResource();
+
         }
 
         google.maps.event.addListener(map, 'click', function () {
@@ -383,55 +371,80 @@ function initialize() {
         getPedigree(1, id, rootGen, rootNode);
 
     }
+    
+    function discoveryResource() {
+        fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
+            if (status == "OK") {
+                discovery = result.links;
+                currentUser();
+            }
+        });
+    }
 
-    function getPedigree(gen, root, rootGen, rootNode) {
-        var generations = gen;
-
-        if (!rootGen) { rootGen = 0; }
-        if (!rootNode) { rootNode = 0; }
-
-        if (root) {
-            personId = root;
-            // if empty, use user default
-        } else {
-            var querythis = document.getElementById('personid');
-            var personId = querythis.value;
-        }
-
+    function fsAPI(options, callback) {
+        // Generic function for FamilySearch API requests
+        // options.url = API url (Required)
+        // options.media = "xml" for xml, else JSON
         var xhttp;
-        var url = baseurl + "/platform/tree/ancestry?person=" + personId + "&generations=" + generations + "&access_token=" + accesstoken;
         xhttp = new XMLHttpRequest();
-        xhttp.open("GET", url);
-        xhttp.setRequestHeader('Accept', 'application/xml');
-
+        xhttp.open("GET", options.url);
+        xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
         xhttp.onload = function (e) {
-            if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
-
-                    var xml = xhttp.responseXML.documentElement;
-                    var p = $(xml).find("gx\\:person, person");
-                    for (var i = 0; i < p.length; i++) {
-                        var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
-                        var n = parseFloat(num[0].textContent);
-                        var gen = Math.floor(log2(n));
-                        var node = n + Math.pow(2, gen) * (rootNode - 1);
-                        if (!familyTree.getNode(gen + rootGen, node)) {
-                            familyTree.setNode({id: p[i].getAttribute("id")}, (gen+rootGen), node);
-                        }
+            if (this.readyState === 4) {
+                if (this.status === 200) { // works
+                    fsdelay = 0;
+                    var status = this.statusText;
+                    if (options.media == "xml") {
+                        var result = this.responseXML.documentElement;
+                    } else {
+                        var result = JSON.parse(this.response);
                     }
-                    
-                    readPedigreeLoop();
-                } else if (xhttp.status === 401) {
-                    completionEvents();
-                    alert("Your session has expired. Please log in again.");
-                    window.location = 'index.php?login=true';
-                } else {
-                    completionEvents();
-                    alert("Error: " + xhttp.statusText);
+                    typeof callback === 'function' && callback(result,status);
+                } else if (this.status === 429) { // throttled
+                    fsdelay = fsdelay + 1000;
+                    setTimeout(function () {
+                        fsAPI(options, callback);
+                    }, fsdelay)
+                } else if (this.status === 401) { // session expired
+                        alert("Your session has expired. Please log in again.");
+                        window.location = 'index.php?login=true'; 
+                } else { // some other error
+                    var status = this.statusText;
+                    typeof callback === 'function' && callback(undefined, status);
                 }
             }
         }
-        xhttp.send();      
+        xhttp.send();
+
+        }
+
+    function getPedigree(generations, id, rootGen, rootNode) {
+        rootGen  || (rootGen = 0);
+        rootNode || (rootNode = 0);
+        id = id ? id : document.getElementById('personid').value;
+
+        var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
+            generations: generations,
+            person: id,
+            access_token: accesstoken
+        });
+       
+        fsAPI({ media: 'xml', url: url }, function (result, status) {
+            if (status == "OK") {
+                var p = $(result).find("gx\\:person, person");
+                for (var i = 0; i < p.length; i++) {
+                    var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
+                    var n = parseFloat(num[0].textContent);
+                    var gen = Math.floor(log2(n));
+                    var node = n + Math.pow(2, gen) * (rootNode - 1);
+                    if (!familyTree.getNode(gen + rootGen, node)) {
+                        familyTree.setNode({ id: p[i].getAttribute("id") }, (gen + rootGen), node);
+                    }
+                }
+                readPedigreeLoop();
+            }
+        });
+  
     }
 
     function readPedigreeLoop() {
@@ -469,138 +482,81 @@ function initialize() {
 
     function getPlaceAuthority(gen,node) {
         var place = familyTree.getNode(gen, node).birth.place;
-
-        var xhttp;
-        var url = "https://api.familysearch.org/authorities/v1/place?place=" + place + "&locale=en&sessionId=" + accesstoken;
-        xhttp = new XMLHttpRequest();
-        xhttp.open("GET", url);
-        xhttp.setRequestHeader('Accept', 'application/xml');
-
-        xhttp.onload = function (e) {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-                    var xmlDocument = this.responseXML.documentElement;
-                    var point = $(xmlDocument).find("point");
-                    var lat = point[0].childNodes[0].textContent;
-                    var lng = point[0].childNodes[1].textContent;
-                    var latlng = new google.maps.LatLng(lat, lng);
-                    familyTree.getNode(gen, node).birth.latlng = latlng;
-                    plotParent(node, gen);
-                    //next();
-                } else {
-                    getChildBirthPlace2(node, gen, function (ref) {
-                        familyTree.getNode(gen, node).birth.latlng = ref;
-                        plotParent(node, gen);
-                        //next();
-                    });
-                }
+        var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
+        fsAPI({ media: 'xml', url: url }, function (result, status) {
+            if (status == "OK") {
+                var point = $(result).find("point");
+                var lat = point[0].childNodes[0].textContent;
+                var lng = point[0].childNodes[1].textContent;
+                var latlng = new google.maps.LatLng(lat, lng);
+                familyTree.getNode(gen, node).birth.latlng = latlng;
+                plotParent(node, gen);
             } else {
                 getChildBirthPlace2(node, gen, function (ref) {
                     familyTree.getNode(gen, node).birth.latlng = ref;
                     plotParent(node, gen);
-                    //next();
                 });
             }
-        }
-        xhttp.send();
+        });
     }
 
 
     function personRead2(id, callback) {
 
-        var xhttp;
-        var url = baseurl + "/platform/tree/persons/" + id + "?&access_token=" + accesstoken;
-        xhttp = new XMLHttpRequest();
-        xhttp.open("GET", url);
-        xhttp.setRequestHeader('Accept', 'application/json');
+        var url = discovery.persons.href + '/' + id + '?&access_token=' + accesstoken;
+        fsAPI({ url: url }, function (result, status) {
+            if (status == "OK") {
+                var person = result.persons[0];
+                var display = person.display;
+                var places = result.places;
 
-        xhttp.onload = function (e) {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-
-                    var result = JSON.parse(this.response);
-                    var person = result.persons[0];
-                    var display = person.display;
-                    var places = result.places;
-
-                    var birth = {
-                        date: display.birthDate,
-                        place: display.birthPlace
-                        }
-
-                    var death = {
-                        date: display.deathDate,
-                        place: display.deathPlace
-                        }
-
-                    var living = person.living;
-
-                    if (living == true) {
-                        death.date = "Living";
-                    }
-
-                    if (places) {
-                        var placestring = places[0].names[0].value;
-                    } else {
-                        var placestring = birth.place;
-                    }
-
-
-                    var personObject = {
-                        name: display.name,
-                        id: person.id,
-                        birth: birth,
-                        death: death,
-                        gender: display.gender,
-                        place: placestring
-                    }
-
-                    // Send reply
-                    callback(personObject);
-                } else if (xhttp.status === 401) {
-                    completionEvents();
-                    alert("Your session has expired. Please log in again.");
-                    window.location = 'index.php?login=true';
-                } else if (this.status === 503) {
-                    callback(this.status);
-                } else {
-                    completionEvents();
-                    alert("Error: " + xhttp.statusText);
+                var birth = {
+                    date: display.birthDate,
+                    place: display.birthPlace
                 }
+
+                var death = {
+                    date: display.deathDate,
+                    place: display.deathPlace
+                }
+
+                if (person.living == true) {
+                    death.date = "Living";
+                }
+
+                if (places) {
+                    var placestring = places[0].names[0].value;
+                } else {
+                    var placestring = birth.place;
+                }
+
+                var personObject = {
+                    name: display.name,
+                    id: person.id,
+                    birth: birth,
+                    death: death,
+                    gender: display.gender,
+                    place: placestring
+                }
+
+                // Send reply
+                callback(personObject);
             }
-        }
-        xhttp.send();
+        });
     }
 
-    function getPhoto(id,gen,node) {
-        var xhttp;
-        var url = baseurl + "/platform/tree/persons/" + id + "/memories?&type=photo&access_token=" + accesstoken;
-        xhttp = new XMLHttpRequest();
-        xhttp.open("GET", url);
-        xhttp.setRequestHeader('Accept', 'application/json');
+    function getPhoto(id, gen, node) {
 
-        xhttp.onload = function (e) {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-
-                    var result = JSON.parse(this.response);
-                    var sourceDescriptions = result.sourceDescriptions;
-                    if (sourceDescriptions[0]) {
-                        var url = sourceDescriptions[0].links["image-icon"].href;
-                        var bigurl = sourceDescriptions[0].links.image.href;
-                        familyTree.getNode(gen, node).imageIcon = url;
-                        familyTree.getNode(gen, node).image = bigurl;
-                    } else {
-                        familyTree.getNode(gen, node).imageIcon = "";
-                        familyTree.getNode(gen, node).image = "";
-                    }
-
-
-                } else if (this.status === 401) {
-                    alert("Sorry, your session has already expired. Please log in again.");
-                    window.location = 'index.php?login=true';
+        var url = discovery.persons.href + '/' + id + '/memories?&type=photo&access_token=' + accesstoken;
+        fsAPI({ url: url }, function (result, status) {
+            if (status == "OK") {
+                var sourceDescriptions = result.sourceDescriptions;
+                if (sourceDescriptions[0]) {
+                    var url = sourceDescriptions[0].links["image-icon"].href;
+                    var bigurl = sourceDescriptions[0].links.image.href;
+                    familyTree.getNode(gen, node).imageIcon = url;
+                    familyTree.getNode(gen, node).image = bigurl;
                 } else {
-                    alert("Error: " + this.statusText);
                     familyTree.getNode(gen, node).imageIcon = "";
                     familyTree.getNode(gen, node).image = "";
                 }
@@ -608,9 +564,8 @@ function initialize() {
                 familyTree.getNode(gen, node).imageIcon = "";
                 familyTree.getNode(gen, node).image = "";
             }
-        }
+        });
 
-        xhttp.send();
     }
 
     function personRead(id, callback) {
@@ -848,72 +803,6 @@ function initialize() {
         plotNextGeneration(progenitors,loop);
     }
 
-    function plotNextGeneration(progenitors, loop) {
-
-        var idx = loop.iteration();
-        var gen = log2(idx + 2) - 1; // Number of generations completed so far
-
-        loadingAnimationEnd();
-        var paths = Math.pow(2, gen);
-
-        for (var j = paths - 1; j < 2 * paths - 1; j++) {
-            var patharray = new Array();
-            if (progenitors[j]) {
-                patharray[1] = progenitors[j].birth.latlng;
-            }
-            var cdx = j;
-
-            if (isEven(j + 1)) {
-                // male
-                cdx = (j + 1) / 2 - 1; // child of male
-                if (progenitors[cdx]) {
-                    patharray[0] = progenitors[cdx].birth.latlng;
-                }
-            } else {
-                // female ancestor
-                cdx = (cdx) / 2 - 1; // child of female
-                if (progenitors[cdx]) {
-                    patharray[0] = progenitors[cdx].birth.latlng;
-                }
-            }
-
-            if (progenitors[j]) {
-                if (progenitors[j].isPaternal == true) { // (j < 3 * paths / 2 - 1)
-                    polymap(patharray, rgbToHex(74, 96, 255),"", j, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
-                        makeInfoWindow(progenitors[result]);
-                        if (result == 2 * paths - 2) {
-                            if (gen !== genquery) {
-                                loadingAnimationStart();
-                            } else {
-                                completionEvents();
-                            }
-                            loop.next();
-                        }
-                    });
-                } else {
-                    polymap(patharray, rgbToHex(255, 96, 182),"", j, function (result) { // rgbToHex(255,96,182) rgbToHex(245, 139, 237)
-                        makeInfoWindow(progenitors[result]);
-                        if (result == 2 * paths - 2) {
-                            if (gen !== genquery) {
-                                loadingAnimationStart();
-                            } else {
-                                completionEvents();
-                            }
-                            loop.next();
-                        }
-                    });
-                }
-            } else if (j == 2 * paths - 2) {
-                if (gen !== genquery) {
-                    loadingAnimationStart();
-                } else {
-                    completionEvents();
-                }
-                loop.next();
-            }
-        }
-
-    }
 
     function polymap(coords, color, node, gen, callback) {
 
@@ -1105,28 +994,6 @@ function initialize() {
         }, 50);
     }
 
-    function getChildBirthPlace(progenitors, idx) {
-        // Call this function if you can't find a person's birthplace
-        // It will check if the person has children, and if so, returns the child's birthplace instead
-
-        if (progenitors[idx].gender == "Male") {
-
-            if (progenitors[(idx + 1) / 2 - 1]) { // Check if child exists
-                return progenitors[(idx + 1) / 2 - 1].birth.latlng;
-            } else {
-                return undefined;
-            }
-
-        } else { // female
-            if (progenitors[idx / 2 - 1]) { // Check if child exists
-                return progenitors[idx / 2 - 1].birth.latlng;
-            } else {
-                return undefined;
-            }
-        }
-
-    }
-
     function getChildBirthPlace2(node, gen,cb) {
         // Call this function if you can't find a person's birthplace
         // It will check if the person has children, and if so, returns the child's birthplace instead
@@ -1147,42 +1014,6 @@ function initialize() {
             }, 1000);
         }
 
-    }
-
-    function asyncLoop(iterations, func, callback) {
-        var index = 0;
-        var done = false;
-        var loop = {
-            next: function () {
-                if (done) {
-                    return;
-                }
-
-                if (index < iterations) {
-                    index++;
-                    func(loop);
-
-                } else {
-                    done = true;
-                    callback();
-                }
-            },
-
-            prev: function () {
-                index--;
-            },
-
-            iteration: function () {
-                return index - 1;
-            },
-
-            breakout: function () {
-                done = true;
-                callback();
-            }
-        };
-        loop.next();
-        return loop;
     }
 
     function loadingAnimationStart() {
@@ -1216,8 +1047,7 @@ function initialize() {
                     familyTree.getNode(gen, node).polyline.setMap(null);
                 }
                 cont();
-            }, function() {
-        });
+            }, function () { });
         }
 
     	if (ib) {
@@ -1231,7 +1061,6 @@ function initialize() {
             plot: true,
 		    box: true
 		};
-        nSearches = 0;
         oms.clearMarkers();
 
         google.maps.event.addListener(ib, 'domready', function () {
