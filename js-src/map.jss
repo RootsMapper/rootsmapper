@@ -399,7 +399,7 @@ function initialize() {
         } else {
             fsdelay = 0;
         }
-        fsdelay = processingTime;
+        fsdelay = Math.round(processingTime / 60);
         setTimeout(function () {
             var xhttp;
             xhttp = new XMLHttpRequest();
@@ -455,10 +455,9 @@ function initialize() {
         access_token: accesstoken
         });
 
-    fsAPI({
-        media: 'xml', url: url
-    }, function (result, status) {
+    fsAPI({ media: 'xml', url: url }, function (result, status) {
         if (status == "OK") {
+            processingTime = generations * 5000;
             var p = $(result).find("gx\\:person, person");
             for (var i = 0; i < p.length; i++) {
                 var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
@@ -469,7 +468,7 @@ function initialize() {
                         familyTree.setNode({ id: p[i].getAttribute("id")
                 }, (gen +rootGen), node);
                     }
-    }
+            }
             readPedigreeLoop();
             } else {
                 completionEvents();
