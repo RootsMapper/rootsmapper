@@ -17,7 +17,8 @@ var version;
 var userID;
 var familyTree;
 var discovery;
-var processingTime=0;
+var processingTime = 0;
+var queue = 0;
 
 function BinaryTree() {
     this.Nodes = new Array();
@@ -393,6 +394,7 @@ function initialize() {
             fsdelay = 0;
         }
         fsdelay = Math.round(processingTime / 60);
+        fsdelay = queue * 1000;
         setTimeout(function () {
             var xhttp;
             xhttp = new XMLHttpRequest();
@@ -421,7 +423,8 @@ function initialize() {
                         typeof callback === 'function' && callback(result, status);
                     } else if (this.status === 429) { // throttled
                         //fsdelay = fsdelay + 1000;
-                        console.log(processingTime);
+                        console.log(processingTime + " " + queue);
+                        queue++;
                         fsAPI(options, callback);
                     } else if (this.status === 401) { // session expired
                         alert("Your session has expired. Please log in again.");
