@@ -17,6 +17,7 @@ var version;
 var userID;
 var familyTree;
 var discovery;
+var processingTime=0;
 
 function BinaryTree() {
     this.Nodes = new Array();
@@ -380,43 +381,55 @@ function initialize() {
             }
         });
     }
+    
+    function throttling() {
+        setInterval(function () {
+            if(processingTime > 1) {
+            }
+        }, 1000);
+    }
 
     function fsAPI(options, callback) {
         // Generic function for FamilySearch API requests
         // options.url = API url (Required)
         // options.media = "xml" for xml, else JSON
-        var xhttp;
-        xhttp = new XMLHttpRequest();
-        xhttp.open("GET", options.url);
-        xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
-        xhttp.onload = function (e) {
-            if (this.readyState === 4) {
-                if (this.status === 200) { // works
-                    fsdelay = 0;
-                    var status = this.statusText;
-                    if (options.media == "xml") {
-                        var result = this.responseXML.documentElement;
-                    } else {
-                        var result = JSON.parse(this.response);
-                    }
-                    typeof callback === 'function' && callback(result,status);
-                } else if (this.status === 429) { // throttled
-                    fsdelay = fsdelay + 1000;
-                    setTimeout(function () {
+        if (processingTime > 1800) {
+            fsdelay = 1000;
+        } else {
+            fsdelay = 0;
+        }
+        setTimeout(function() {
+            var xhttp;
+            xhttp = new XMLHttpRequest();
+            xhttp.open("GET", options.url);
+            xhttp.setRequestHeader('Accept', 'application/' +(options.media || 'json'));
+            xhttp.onload = function (e) {
+                processingTime = processingTime + 43;
+                setTimeout(function(){processingTime = processingTime - 43},60*1000)
+                if (this.readyState === 4) {
+                    if (this.status === 200) { // works
+                        var status = this.statusText;
+                        if (options.media == "xml") {
+                            var result = this.responseXML.documentElement;
+                        } else {
+                            var result = JSON.parse(this.response);
+                        }
+                        typeof callback === 'function' && callback(result, status);
+                    } else if (this.status === 429) { // throttled
+                        fsdelay = fsdelay +1000;
                         fsAPI(options, callback);
-                    }, fsdelay)
-                } else if (this.status === 401) { // session expired
+                    } else if (this.status === 401) { // session expired
                         alert("Your session has expired. Please log in again.");
-                        window.location = 'index.php?login=true'; 
-                } else { // some other error
-                    var status = this.statusText;
-                    typeof callback === 'function' && callback(undefined, status);
+                        window.location = 'index.php?login=true';
+                    } else { // some other error
+                        var status = this.statusText;
+                        typeof callback === 'function' && callback(undefined, status);
+                    }
                 }
             }
-        }
-        xhttp.send();
-
-        }
+            xhttp.send();
+        }, fsdelay);
+    }
 
     function getPedigree(generations, id, rootGen, rootNode) {
         rootGen  || (rootGen = 0);
@@ -442,6 +455,8 @@ function initialize() {
                     }
                 }
                 readPedigreeLoop();
+            } else {
+                completionEvents();
             }
         });
   
@@ -1128,6 +1143,7 @@ function initialize() {
 
     function completionEvents() {
         loadingAnimationEnd();
+        fsdelay = 0;
         var runButton = document.getElementById('runButton');
         runButton.disabled = false;
         runButton.className = 'button green';
