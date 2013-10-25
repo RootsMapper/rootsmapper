@@ -459,7 +459,6 @@ function initialize() {
     function readPedigreeLoop() {
         delay = 1;
         familyTree.IDDFS(function (tree, cont) {
-            
             var node = tree.node;
             var gen = tree.generation;
             var ID = familyTree.getNode(gen, node);
@@ -473,7 +472,8 @@ function initialize() {
                             result.isPaternal = true;
                         }
                         familyTree.setNode(result, gen, node);
-                        getMeABirthLatLng(gen, node, cont);
+                        getMeABirthLatLng(gen, node);
+                        cont();
                     });
                 } else {
                     cont();
@@ -717,31 +717,31 @@ function initialize() {
         }
     }
 
-    function getMeABirthLatLng(gen,node,next) {
+    function getMeABirthLatLng(gen,node,callback) {
         setTimeout(function () {
             getLatLng(familyTree.getNode(gen,node).birth.place, function (res) {
                 if (res == "empty") {
                     delay++
-                    getMeABirthLatLng(gen, node, next);
+                    getMeABirthLatLng(gen, node, callback);
                 } else if (res == "other") {
                     getPlaceAuthority(gen, node);
-                    next();
+                    typeof callback === 'function' && callback();
 
                 } else if (!res) {
                     getChildBirthPlace2(node, gen, function (ref) {
                         familyTree.getNode(gen, node).birth.latlng = ref;
                         plotParent(node, gen);
-                        next();
+                        typeof callback === 'function' && callback();
                     });
                 } else {
                     familyTree.getNode(gen, node).birth.latlng = res;
                     if (gen == 0 && node == 0) {
                         makeInfoWindow(familyTree.root());
                         familyTree.root().isPlotted = true;
-                        next();
+                        typeof callback === 'function' && callback();
                     } else {
                         plotParent(node, gen);
-                        next();
+                        typeof callback === 'function' && callback();
                     }
                 }
             });
