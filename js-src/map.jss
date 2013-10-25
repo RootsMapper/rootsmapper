@@ -17,7 +17,6 @@ var version;
 var userID;
 var familyTree;
 var discovery;
-var processingTime = 0;
 var queue = 1;
 
 function BinaryTree() {
@@ -387,62 +386,42 @@ function initialize() {
         // Generic function for FamilySearch API requests
         // options.url = API url (Required)
         // options.media = "xml" for xml, else JSON
-        //wait || (wait = 0);
-        if (processingTime > 800) {
-            fsdelay = 1000;
-        } else {
-            fsdelay = 0;
+        var xhttp;
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", options.url);
+        xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
+        if (timeout) {
+            xhttp.timeout = timeout;
+            xhttp.ontimeout = function () {
+                typeof callback === 'function' && callback(undefined, "Operation Timed Out");
+            }
         }
-        fsdelay = Math.round(processingTime / 60);
-        fsdelay = queue * 1000;
-        //setTimeout(function () {
-            var xhttp;
-            xhttp = new XMLHttpRequest();
-            xhttp.open("GET", options.url);
-            xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
-            if (timeout) {
-                xhttp.timeout = timeout;
-                xhttp.ontimeout = function () {
-                    processingTime = processingTime + timeout;
-                    setTimeout(function () { processingTime = processingTime - timeout }, 60 * 1000)
-                    typeof callback === 'function' && callback(undefined, "Operation Timed Out");
-                }
-            }
-            xhttp.onload = function (e) {
-                //clearTimeout(aborter);
-                processingTime = processingTime + 50;
-                setTimeout(function () { processingTime = processingTime - 50 }, 60 * 1000)
-                if (this.readyState === 4) {
-                    if (this.status === 200) { // works
-                        queue = 1;
-                        var status = this.statusText;
-                        if (options.media == "xml") {
-                            var result = this.responseXML.documentElement;
-                        } else {
-                            var result = JSON.parse(this.response);
-                        }
-                        typeof callback === 'function' && callback(result, status);
-                    } else if (this.status === 429) { // throttled
-                        //fsdelay = fsdelay + 1000;
-                        console.log(processingTime + " " + queue);
-                        queue++;
-                        setTimeout(function () {
-                            fsAPI(options, callback);
-                        }, queue * 1000);
-                    } else if (this.status === 401) { // session expired
-                        alert("Your session has expired. Please log in again.");
-                        window.location = 'index.php?login=true';
-                    } else { // some other error
-                        var status = this.statusText;
-                        typeof callback === 'function' && callback(undefined, status);
+        xhttp.onload = function (e) {
+            if (this.readyState === 4) {
+                if (this.status === 200) { // works
+                    queue = 1;
+                    var status = this.statusText;
+                    if (options.media == "xml") {
+                        var result = this.responseXML.documentElement;
+                    } else {
+                        var result = JSON.parse(this.response);
                     }
+                    typeof callback === 'function' && callback(result, status);
+                } else if (this.status === 429) { // throttled
+                    queue++;
+                    setTimeout(function () {
+                        fsAPI(options, callback);
+                    }, queue * 1000);
+                } else if (this.status === 401) { // session expired
+                    alert("Your session has expired. Please log in again.");
+                    window.location = 'index.php?login=true';
+                } else { // some other error
+                    var status = this.statusText;
+                    typeof callback === 'function' && callback(undefined, status);
                 }
             }
-            xhttp.onabort = function() {
-                typeof callback === 'function' && callback(undefined, "Aborted");
-            }
-            xhttp.send();
-    //}, fsdelay);
+        }
+        xhttp.send();
     }
 
     function getPedigree(generations, id, rootGen, rootNode) {
@@ -458,8 +437,6 @@ function initialize() {
 
     fsAPI({ media: 'xml', url: url }, function (result, status) {
         if (status == "OK") {
-            processingTime = generations * 5000;
-            setTimeout(function () { processingTime = processingTime - generations * 5000 }, 60 * 1000)
             var p = $(result).find("gx\\:person, person");
             for (var i = 0; i < p.length; i++) {
                 var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
@@ -496,7 +473,7 @@ function initialize() {
                             result.isPaternal = true;
                         }
                         familyTree.setNode(result, gen, node);
-                        getPhoto(result.id, gen, node);
+                        //getPhoto(result.id, gen, node);
                         getMeABirthLatLng(gen, node, cont);
                     });
                 } else {
@@ -506,9 +483,15 @@ function initialize() {
                 cont();
             }
         }, function () {
-            setTimeout(function () {
-                completionEvents();
-            }, 1000);
+            familyTree.IDDFS(function (tree, cont) {
+                var node = tree.node;
+                var gen = tree.generation;
+                var ID = familyTree.getNode(gen, node).id;
+                getPhoto(ID, gen, node, cont);
+                setTimeout(function () {
+                    completionEvents();
+                }, 2000);
+            }, function () {});
         });
     }
 
@@ -577,26 +560,27 @@ function initialize() {
         });
     }
 
-    function getPhoto(id, gen, node) {
+    function getPhoto(id, gen, node, callback) {
 
         var url = discovery.persons.href + '/' + id + '/memories?&type=photo&access_token=' + accesstoken;
         fsAPI({ url: url }, function (result, status) {
             if (status == "OK") {
-                processingTime = processingTime + 100;
-                setTimeout(function () { processingTime = processingTime - 100 }, 60 * 1000)
                 var sourceDescriptions = result.sourceDescriptions;
                 if (sourceDescriptions[0]) {
                     var url = sourceDescriptions[0].links["image-icon"].href;
                     var bigurl = sourceDescriptions[0].links.image.href;
                     familyTree.getNode(gen, node).imageIcon = url;
                     familyTree.getNode(gen, node).image = bigurl;
+                    callback();
                 } else {
                     familyTree.getNode(gen, node).imageIcon = "";
                     familyTree.getNode(gen, node).image = "";
+                    callback();
                 }
             } else {
                 familyTree.getNode(gen, node).imageIcon = "";
                 familyTree.getNode(gen, node).image = "";
+                callback();
             }
         },3000);
 
