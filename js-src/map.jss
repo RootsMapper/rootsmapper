@@ -382,13 +382,6 @@ function initialize() {
         });
     }
     
-    function throttling() {
-        setInterval(function () {
-            if(processingTime > 1) {
-            }
-        }, 1000);
-    }
-
     function fsAPI(options, callback, timeout) {
         // Generic function for FamilySearch API requests
         // options.url = API url (Required)
@@ -409,6 +402,7 @@ function initialize() {
                 xhttp.timeout = timeout;
                 xhttp.ontimeout = function () {
                     processingTime = processingTime + timeout;
+                    setTimeout(function () { processingTime = processingTime - timeout }, 60 * 1000)
                     typeof callback === 'function' && callback(undefined, "Operation Timed Out");
                 }
             }
@@ -427,6 +421,7 @@ function initialize() {
                         typeof callback === 'function' && callback(result, status);
                     } else if (this.status === 429) { // throttled
                         //fsdelay = fsdelay + 1000;
+                        console.log(processingTime);
                         fsAPI(options, callback);
                     } else if (this.status === 401) { // session expired
                         alert("Your session has expired. Please log in again.");
@@ -458,6 +453,7 @@ function initialize() {
     fsAPI({ media: 'xml', url: url }, function (result, status) {
         if (status == "OK") {
             processingTime = generations * 5000;
+            setTimeout(function () { processingTime = processingTime - generations * 5000 }, 60 * 1000)
             var p = $(result).find("gx\\:person, person");
             for (var i = 0; i < p.length; i++) {
                 var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
@@ -580,6 +576,8 @@ function initialize() {
         var url = discovery.persons.href + '/' + id + '/memories?&type=photo&access_token=' + accesstoken;
         fsAPI({ url: url }, function (result, status) {
             if (status == "OK") {
+                processingTime = processingTime + 100;
+                setTimeout(function () { processingTime = processingTime - 100 }, 60 * 1000)
                 var sourceDescriptions = result.sourceDescriptions;
                 if (sourceDescriptions[0]) {
                     var url = sourceDescriptions[0].links["image-icon"].href;
