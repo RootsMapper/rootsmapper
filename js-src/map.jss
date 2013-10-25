@@ -399,7 +399,7 @@ function initialize() {
         } else {
             fsdelay = 0;
         }
-        fsdelay = Math.round(processingTime / 60);
+        fsdelay = processingTime;
         setTimeout(function () {
             var xhttp;
             xhttp = new XMLHttpRequest();
