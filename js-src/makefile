@@ -9,7 +9,7 @@
 
 COMPILER=java -jar ~/compiler.jar
 
-SOURCES=map.js keyfilter.js oms.js loading.js infobox.js url-template.js
+SOURCES=map.js keyfilter.js oms.js loading.js infobox.js url-template.js binarytree.jss
 JS=$(SOURCES:.jss=.js)
 OUTPUT=../public/scripts/
 

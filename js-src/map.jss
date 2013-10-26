@@ -10,8 +10,7 @@ var oms;
 var accesstoken;
 var ib;
 var genquery;
-var delay = 100;
-var fsdelay = 0;
+var delay;
 var baseurl;
 var version;
 var userID;
@@ -19,136 +18,13 @@ var familyTree;
 var discovery;
 var queue = 1;
 
-function BinaryTree() {
-    this.Nodes = new Array();
-    this.generation = 0;
-    this.node = 0;
-
-    this.traverse = function (run, index, callback) {
-        var that = this;
-        if (index < this.stage.length) {
-            run(this.stage[index], function () {
-                index++;
-                that.traverse(run, index, callback)
-            });
-        } else {
-            callback();
+function discoveryResource() {
+    fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
+        if (status == "OK") {
+            discovery = result.links;
+            currentUser();
         }
-    }
-
-    this.IDDFS = function (run,callback) {
-        this.stage = new Array();
-        for (var i = 0; i < this.generations() + 2; i++) {
-            if (i < this.generations() + 1) {
-                this.root();
-                this.DLS(i);
-            } else {
-                this.traverse(run, 0, callback);
-            }
-        }
-    }
-
-    this.DLS = function (depth) {
-        if (depth == 0) {
-            this.stage.push({node: this.node, generation: this.generation});
-        } else {
-            if (this.father() !== undefined) {
-                this.DLS(depth - 1);
-            }
-            this.child();
-            if (this.mother() !== undefined) {
-                this.DLS(depth - 1);
-            }
-            this.child();
-        }
-    }
-
-    this.generations = function () {
-        return Math.ceil(log2(this.Nodes.length))-1;
-    }
-
-    this.setNode = function (value, generation, node) {
-        if (generation === undefined) {
-            this.Nodes[this.btSMF(this.generation, this.node)] = value;
-        } else {
-            this.Nodes[this.btSMF(generation, node)] = value;
-        }
-    }
-
-    this.getNode = function (generation, node) {
-        if (generation === undefined) {
-            return this.Nodes[this.btSMF(this.generation, this.node)];
-        } else {
-            return this.Nodes[this.btSMF(generation, node)];
-        }
-    }
-
-    this.setNodeByLocation = function (value, location) {
-        this.Nodes[location] = value;
-    }
-
-    this.getNodeByLocation = function (location) {
-        if (location === undefined) {
-            return this.Nodes[this.btSMF(this.generation, this.node)];
-        } else {
-            this.generation = Math.floor(log2(location));
-            this.node = location - Math.pow(2, this.generation);
-            return this.Nodes[location];
-        }
-    }
-
-    this.root = function (value) {
-        this.generation = 0;
-        this.node = 0;
-        if (value !== undefined) {
-            this.Nodes[this.btSMF(this.generation, this.node)] = value;
-        }
-        return this.Nodes[this.btSMF(this.generation, this.node)];
-
-    }
-
-    this.mother = function (value) {
-        this.generation++
-        this.node = this.node * 2 + 1;
-        if (value !== undefined) {
-            this.Nodes[this.btSMF(this.generation, this.node)] = value;
-        }
-        return this.Nodes[this.btSMF(this.generation, this.node)];
-    }
-
-    this.getMother = function (gen, node) {
-        return this.Nodes[this.btSMF(gen + 1, node * 2 + 1)];
-    }
-
-    this.father = function (value) {
-        this.generation++
-        this.node = this.node * 2;
-        if (value !== undefined) {
-            this.Nodes[this.btSMF(this.generation, this.node)] = value;
-        }
-        return this.Nodes[this.btSMF(this.generation, this.node)];
-    }
-
-    this.getFather = function (gen,node) {
-        return this.Nodes[this.btSMF(gen + 1, node * 2)];
-    }
-
-    this.child = function (value) {
-        this.generation--;
-        this.node = this.node >> 1;
-        if (value !== undefined) {
-            this.Nodes[this.btSMF(this.generation, this.node)] = value;
-        }
-        return this.Nodes[this.btSMF(this.generation, this.node)];
-    }
-
-    this.getChild = function (gen,node) {
-        return this.Nodes[this.btSMF(gen - 1, (node >> 1))];
-    }
-
-    this.btSMF = function (generation, node) {
-        return node + (1 << generation);
-    }
+    });
 }
 
 function currentUser() {
@@ -171,74 +47,6 @@ function currentUser() {
     
 }
 
-
-function customAlert() {
-    var div = document.createElement("div");
-    div.setAttribute('id', 'alertDiv');
-    var child = document.createElement("div");
-    child.setAttribute('id','alertText');
-    var message = "Your FamilySearch session is about to expire. You will be automatically logged out in <span id='timer'></span></br></br>";
-    var b = "<button class='button red' onclick='" + "window.location = 'logout.php'" + "';>Logout</button>";
-   
-    var count = 5;
-    var counter = setInterval(function () {
-        count = count - 1;
-        if (count <= 0) {
-            clearInterval(counter);
-            var div = document.getElementById("alertDiv");
-            document.body.removeChild(div);
-            var root = document.getElementById("rootGrid");
-            var inputFrame = document.getElementById("inputFrame");
-            root.removeChild(inputFrame);
-            var div = document.createElement("div");
-            div.setAttribute("id","inputFrame");
-            div.innerHTML = "<div class='hoverdiv'><button id='loginbutton' onclick='window.location='index.php?login=true''>Login to FamilySearch</button></div>";
-            root.appendChild(div);
-
-            // Also need to disable functions requiring sessionid or access token
-        } else {
-            // Adjust this to actually say minutes and seconds, appropriately
-            document.getElementById("timer").innerHTML = count + " seconds."; // watch for spelling
-        }
-    }, 1000);
-
-    var c = "<button class='button green' onclick='emptyQuery(); clearInterval(" + counter + ")';>Keep me logged in</button>";
-    var d = "<span id='timer'></span>";
-    child.innerHTML = message + c;
-    div.appendChild(child);
-    document.body.appendChild(div);
-
-}
-
-function emptyQuery() {
-    var div = document.getElementById("alertDiv");
-    document.body.removeChild(div);
-
-    var xhttp;
-    var url = baseurl + "/platform/tree/persons/" + userID + "?access_token=" + accesstoken;
-    xhttp = new XMLHttpRequest();
-    xhttp.open("GET", url);
-    xhttp.setRequestHeader('Accept', 'application/xml');
-
-    xhttp.onload = function (e) {
-        if (xhttp.readyState === 4) {
-            if (xhttp.status === 200) {
-            } else if (xhttp.status === 401) {
-                alert("Sorry, your session has already expired. Please log in again.");
-                window.location = 'index.php?login=true';
-            }
-        }
-    }
-
-    xhttp.send();
-    sessionHandler();
-}
-
-function sessionHandler() {
-    var handler = setTimeout(function () {
-        customAlert();
-    }, 10*1000);
-}
 
 function initialize() {
  
@@ -282,77 +90,13 @@ function initialize() {
             document.getElementById("donatebutton").onmouseover = function () { tooltip("Help keep this site up and running","donatebutton",-65,-65); }
         }
         
-        var ua = navigator.userAgent.toLowerCase();
-        if (ua.indexOf('safari') != -1) {
-            if (ua.indexOf('chrome') > -1) {
-                var safari = false; // chrome
-            } else {
-                var safari = true; // saf
-            }
-        }
-
         if (accesstoken) {
-            //if (!safari) {
-                //currentUser();
-            //} else {
-            //    populateUser();
-            //}
-            //sessionHandler();
-                discoveryResource();
-
+            discoveryResource();
         }
 
         google.maps.event.addListener(map, 'click', function () {
             ib.close();
         });
-
-        
-
-    }
-
-    function tooltip(tip,el, v, h) {
-		var vert;
-		var horiz;
-    	if (v) {vert = v} else {vert = 0}
-		if (h) {horiz = h} else {horiz = 0}
-		var tt;
-		var that = document.getElementById(el);
-
-		var timeoutId = setTimeout(function () {
-		tt = document.createElement('div');
-		tt.setAttribute('id', 'tt');
-		tt.innerHTML = tip;
-		var rect = that.getBoundingClientRect();
-            tt.style.top = (rect.bottom +vert) + 'px';
-            tt.style.left =(rect.left +horiz) + 'px';
-
-            document.body.appendChild(tt);
-
-            var timer = setTimeout(function () {
-                if (document.getElementById('tt')) {
-                    var m = document.getElementById('tt');
-                    document.body.removeChild(m);
-                    }
-            }, 4000);
-
-            that.onmouseout = function () {
-                clearTimeout(timer);
-                if (document.getElementById('tt')) {
-				var m = document.getElementById('tt');
-                    document.body.removeChild(tt);
-                    }
-                    };
-
-                    }, 500);
-
-				that.onmouseout = function () {
-					clearTimeout(timeoutId);
-					if (document.getElementById('tt')) {
-                        var m = document.getElementById('tt');
-                        document.body.removeChild(m);
-                    }
-        };
-
     }
 
     function ancestorgens(gens) {
@@ -371,15 +115,6 @@ function initialize() {
         genquery = 1;
         getPedigree(1, id, rootGen, rootNode);
 
-    }
-    
-    function discoveryResource() {
-        fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
-            if (status == "OK") {
-                discovery = result.links;
-                currentUser();
-            }
-        });
     }
     
     function fsAPI(options, callback, timeout) {
@@ -457,7 +192,6 @@ function initialize() {
     }
 
     function readPedigreeLoop() {
-        delay = 1;
         familyTree.IDDFS(function (tree, cont) {
             var node = tree.node;
             var gen = tree.generation;
@@ -465,15 +199,15 @@ function initialize() {
             var pause = true;
             if (ID) {
                 if (ID.isPlotted !== true) {
-                    personRead2(ID.id, function (result) {
+                    personRead(ID.id, function (result) {
                         result.generation = gen;
                         result.node = node;
                         if (node < Math.pow(2, gen - 1)) {
                             result.isPaternal = true;
                         }
                         familyTree.setNode(result, gen, node);
-                        getMeABirthLatLng(gen, node);
-                        cont();
+                        getMeABirthLatLng(gen, node, cont);
+                        //cont();
                     });
                 } else {
                     cont();
@@ -494,28 +228,7 @@ function initialize() {
         });
     }
 
-    function getPlaceAuthority(gen,node) {
-        var place = familyTree.getNode(gen, node).birth.place;
-        var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
-        fsAPI({ media: 'xml', url: url }, function (result, status) {
-            if (status == "OK") {
-                var point = $(result).find("point");
-                var lat = point[0].childNodes[0].textContent;
-                var lng = point[0].childNodes[1].textContent;
-                var latlng = new google.maps.LatLng(lat, lng);
-                familyTree.getNode(gen, node).birth.latlng = latlng;
-                plotParent(node, gen);
-            } else {
-                getChildBirthPlace2(node, gen, function (ref) {
-                    familyTree.getNode(gen, node).birth.latlng = ref;
-                    plotParent(node, gen);
-                });
-            }
-        });
-    }
-
-
-    function personRead2(id, callback) {
+    function personRead(id, callback) {
 
         var url = discovery.persons.href + '/' + id + '?&access_token=' + accesstoken;
         fsAPI({ url: url }, function (result, status) {
@@ -586,171 +299,112 @@ function initialize() {
         }
     }
 
-    function personRead(id, callback) {
-
-        var url = baseurl + "/familytree/v2/person/" + id + "?&events=standard&sessionId=" + accesstoken;
-
-        var xhttp;
-        xhttp = new XMLHttpRequest();
-        xhttp.open("GET", url);
-
-        xhttp.onload = function (e) {
-            if (xhttp.readyState === 4) {
-                if (xhttp.status === 200) {
-
-                    var xmlDocument = xhttp.responseXML.documentElement;
-
-                    // Get full name of individual
-                    var fullText = xmlDocument.getElementsByTagName("fullText");
-                    if (fullText[0]) {
-                        var name = fullText[0].textContent;
-                    }
-
-                    // Get user id if none was supplied
-                    if (id == "") {
-                        var person = xmlDocument.getElementsByTagName("person");
-                        if (person[0]) {
-                            id = person[0].getAttribute("id");
-                        }
-                    }
-
-                    var genders = xmlDocument.getElementsByTagName("gender");
-                    if (genders[0]) {
-                        var gender = genders[0].textContent;
-                    }
-                    var death = {
-                        date: null,
-                        place: null
-                    }
-                    var birth = {
-                        date: null,
-                        place: null
-                    }
-                    // Get birth date and location
-                    var events = xmlDocument.getElementsByTagName("events");
-                    if (events[0]) {
-                        var value = events[0].getElementsByTagName("value");
-                        for (var i = 0; i < value.length; i++) {
-                            var dates = value[i].getElementsByTagName("date");
-                            var places = value[i].getElementsByTagName("place");
-
-                            if (places[0]) {
-                                if (places[0].childNodes[1]) {
-                                    var place = places[0].childNodes[1].textContent;
-                                } else {
-                                    var place = places[0].childNodes[0].textContent;
-                                }
-                            }
-                            if (dates[0]) {
-                                if (dates[0].childNodes[1]) {
-                                    var date = dates[0].childNodes[1].textContent;
-                                } else {
-                                    var date = dates[0].childNodes[0].textContent;
-                                }
-                            }
-
-                            if (value[i].getAttribute("type") == "Birth") {
-                                // Package birth information
-                                var birth = {
-                                    date: date,
-                                    place: place
-                                }
-                            } else if (value[i].getAttribute("type") == "Death") {
-                                // Package death information
-                                var death = {
-                                    date: date,
-                                    place: place
-                                }
-                            }
-                        }
-                    }
-
-                    // Package individual summary
-                    var personObject = {
-                        name: name,
-                        id: id,
-                        birth: birth,
-                        death: death,
-                        gender: gender
-                    }
-
-                    // Send reply
-                    callback(personObject);
-
-                } else {
-                    if (xhttp.status != 503) {
-                        completionEvents();
-                        alert("Error: " + xhttp.statusText);
+    function setPhoto(gen, node, timer) {
+        setTimeout(function () {
+            var portrait = document.getElementById('portrait');
+            if (portrait) {
+                var person = familyTree.getNode(gen, node);
+                if (person.image && person.imageIcon) {
+                    if (person.image == "none" && person.imageIcon == "none") {
+                        portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", 10); }
                     } else {
-                        callback(xhttp.status);
+                        var imageHTML = "<img style='height:300px;' src='" + person.image + "'>";
+                        portrait.setAttribute('src', person.imageIcon);
+                        portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 10); }
                     }
+                } else {
+                    setPhoto(gen, node, 50)
                 }
+            } else {
+                setPhoto(gen, node, 50)
             }
-        };
+        }, timer);
+    }
 
-        xhttp.send();
-        
+    function getMeABirthLatLng(gen,node,callback) {
+        getLatLng(familyTree.getNode(gen,node).birth.place, function (result,status) {
+            if (status == "OK") {
+                familyTree.getNode(gen, node).birth.latlng = result;
+                if (gen == 0 && node == 0) {
+                    createMarker(familyTree.root());
+                    familyTree.root().isPlotted = true;
+                    typeof callback === 'function' && callback();
+                } else {
+                    plotParent(gen, node);
+                    typeof callback === 'function' && callback();
+                }
+            } else if (status == "NONE") {
+                getPlaceAuthority(gen, node, function (result, status) {
+                    if (status == "OK") {
+                        familyTree.getNode(gen, node).birth.latlng = result;
+                        plotParent(gen, node);
+                    } else {
+                        getChildBirthPlace(gen, node, function (result) {
+                            familyTree.getNode(gen, node).birth.latlng = result;
+                            plotParent(gen, node);
+                        });
+                    }
+                });
+                typeof callback === 'function' && callback();
+            } else if (status == "EMPTY") {
+                getChildBirthPlace(gen, node, function (result) {
+                    familyTree.getNode(gen, node).birth.latlng = result;
+                    plotParent(gen, node);
+                    typeof callback === 'function' && callback();
+                });
+            }
+        });
     }
 
     function getLatLng(place, callback) {
 
         if (place) {
-            var geocoder = new google.maps.Geocoder();
-            var georequest = {
-                address: place
-            };
-            
-            geocoder.geocode(georequest, function (result, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    var latlng = result[0].geometry.location;
-                    callback(latlng);
-                } else {
-                    if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
-                        callback("empty");
+            setTimeout(function () {
+                var geocoder = new google.maps.Geocoder();
+                var georequest = {
+                    address: place
+                };
+
+                geocoder.geocode(georequest, function (result, status) {
+                    if (status == google.maps.GeocoderStatus.OK) {
+                        var latlng = result[0].geometry.location;
+                        typeof callback === 'function' && callback(latlng, "OK");
                     } else {
-                        callback("other");
+                        if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
+                            //typeof callback === 'function' && callback(undefined, "LIMIT");
+                            console.log("Google throttled. Delay = " + delay);
+                            delay++;
+                            getLatLng(place, callback);
+                        } else {
+                            typeof callback === 'function' && callback(undefined, "NONE");
+                        }
                     }
-                }
-            })
+                })
+            }, delay);
         } else {
-            callback(place);
+            typeof callback === 'function' && callback(undefined,"EMPTY");
         }
     }
 
-    function getMeABirthLatLng(gen,node,callback) {
-        setTimeout(function () {
-            getLatLng(familyTree.getNode(gen,node).birth.place, function (res) {
-                if (res == "empty") {
-                    delay++
-                    getMeABirthLatLng(gen, node, callback);
-                } else if (res == "other") {
-                    getPlaceAuthority(gen, node);
-                    typeof callback === 'function' && callback();
-
-                } else if (!res) {
-                    getChildBirthPlace2(node, gen, function (ref) {
-                        familyTree.getNode(gen, node).birth.latlng = ref;
-                        plotParent(node, gen);
-                        typeof callback === 'function' && callback();
-                    });
-                } else {
-                    familyTree.getNode(gen, node).birth.latlng = res;
-                    if (gen == 0 && node == 0) {
-                        makeInfoWindow(familyTree.root());
-                        familyTree.root().isPlotted = true;
-                        typeof callback === 'function' && callback();
-                    } else {
-                        plotParent(node, gen);
-                        typeof callback === 'function' && callback();
-                    }
-                }
-            });
-        }, delay);
+    function getPlaceAuthority(gen, node, callback) {
+        var place = familyTree.getNode(gen, node).birth.place;
+        var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
+        fsAPI({ media: 'xml', url: url }, function (result, status) {
+            if (status == "OK") {
+                var point = $(result).find("point");
+                var lat = point[0].childNodes[0].textContent;
+                var lng = point[0].childNodes[1].textContent;
+                var latlng = new google.maps.LatLng(lat, lng);
+                typeof callback === 'function' && callback(latlng, status);
+            } else {
+                typeof callback === 'function' && callback(undefined, status);
+            }
+        });
     }
 
-    function plotParent(node,gen) { 
+    function plotParent(gen, node) { 
         var parent = familyTree.getNode(gen, node);
-        var child = familyTree.getChild(gen,node);
+        var child = familyTree.getChild(gen, node);
 
         if (parent.isPaternal == true) {
             var color = rgbToHex(74, 96, 255);
@@ -762,39 +416,23 @@ function initialize() {
 
             if (child.birth.latlng && parent.birth.latlng) {
                 polymap([child.birth.latlng, parent.birth.latlng], color, node, gen, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
-                    makeInfoWindow(familyTree.getNode(gen, node));
+                    createMarker(familyTree.getNode(gen, node));
                     familyTree.getNode(gen, node).isPlotted = true;
                 });
             } else {
                 console.log("Recursion waiting for " + child.name + " ... ");
                 setTimeout(function () {
-                    plotParent(node, gen);
+                    plotParent(gen, node);
                 }, 1000);
             }
         } else {
             console.log("Recursion waiting for " + child + " ... ");
             setTimeout(function () {
-                plotParent(node, gen);
+                plotParent(gen, node);
             }, 1000);
         }
             
 
-    }
-
-    function callLoopNext(loop,progenitors) {
-
-        var idx = loop.iteration();
-        if ( log2(idx+2) == Math.round(log2(idx + 2)) ) { // Finished a complete generation
-            if (idx !== 0) {
-                //checkBounds(progenitors, loop);
-                loop.next()
-            } else {
-                loop.next();
-            }
-        } else {
-            loop.next();
-        }
-        
     }
 
     function checkBounds(progenitors,loop) {
@@ -803,7 +441,7 @@ function initialize() {
         var currentBounds = map.getBounds();
 
         if (firstTime.plot == true) {
-            makeInfoWindow(progenitors[0]);
+            createMarker(progenitors[0]);
             firstTime.plot = false;
         }
 
@@ -860,22 +498,17 @@ function initialize() {
 
     }
 
-    function makeInfoWindow(p) {
+    function createMarker(p) {
         if (p) {
             if (p.birth.latlng) {
 
                 if (p.gender == "Male") {
-                    var bgcolor = 'lightblue'; //rgbToHex(0, 176, 240);
                     var icon = 'images/male' + p.generation + '.png?v=' + version;
                     var src = 'images/man.png?v=' + version;
                 } else {
-                    var bgcolor = 'pink'; // rgbToHex(245, 139, 237);
                     var icon = 'images/female' + p.generation + '.png?v=' + version;
                     var src = 'images/woman.png?v=' + version;
                 }
-                var self = "<img style='width: 18px; height: 18px; margin-top: 10px;' src='" + icon + "'>";
-                var father = "<img style='width: 18px; height: 18px; margin-bottom:1px;' src='images/male" + (p.generation + 1) + ".png?v=" + version + "'>";
-                var mother = "<img style='width: 18px; height: 18px; margin-top:1px;' src='images/female" + (p.generation + 1) + ".png?v=" + version + "'>";
                 var scaleFactor = .5;
                 var opts = {
                     map: map,
@@ -890,86 +523,10 @@ function initialize() {
                 }
 
                 var mark = new google.maps.Marker(opts);
-                mark.generation = p.generation;
-                mark.node = p.node;
-                mark.expandButton = "<div  style='height:38px;'>" +
-                                    "<div id='ebutton' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.isExpanded=true; ancestorExpand(\"" + p.id +
-                                    "\"," + p.generation + "," + p.node + "); ib.close();'>" +
-                                        "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
-                                        "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
-                                        "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
-                                    '</div>';
-                                
-                mark.deleteButton = "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version +
-                                  "' style='width:25px; height:26px; margin-top: 12px;' onclick='unPlot(" +p.generation + "," +p.node +") ;'</div>";
+                createInfoBox(mark, p, icon, src);
                 
-                //if (p.generation > genquery - 1) {  
-                //    mark.isExpanded = false;
-                //} else {
-                //    mark.isExpanded = true;
-                //}
-                mark.personID = p.id;
-                var url = baseurl + '/tree/#view=ancestor&person=' + p.id;
-
-                mark.infoBoxContent =
-                "<div id='infow'>" +
-                    "<div class='person'>" +
-                        "<img id='portrait' class='profile-image' src='" + src + "'>" +
-                        "<div class='box'>" +
-                            "<div class='xlarge'>" + p.name + "</div>" +
-                            "<div class='large'>" + p.id +
-                            "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
-                        "</div>" + "<img id='fsButton' class='profile-image' src='images/fs_logo.png?v=" + version + "' onclick='window.open(\"" + url + "\");'>" +
-                    "</div>" +
-                    "<div class='person'>" +
-                        "<div class='label'>BIRTH</div>" +
-                        "<div class='box'>" +
-                            "<div class='large'>" + (p.birth.date || "") + "</div>" +
-                            "<div class='small'>" + (p.birth.place || "") + "</div>" +
-                        "</div>" +
-                    "</div>" +
-                    "<div class='person'>" +
-                        "<div class='label'>DEATH</div>" +
-                        "<div class='box'>" +
-                            "<div class='large'>" + (p.death.date || "") + "</div>" +
-                            "<div class='small'>" + (p.death.place || "") + "</div>" +
-                        "</div>" +
-                    "</div>";
-                        
                 oms.addListener('click', function (mark, event) {
-
-                    getPhoto(mark.personID,mark.generation, mark.node);
-
-                    var fatherPlotted = false;
-                    var motherPlotted = false;
-                    if (familyTree.getFather(mark.generation, mark.node)) {
-                        if (familyTree.getFather(mark.generation, mark.node).isPlotted == true) {
-                            fatherPlotted = true;
-                        }
-                    }
-
-                    if (familyTree.getMother(mark.generation, mark.node)) {
-                        if (familyTree.getMother(mark.generation, mark.node).isPlotted == true) {
-                            motherPlotted = true;
-                        }
-                    }
-
-                    if (motherPlotted == false && fatherPlotted == false) { // neither parent is plotted, okay to show delete button
-                        var buttons = mark.expandButton + mark.deleteButton + '</div>';
-                    } else if (motherPlotted == true && fatherPlotted == true) {
-                        var buttons = "";
-                    } else {
-                        var buttons = mark.expandButton + '</div>';
-                    }
-
-                    if (mark.isExpanded) {
-                        ib.setContent(mark.infoBoxContent + '</div>');
-                    } else {
-                        ib.setContent(mark.infoBoxContent + buttons + '</div>');
-                    }
-                  
-                    ib.open(map, mark);
-                    setPhoto(mark.generation, mark.node,0);
+                    infoBoxClick(mark);
                 });
 
                 oms.addListener('spiderfy', function (mark) {
@@ -986,7 +543,88 @@ function initialize() {
         }
     }
 
-    function unPlot(gen, node) {
+    function createInfoBox(mark, p, icon, src) {
+        var father = "<img style='width: 18px; height: 18px; margin-bottom:1px;' src='images/male" + (p.generation + 1) + ".png?v=" + version + "'>";
+        var mother = "<img style='width: 18px; height: 18px; margin-top:1px;' src='images/female" + (p.generation + 1) + ".png?v=" + version + "'>";
+        var self = "<img style='width: 18px; height: 18px; margin-top: 10px;' src='" + icon + "'>";
+        mark.generation = p.generation;
+        mark.node = p.node;
+        mark.expandButton = "<div  style='height:38px;'>" +
+                            "<div id='ebutton' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.isExpanded=true; ancestorExpand(\"" + p.id +
+                            "\"," + p.generation + "," + p.node + "); ib.close();'>" +
+                                "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
+                                "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
+                                "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
+                            '</div>';
+
+        mark.deleteButton = "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version +
+                          "' style='width:25px; height:26px; margin-top: 12px;' onclick='deleteMarker(" + p.generation + "," + p.node + ") ;'</div>";
+
+        mark.personID = p.id;
+        var url = baseurl + '/tree/#view=ancestor&person=' + p.id;
+
+        mark.infoBoxContent =
+        "<div id='infow'>" +
+            "<div class='person'>" +
+                "<img id='portrait' class='profile-image' src='" + src + "'>" +
+                "<div class='box'>" +
+                    "<div class='xlarge'>" + p.name + "</div>" +
+                    "<div class='large'>" + p.id +
+                    "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
+                "</div>" + "<img id='fsButton' class='profile-image' src='images/fs_logo.png?v=" + version + "' onclick='window.open(\"" + url + "\");'>" +
+            "</div>" +
+            "<div class='person'>" +
+                "<div class='label'>BIRTH</div>" +
+                "<div class='box'>" +
+                    "<div class='large'>" + (p.birth.date || "") + "</div>" +
+                    "<div class='small'>" + (p.birth.place || "") + "</div>" +
+                "</div>" +
+            "</div>" +
+            "<div class='person'>" +
+                "<div class='label'>DEATH</div>" +
+                "<div class='box'>" +
+                    "<div class='large'>" + (p.death.date || "") + "</div>" +
+                    "<div class='small'>" + (p.death.place || "") + "</div>" +
+                "</div>" +
+            "</div>";
+    }
+
+    function infoBoxClick(mark) {
+        getPhoto(mark.personID, mark.generation, mark.node);
+
+        var fatherPlotted = false;
+        var motherPlotted = false;
+        if (familyTree.getFather(mark.generation, mark.node)) {
+            if (familyTree.getFather(mark.generation, mark.node).isPlotted == true) {
+                fatherPlotted = true;
+            }
+        }
+
+        if (familyTree.getMother(mark.generation, mark.node)) {
+            if (familyTree.getMother(mark.generation, mark.node).isPlotted == true) {
+                motherPlotted = true;
+            }
+        }
+
+        if (motherPlotted == false && fatherPlotted == false) { // neither parent is plotted, okay to show delete button
+            var buttons = mark.expandButton + mark.deleteButton + '</div>';
+        } else if (motherPlotted == true && fatherPlotted == true) {
+            var buttons = "";
+        } else {
+            var buttons = mark.expandButton + '</div>';
+        }
+
+        if (mark.isExpanded) {
+            ib.setContent(mark.infoBoxContent + '</div>');
+        } else {
+            ib.setContent(mark.infoBoxContent + buttons + '</div>');
+        }
+
+        ib.open(map, mark);
+        setPhoto(mark.generation, mark.node, 0);
+    }
+
+    function deleteMarker(gen, node) {
         familyTree.getNode(gen,node).marker.setVisible(false);
         familyTree.getNode(gen,node).polyline.setVisible(false);
         familyTree.getChild(gen,node).marker.isExpanded = false;
@@ -994,46 +632,23 @@ function initialize() {
         familyTree.setNode(undefined, gen, node);
         ib.close();
     }
-    
-    function setPhoto(gen,node,timer) {
-        setTimeout(function () {
-            var portrait = document.getElementById('portrait');
-            if (portrait) {
-                var person = familyTree.getNode(gen, node);
-                if (person.image && person.imageIcon) {
-                    if (person.image == "none" && person.imageIcon == "none") {
-                        portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", 10); }
-                    } else {
-                        var imageHTML = "<img style='height:300px;' src='" + person.image + "'>";
-                        portrait.setAttribute('src', person.imageIcon);
-                        portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 10); }
-                    }
-                } else {
-                    setPhoto(gen, node,50)
-                }
-            } else {
-                setPhoto(gen, node,50)
-            }
-        }, timer);
-    }
 
-    function getChildBirthPlace2(node, gen,cb) {
+    function getChildBirthPlace(gen, node, callback) {
         // Call this function if you can't find a person's birthplace
         // It will check if the person has children, and if so, returns the child's birthplace instead
 
         var child = familyTree.getChild(gen, node);
         if (child.birth) {
             if (child.birth.latlng) {
-                var e = child.birth.latlng;
-                cb(e);
+                typeof callback === 'function' && callback(child.birth.latlng);
             } else {
                 setTimeout(function () {
-                    getChildBirthPlace2(node, gen,cb)
+                    getChildBirthPlace(gen, node, callback);
                 }, 1000);
             }
         } else {
             setTimeout(function () {
-                getChildBirthPlace2(node, gen,cb)
+                getChildBirthPlace(gen, node, callback);
             }, 1000);
         }
 
@@ -1058,7 +673,6 @@ function initialize() {
     }
 
     function clearOverlays() {
-
         if (familyTree) {
             familyTree.IDDFS(function (tree, cont) {
                 var node = tree.node;
@@ -1100,32 +714,9 @@ function initialize() {
         });
     }
 
-    function componentToHex(c) {
-        var hex = c.toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-
-    function rgbToHex(r, g, b) {
-        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-    }
-
     function populateIdField(id) {
         var personId = document.getElementById("personid");
         personId.value = id;
-    }
-
-    function populateUser() {
-        if (!userID) {
-            personRead("", function (currentUser) {
-                populateIdField(currentUser.id);
-                userID = currentUser.id;
-                var username = document.getElementById("username");
-                username.innerHTML = currentUser.name;
-                ancestorgens();
-            });
-        } else {
-            populateIdField(userID);
-        }
     }
 
     function isEven(num) {
@@ -1137,12 +728,22 @@ function initialize() {
         }
     }
 
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    function rgbToHex(r, g, b) {
+        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+    }
+
     function log2(num) {
         // Base 2 logarithm of number
         return Math.log(num) / Math.log(2);
     }
 
     function startEvents() {
+        delay = 1;
         loadingAnimationStart();
         var runButton = document.getElementById('runButton');
         runButton.disabled = true;
@@ -1151,7 +752,6 @@ function initialize() {
 
     function completionEvents() {
         loadingAnimationEnd();
-        fsdelay = 0;
         var runButton = document.getElementById('runButton');
         runButton.disabled = false;
         runButton.className = 'button green';
@@ -1165,6 +765,119 @@ function initialize() {
                 firstTime.box = false;
             }
 		}
+    }
+
+    function customAlert() {
+        var div = document.createElement("div");
+        div.setAttribute('id', 'alertDiv');
+        var child = document.createElement("div");
+        child.setAttribute('id', 'alertText');
+        var message = "Your FamilySearch session is about to expire. You will be automatically logged out in <span id='timer'></span></br></br>";
+        var b = "<button class='button red' onclick='" + "window.location = 'logout.php'" + "';>Logout</button>";
+
+        var count = 5;
+        var counter = setInterval(function () {
+            count = count - 1;
+            if (count <= 0) {
+                clearInterval(counter);
+                var div = document.getElementById("alertDiv");
+                document.body.removeChild(div);
+                var root = document.getElementById("rootGrid");
+                var inputFrame = document.getElementById("inputFrame");
+                root.removeChild(inputFrame);
+                var div = document.createElement("div");
+                div.setAttribute("id", "inputFrame");
+                div.innerHTML = "<div class='hoverdiv'><button id='loginbutton' onclick='window.location='index.php?login=true''>Login to FamilySearch</button></div>";
+                root.appendChild(div);
+
+                // Also need to disable functions requiring sessionid or access token
+            } else {
+                // Adjust this to actually say minutes and seconds, appropriately
+                document.getElementById("timer").innerHTML = count + " seconds."; // watch for spelling
+            }
+        }, 1000);
+
+        var c = "<button class='button green' onclick='emptyQuery(); clearInterval(" + counter + ")';>Keep me logged in</button>";
+        var d = "<span id='timer'></span>";
+        child.innerHTML = message + c;
+        div.appendChild(child);
+        document.body.appendChild(div);
+
+    }
+
+    function tooltip(tip, el, v, h) {
+        var vert;
+        var horiz;
+        if (v) { vert = v } else { vert = 0 }
+        if (h) { horiz = h } else { horiz = 0 }
+        var tt;
+        var that = document.getElementById(el);
+
+        var timeoutId = setTimeout(function () {
+            tt = document.createElement('div');
+            tt.setAttribute('id', 'tt');
+            tt.innerHTML = tip;
+            var rect = that.getBoundingClientRect();
+            tt.style.top = (rect.bottom + vert) + 'px';
+            tt.style.left = (rect.left + horiz) + 'px';
+
+            document.body.appendChild(tt);
+
+            var timer = setTimeout(function () {
+                if (document.getElementById('tt')) {
+                    var m = document.getElementById('tt');
+                    document.body.removeChild(m);
+                }
+            }, 4000);
+
+            that.onmouseout = function () {
+                clearTimeout(timer);
+                if (document.getElementById('tt')) {
+                    var m = document.getElementById('tt');
+                    document.body.removeChild(tt);
+                }
+            };
+        }, 500);
+
+        that.onmouseout = function () {
+            clearTimeout(timeoutId);
+            if (document.getElementById('tt')) {
+                var m = document.getElementById('tt');
+                document.body.removeChild(m);
+            }
+        };
+
+    }
+
+
+    function emptyQuery() {
+        var div = document.getElementById("alertDiv");
+        document.body.removeChild(div);
+
+        var xhttp;
+        var url = baseurl + "/platform/tree/persons/" + userID + "?access_token=" + accesstoken;
+        xhttp = new XMLHttpRequest();
+        xhttp.open("GET", url);
+        xhttp.setRequestHeader('Accept', 'application/xml');
+
+        xhttp.onload = function (e) {
+            if (xhttp.readyState === 4) {
+                if (xhttp.status === 200) {
+                } else if (xhttp.status === 401) {
+                    alert("Sorry, your session has already expired. Please log in again.");
+                    window.location = 'index.php?login=true';
+                }
+            }
+        }
+
+        xhttp.send();
+        sessionHandler();
+    }
+
+    function sessionHandler() {
+        var handler = setTimeout(function () {
+            customAlert();
+        }, 10 * 1000);
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);
