@@ -146,7 +146,7 @@ function initialize() {
                     queue++;
                     setTimeout(function () {
                         fsAPI(options, callback);
-                    }, queue * 1000);
+                    }, 60 * 1000);
                 } else if (this.status === 401) { // session expired
                     alert("Your session has expired. Please log in again.");
                     window.location = 'index.php?login=true';
@@ -206,9 +206,10 @@ function initialize() {
                             result.isPaternal = true;
                         }
                         familyTree.setNode(result, gen, node);
-                        getMeABirthLatLng(gen, node, cont);
+                        //getMeABirthLatLng(gen, node);
                         //cont();
                     });
+                    cont();
                 } else {
                     cont();
                 }
@@ -216,15 +217,38 @@ function initialize() {
                 cont();
             }
         }, function () {
-            setTimeout(function () {
-                completionEvents();
-            }, 1000);
             familyTree.IDDFS(function (tree, cont) {
+
                 var node = tree.node;
                 var gen = tree.generation;
-                var ID = familyTree.getNode(gen, node).id;
-                getPhoto(ID, gen, node, cont);
-            }, function () {});
+                if (familyTree.getNode(gen, node)) {
+                    if (familyTree.getNode(gen, node).isPlotted !== true) {
+                        getMeABirthPlace(gen, node);
+                        setTimeout(function () {
+                            cont();
+                        }, 50);
+                    } else {
+                        cont();
+                    }
+                } else {
+                    cont();
+                }
+        }, function () {
+            setTimeout(function () {
+                completionEvents();
+            }, genquery * 1000);
+                familyTree.IDDFS(function (tree, cont) {
+                    var node = tree.node;
+                    var gen = tree.generation;
+                    if (familyTree.getNode(gen, node)) {
+                        if (!familyTree.getNode(gen, node).image) {
+                            var ID = familyTree.getNode(gen, node).id;
+                            getPhoto(ID, gen, node, cont);
+                        }
+                    }
+                }, function () { });
+            
+        });
         });
     }
 
@@ -356,6 +380,38 @@ function initialize() {
         });
     }
 
+    function getMeABirthPlace(gen, node, callback) {
+        getPlaceAuthority(gen,node, function (result, status) {
+            if (status == "OK") {
+                familyTree.getNode(gen, node).birth.latlng = result;
+                if (gen == 0 && node == 0) {
+                    createMarker(familyTree.root());
+                    familyTree.root().isPlotted = true;
+                    typeof callback === 'function' && callback();
+                } else {
+                    plotParent(gen, node);
+                    typeof callback === 'function' && callback();
+                }
+            } else {
+                console.log("Place authority fail. Try google.")
+                getLatLng(familyTree.getNode(gen, node).birth.place, function (result, status) {
+                    if (status == "OK") {
+                        familyTree.getNode(gen, node).birth.latlng = result;
+                        plotParent(gen, node);
+                        typeof callback === 'function' && callback();
+                    } else {
+                        getChildBirthPlace(gen, node, function (result) {
+                            familyTree.getNode(gen, node).birth.latlng = result;
+                            plotParent(gen, node);
+                            typeof callback === 'function' && callback();
+                        });
+
+                    }
+                });   
+            }
+        });
+    }
+
     function getLatLng(place, callback) {
 
         if (place) {
@@ -372,7 +428,7 @@ function initialize() {
                     } else {
                         if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
                             //typeof callback === 'function' && callback(undefined, "LIMIT");
-                            console.log("Google throttled. Delay = " + delay);
+                            console.log("Google throttled. Delay = " + delay + "ms. Place: " + place);
                             delay++;
                             getLatLng(place, callback);
                         } else {
@@ -387,19 +443,33 @@ function initialize() {
     }
 
     function getPlaceAuthority(gen, node, callback) {
-        var place = familyTree.getNode(gen, node).birth.place;
-        var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
-        fsAPI({ media: 'xml', url: url }, function (result, status) {
-            if (status == "OK") {
-                var point = $(result).find("point");
-                var lat = point[0].childNodes[0].textContent;
-                var lng = point[0].childNodes[1].textContent;
-                var latlng = new google.maps.LatLng(lat, lng);
-                typeof callback === 'function' && callback(latlng, status);
+        if (familyTree.getNode(gen, node).birth) {
+            var place = familyTree.getNode(gen, node).birth.place;
+            if (place) {
+                var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
+                fsAPI({ media: 'xml', url: url }, function (result, status) {
+                    if (status == "OK") {
+                        var point = $(result).find("point");
+                        if (point[0]) {
+                            var lat = point[0].childNodes[0].textContent;
+                            var lng = point[0].childNodes[1].textContent;
+                            var latlng = new google.maps.LatLng(lat, lng);
+                            typeof callback === 'function' && callback(latlng, status);
+                        } else {
+                            typeof callback === 'function' && callback(undefined, "NONE");
+                        }
+                    } else {
+                        typeof callback === 'function' && callback(undefined, status);
+                    }
+                });
             } else {
-                typeof callback === 'function' && callback(undefined, status);
+                typeof callback === 'function' && callback(undefined, "EMPTY");
             }
-        });
+        } else {
+            setTimeout(function () {
+                getPlaceAuthority(gen, node, callback)
+            }, 100);
+        }
     }
 
     function plotParent(gen, node) { 
@@ -760,7 +830,7 @@ function initialize() {
                 var mark = familyTree.root().marker;
                 ib.setContent(mark.infoBoxContent + '</div>');
                 ib.open(map, mark);
-                getPhoto(mark.personID, 0, 0);
+                //getPhoto(mark.personID, 0, 0);
                 setPhoto(0,0,0);
                 firstTime.box = false;
             }
