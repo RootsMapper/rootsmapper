@@ -18,6 +18,8 @@ var familyTree;
 var discovery;
 var queue = 1;
 
+
+
 function discoveryResource() {
     fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
         if (status == "OK") {
