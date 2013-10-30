@@ -124,7 +124,9 @@ function initialize() {
         var xhttp;
         xhttp = new XMLHttpRequest();
         xhttp.open("GET", options.url);
-        xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
+        if(options.media != "none") {
+            xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
+        }
         if (timeout) {
             xhttp.timeout = timeout;
             xhttp.ontimeout = function () {
@@ -447,7 +449,7 @@ function initialize() {
             var place = familyTree.getNode(gen, node).birth.place;
             if (place) {
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
-                fsAPI({ media: 'xml', url: url }, function (result, status) {
+                fsAPI({ media: 'none', url: url }, function (result, status) {
                     if (status == "OK") {
                         var point = $(result).find("point");
                         if (point[0]) {
