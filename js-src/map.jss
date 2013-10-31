@@ -791,6 +791,20 @@ function initialize() {
         personId.value = id;
     }
 
+    function populateUser() {
+        if (!userID) {
+            personRead("", function (currentUser) {
+                populateIdField(currentUser.id);
+                userID = currentUser.id;
+                var username = document.getElementById("username");
+                username.innerHTML = currentUser.name;
+                ancestorgens();
+            });
+        } else {
+            populateIdField(userID);
+        }
+    }
+
     function isEven(num) {
         // Returns true for even numbers and false for odd
         if (num / 2 == Math.round(num / 2)) {
