@@ -371,3 +371,8 @@ html, body {
     margin: 0;
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
 }
+
+@media print {
+    #inputFrame { display: none }
+    #lowerbuttonframe { display: none }
+}
