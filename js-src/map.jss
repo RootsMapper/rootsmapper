@@ -492,7 +492,7 @@ function initialize() {
                     });
                 } else {
                     $.ajax({
-                        url: url,
+                        url: url + "&callback=?",
                         dataType: 'xml',
                         success: function (result) {
                             var point = $(result).find("point");
