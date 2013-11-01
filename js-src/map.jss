@@ -416,7 +416,6 @@ function initialize() {
                     familyTree.root().isPlotted = true;
                     typeof callback === 'function' && callback();
                 } else {
-                    //plotParent(gen, node);
                     typeof callback === 'function' && callback();
                 }
             } else {
@@ -424,15 +423,18 @@ function initialize() {
                 getLatLng(familyTree.getNode(gen, node).birth.place, function (result, status) {
                     if (status == "OK") {
                         familyTree.getNode(gen, node).birth.latlng = result;
-                        //plotParent(gen, node);
-                        typeof callback === 'function' && callback();
+                        if (gen == 0 && node == 0) {
+                            createMarker(familyTree.root());
+                            familyTree.root().isPlotted = true;
+                            typeof callback === 'function' && callback();
+                        } else {
+                            typeof callback === 'function' && callback();
+                        }
                     } else {
                         getChildBirthPlace(gen, node, function (result) {
                             familyTree.getNode(gen, node).birth.latlng = result;
-                            //plotParent(gen, node);
                             typeof callback === 'function' && callback();
                         });
-
                     }
                 });   
             }
@@ -491,21 +493,9 @@ function initialize() {
                         }
                     });
                 } else {
-                    //var script = document.createElement('script');
-                    //script.setAttribute('type', 'text/javascript');
-                    //script.setAttribute('src', url);
-                    //script.setAttribute('id', 'script_id');
-                    //var script_id = document.getElementById('script_id');
-                    //document.getElementsByTagName('head')[0].appendChild(script);
-                    //ajaxcallback = function (data) {
-                    //    var pause = data;
-                    //};
-                    //var doc = document.getElementById('script_id');
-                    //var pause = true;
                     $.ajax({
                         url: url,
                         dataType: 'xml',
-                        crossDomain: true,
                         success: function (result) {
                             var point = $(result).find("point");
                             if (point[0]) {
