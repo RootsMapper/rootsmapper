@@ -474,7 +474,7 @@ function initialize() {
             var place = familyTree.getNode(gen, node).birth.place;
             if (place) {
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
-                if (baseurl.indexOf('sandbox') !== -1) {
+                if (baseurl.indexOf('sandbox') == -1) {
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
                         if (status == "OK") {
                             var point = $(result).find("point");
@@ -491,9 +491,21 @@ function initialize() {
                         }
                     });
                 } else {
+                    //var script = document.createElement('script');
+                    //script.setAttribute('type', 'text/javascript');
+                    //script.setAttribute('src', url);
+                    //script.setAttribute('id', 'script_id');
+                    //var script_id = document.getElementById('script_id');
+                    //document.getElementsByTagName('head')[0].appendChild(script);
+                    //ajaxcallback = function (data) {
+                    //    var pause = data;
+                    //};
+                    //var doc = document.getElementById('script_id');
+                    //var pause = true;
                     $.ajax({
-                        url: url + "&callback=?",
+                        url: url,
                         dataType: 'xml',
+                        crossDomain: true,
                         success: function (result) {
                             var point = $(result).find("point");
                             if (point[0]) {
