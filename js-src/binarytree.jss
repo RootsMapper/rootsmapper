@@ -29,7 +29,7 @@ function BinaryTree() {
 
     this.DLS = function (depth) {
         if (depth == 0) {
-            this.stage.push({ node: this.node, generation: this.generation });
+            this.stage.push({ node: this.node, generation: this.generation, value: this.getNode() });
         } else {
             if (this.father() !== undefined) {
                 this.DLS(depth - 1);

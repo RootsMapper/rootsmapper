@@ -107,7 +107,7 @@ function initialize() {
         startEvents();
 	    var select = document.getElementById('genSelect');
 	    genquery = parseFloat(select.value);
-        getPedigree(genquery, undefined, undefined);
+	    mapper(genquery);
 
     }
 
@@ -115,7 +115,7 @@ function initialize() {
 
         startEvents();
         genquery = 1;
-        getPedigree(1, id, rootGen, rootNode);
+        mapper(1, id, rootGen, rootNode);
 
     }
     
@@ -148,7 +148,7 @@ function initialize() {
                     queue++;
                     setTimeout(function () {
                         fsAPI(options, callback);
-                    }, 60 * 1000);
+                    }, 5 * 1000);
                 } else if (this.status === 401) { // session expired
                     alert("Your session has expired. Please log in again.");
                     window.location = 'index.php?login=true';
@@ -161,116 +161,141 @@ function initialize() {
         xhttp.send();
     }
 
-    function getPedigree(generations, id, rootGen, rootNode) {
+    function getPedigree(generations, id, rootGen, rootNode, callback) {
         rootGen || (rootGen = 0);
         rootNode || (rootNode = 0);
         id = id ? id: document.getElementById('personid').value;
 
         var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
             generations: generations,
-                person: id,
-        access_token: accesstoken
+            person: id,
+            access_token: accesstoken
         });
 
-    fsAPI({ media: 'xml', url: url }, function (result, status) {
-        if (status == "OK") {
-            var p = $(result).find("gx\\:person, person");
-            for (var i = 0; i < p.length; i++) {
-                var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
-                var n = parseFloat(num[0].textContent);
-                var gen = Math.floor(log2(n));
-                var node = n +Math.pow(2, gen) * (rootNode -1);
-                if (!familyTree.getNode(gen +rootGen, node)) {
-                        familyTree.setNode({ id: p[i].getAttribute("id")
-                }, (gen +rootGen), node);
-                    }
-            }
-            readPedigreeLoop();
-            } else {
-                completionEvents();
-            }
-        });
-  
+		fsAPI({ media: 'xml', url: url }, function (result, status) {
+			if (status == "OK") {
+				var p = $(result).find("gx\\:person, person");
+				for (var i = 0; i < p.length; i++) {
+					var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
+					var n = parseFloat(num[0].textContent);
+					var gen = Math.floor(log2(n));
+					var node = n +Math.pow(2, gen) * (rootNode -1);
+					if (!familyTree.getNode(gen +rootGen, node)) {
+						familyTree.setNode({ id: p[i].getAttribute("id") }, (gen +rootGen), node);
+					}
+				}
+				typeof callback === 'function' && callback();
+			} else {
+				completionEvents();
+			}
+		});  
     }
 
-    function readPedigreeLoop() {
-        familyTree.IDDFS(function (tree, cont) {
-            var node = tree.node;
-            var gen = tree.generation;
-            var ID = familyTree.getNode(gen, node);
-            var pause = true;
-            if (ID) {
-                if (ID.isPlotted !== true) {
-                    personRead(ID.id, function (result) {
-                        result.generation = gen;
-                        result.node = node;
-                        if (node < Math.pow(2, gen - 1)) {
-                            result.isPaternal = true;
-                        }
-                        familyTree.setNode(result, gen, node);
-                        //getMeABirthLatLng(gen, node);
-                        //cont();
-                    });
-                    cont();
-                } else {
-                    cont();
-                }
+    function mapper(generations,id,rootGen,rootNode) {
+        getPedigree(generations,id,rootGen,rootNode, function () { 
+            personReadLoop(function () {
+    		    placeReadLoop(function () {
+    			    setTimeout(function () {
+    				    plotterLoop(function () {	
+    					    completionEvents();
+						    if (baseurl.indexOf('sandbox') == -1) {
+    						    photoLoop();
+						    }
+					    });
+				    },1);
+                });
+            });
+        });
+    }
+
+	function personReadLoop(callback) {
+		familyTree.IDDFS(function (leaf, cont) {
+            var node = leaf.node;
+            var gen = leaf.generation;
+            if (leaf.value.isPlotted !== true) {
+                personRead(leaf.value.id, function (result) {
+                    result.generation = gen;
+                    result.node = node;
+                    if (node < Math.pow(2, gen -1)) {
+                        result.isPaternal = true;
+                    }
+                    familyTree.setNode(result, gen, node)
+                });
+                cont();
             } else {
                 cont();
             }
-        }, function () {
-            familyTree.IDDFS(function (tree, cont) {
-
-                var node = tree.node;
-                var gen = tree.generation;
-                if (familyTree.getNode(gen, node)) {
-                    if (familyTree.getNode(gen, node).isPlotted !== true) {
-                        getMeABirthPlace(gen, node);
-                        setTimeout(function () {
-                            cont();
-                        }, 50);
-                    } else {
-                        cont();
-                    }
-                } else {
-                    cont();
-                }
-        }, function () {
-            setTimeout(function () {
-                completionEvents();
-            }, genquery * 1000);
-                familyTree.IDDFS(function (tree, cont) {
-                    var node = tree.node;
-                    var gen = tree.generation;
-                    if (familyTree.getNode(gen, node)) {
-                        if (!familyTree.getNode(gen, node).image) {
-                            var ID = familyTree.getNode(gen, node).id;
-                            getPhoto(ID, gen, node, cont);
-                        }
-                    }
-                }, function () { });
-            
-        });
+        }, function () { 
+			typeof callback === 'function' && callback();
         });
     }
 
+	function placeReadLoop(callback) {
+		familyTree.IDDFS(function (leaf, cont) {
+    		var node = leaf.node;
+    		var gen = leaf.generation;
+    		if (leaf.value.isPlotted !== true) {
+    			getMeABirthPlace(gen, node);
+				cont();
+    		} else {
+    			cont();
+    		}
+    	}, function() {
+			typeof callback === 'function' && callback();
+		});
+    }
+
+    function plotterLoop(callback) {
+		familyTree.IDDFS(function (leaf, cont) {
+    		var node = leaf.node;
+    		var gen = leaf.generation;
+    		if (leaf.value.isPlotted !== true) {
+    		    if (!(gen == 0 && node == 0)) {
+    		        plotParent(gen, node);
+    		    }
+    			setTimeout(function () {
+    				cont();
+    			}, 50);
+    		} else {
+    			cont();
+			}
+    	}, function() {
+			typeof callback === 'function' && callback();
+	    });
+    }
+
+	function photoLoop(callback) {
+		familyTree.IDDFS(function (tree, cont) {
+    		var node = tree.node;
+    		var gen = tree.generation;
+    		if (!familyTree.getNode(gen, node).image) {
+    			var ID = familyTree.getNode(gen, node).id;
+    			getPhoto(ID, gen, node, cont);
+    		}
+		}, function () {
+			typeof callback === 'function' && callback();
+		});
+	}
+
     function personRead(id, callback) {
 
-        var url = discovery.persons.href + '/' + id + '?&access_token=' + accesstoken;
-        fsAPI({ url: url }, function (result, status) {
+        var url = discovery.persons.href + '/' + id + '?&access_token=' +accesstoken;
+        fsAPI({
+			url: url
+			}, function (result, status) {
             if (status == "OK") {
                 var person = result.persons[0];
                 var display = person.display;
                 var places = result.places;
 
                 var birth = {
-                    date: display.birthDate,
-                    place: display.birthPlace
+                	date: display.birthDate,
+                	place: display.birthPlace
                 }
 
                 var death = {
-                    date: display.deathDate,
-                    place: display.deathPlace
+                	date: display.deathDate,
+                	place: display.deathPlace
                 }
 
                 if (person.living == true) {
@@ -284,15 +309,15 @@ function initialize() {
                 }
 
                 var personObject = {
-                    name: display.name,
-                    id: person.id,
-                    birth: birth,
-                    death: death,
-                    gender: display.gender,
-                    place: placestring
-                }
+                	name: display.name,
+                	id: person.id,
+                	birth: birth,
+                	death: death,
+                	gender: display.gender,
+                	place: placestring
+			}
 
-                // Send reply
+				// Send reply
                 callback(personObject);
             }
         });
@@ -391,7 +416,7 @@ function initialize() {
                     familyTree.root().isPlotted = true;
                     typeof callback === 'function' && callback();
                 } else {
-                    plotParent(gen, node);
+                    //plotParent(gen, node);
                     typeof callback === 'function' && callback();
                 }
             } else {
@@ -399,12 +424,12 @@ function initialize() {
                 getLatLng(familyTree.getNode(gen, node).birth.place, function (result, status) {
                     if (status == "OK") {
                         familyTree.getNode(gen, node).birth.latlng = result;
-                        plotParent(gen, node);
+                        //plotParent(gen, node);
                         typeof callback === 'function' && callback();
                     } else {
                         getChildBirthPlace(gen, node, function (result) {
                             familyTree.getNode(gen, node).birth.latlng = result;
-                            plotParent(gen, node);
+                            //plotParent(gen, node);
                             typeof callback === 'function' && callback();
                         });
 
@@ -449,21 +474,42 @@ function initialize() {
             var place = familyTree.getNode(gen, node).birth.place;
             if (place) {
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
-                fsAPI({ media: 'xml', url: url }, function (result, status) {
-                    if (status == "OK") {
-                        var point = $(result).find("point");
-                        if (point[0]) {
-                            var lat = point[0].childNodes[0].textContent;
-                            var lng = point[0].childNodes[1].textContent;
-                            var latlng = new google.maps.LatLng(lat, lng);
-                            typeof callback === 'function' && callback(latlng, status);
+                if (baseurl.indexOf('sandbox') !== -1) {
+                    fsAPI({ media: 'xml', url: url }, function (result, status) {
+                        if (status == "OK") {
+                            var point = $(result).find("point");
+                            if (point[0]) {
+                                var lat = point[0].childNodes[0].textContent;
+                                var lng = point[0].childNodes[1].textContent;
+                                var latlng = new google.maps.LatLng(lat, lng);
+                                typeof callback === 'function' && callback(latlng, status);
+                            } else {
+                                typeof callback === 'function' && callback(undefined, "NONE");
+                            }
                         } else {
-                            typeof callback === 'function' && callback(undefined, "NONE");
+                            typeof callback === 'function' && callback(undefined, status);
                         }
-                    } else {
-                        typeof callback === 'function' && callback(undefined, status);
-                    }
-                });
+                    });
+                } else {
+                    $.ajax({
+                        url: url,
+                        dataType: 'xml',
+                        success: function (result) {
+                            var point = $(result).find("point");
+                            if (point[0]) {
+                                var lat = point[0].childNodes[0].textContent;
+                                var lng = point[0].childNodes[1].textContent;
+                                var latlng = new google.maps.LatLng(lat, lng);
+                                typeof callback === 'function' && callback(latlng, "OK");
+                            } else {
+                                typeof callback === 'function' && callback(undefined, "NONE");
+                            }
+                        },
+                        error: function (request, textStatus, errorThrown) {
+                            typeof callback === 'function' && callback(undefined, textStatus);
+                        }
+                    });
+                }
             } else {
                 typeof callback === 'function' && callback(undefined, "EMPTY");
             }
@@ -551,18 +597,22 @@ function initialize() {
             var geodesicPoly = new google.maps.Polyline(geodesicOptions);
             familyTree.getNode(gen, node).polyline = geodesicPoly;
 
+			var before = new Date();
             var step = 0;
-            var numSteps = 100; //Change this to set animation resolution
-            var timePerStep = 1; //Change this to alter animation speed
+            var numSteps = 200; //Change this to set animation resolution
+            var timePerStep = 5; //Change this to alter animation speed
             var interval = setInterval(function () {
-                step += 1;
-                if (step > numSteps) {
+				var now = new Date();
+				var elapsedTime = (now.getTime() - before.getTime())
+				if (elapsedTime > timePerStep * numSteps) {
                     clearInterval(interval);
-                    callback();
-                } else {
-                    var are_we_there_yet = google.maps.geometry.spherical.interpolate(c1, c2, step / numSteps);
+					geodesicPoly.setPath([c1, c2]);
+					callback();
+				} else {
+					step = elapsedTime / (timePerStep * numSteps);
+					var are_we_there_yet = google.maps.geometry.spherical.interpolate(c1, c2, step);
                     geodesicPoly.setPath([c1, are_we_there_yet]);
-                }
+				}
             }, timePerStep);
         } else {
             callback(idx);
@@ -662,15 +712,16 @@ function initialize() {
     }
 
     function infoBoxClick(mark) {
-        getPhoto(mark.personID, mark.generation, mark.node);
-
-        var fatherPlotted = false;
-        var motherPlotted = false;
-        if (familyTree.getFather(mark.generation, mark.node)) {
-            if (familyTree.getFather(mark.generation, mark.node).isPlotted == true) {
-                fatherPlotted = true;
-            }
-        }
+		if (baseurl.indexOf('sandbox') == -1) {
+		    getPhoto(mark.personID, mark.generation, mark.node);
+		}
+		var fatherPlotted = false;
+		var motherPlotted = false;
+		if (familyTree.getFather(mark.generation, mark.node)) {
+			if (familyTree.getFather(mark.generation, mark.node).isPlotted == true) {
+				fatherPlotted = true;
+			}
+		}
 
         if (familyTree.getMother(mark.generation, mark.node)) {
             if (familyTree.getMother(mark.generation, mark.node).isPlotted == true) {
@@ -679,8 +730,8 @@ function initialize() {
         }
 
         if (motherPlotted == false && fatherPlotted == false) { // neither parent is plotted, okay to show delete button
-            var buttons = mark.expandButton + mark.deleteButton + '</div>';
-        } else if (motherPlotted == true && fatherPlotted == true) {
+            var buttons = mark.expandButton +mark.deleteButton + '</div>';
+        } else if (motherPlotted == true && fatherPlotted == true) { 
             var buttons = "";
         } else {
             var buttons = mark.expandButton + '</div>';
@@ -689,11 +740,15 @@ function initialize() {
         if (mark.isExpanded) {
             ib.setContent(mark.infoBoxContent + '</div>');
         } else {
-            ib.setContent(mark.infoBoxContent + buttons + '</div>');
+            ib.setContent(mark.infoBoxContent +buttons + '</div>');
         }
 
         ib.open(map, mark);
-        setPhoto(mark.generation, mark.node, 0);
+
+		if (baseurl.indexOf('sandbox') == -1) {
+			setPhoto(mark.generation, mark.node, 0);
+		}
+
     }
 
     function deleteMarker(gen, node) {
@@ -842,15 +897,26 @@ function initialize() {
         runButton.disabled = false;
         runButton.className = 'button green';
         if (firstTime.box == true) {
-            if (familyTree.root().marker) {
-                var mark = familyTree.root().marker;
-                ib.setContent(mark.infoBoxContent + '</div>');
-                ib.open(map, mark);
-                //getPhoto(mark.personID, 0, 0);
-                setPhoto(0,0,0);
+            markerCheckLoop(function () {
+                infoBoxClick(familyTree.root().marker);
                 firstTime.box = false;
-            }
+            });
 		}
+    }
+
+    function markerCheckLoop(callback) {
+        familyTree.IDDFS(function (leaf, cont) {
+            if (!leaf.value.marker) {
+                setTimeout(function () {
+                    markerCheckLoop(callback);
+                    console.log("Test");
+                }, 500);
+            } else {
+                cont();
+            }
+        }, function () {
+            typeof callback === 'function' && callback();
+        });
     }
 
     function customAlert() {
