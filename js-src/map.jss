@@ -476,7 +476,7 @@ function initialize() {
             var place = familyTree.getNode(gen, node).birth.place;
             if (place) {
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
-                if (baseurl.indexOf('sandbox') == -1) {
+                if (baseurl.indexOf('sandbox') !== -1) {
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
                         if (status == "OK") {
                             var point = $(result).find("point");
