@@ -12,20 +12,20 @@ JS=$(SOURCES:.jss=.js)
 OUTPUT=../public/scripts/
 
 set-compile:
-  COMPILER=java -jar ~/compiler.jar
-  ARG1=--js
-  ARG2=--js_output_file
+	COMPILER=java -jar ~/compiler.jar
+	ARG1=--js
+	ARG2=--js_output_file
 
 set-copy:
-  COMPILER=cp
+	COMPILER=cp
 
 compile: set-compile $(JS)
 
 no-compile: set-copy $(JS)
-  cp *.js $(OUTPUT)
+	cp *.js $(OUTPUT)
 
 .jss.js:
-	$(COMPILER) $ARG1 $< $ARG2 $@ 
+	$(COMPILER) $(ARG1) $< $(ARG2) $@ 
 
 install: compile
 	cp *.js $(OUTPUT)
