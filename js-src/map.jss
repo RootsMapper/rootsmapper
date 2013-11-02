@@ -209,11 +209,11 @@ function initialize() {
     				        completionEvents(function () {
     				            countryLoop(function (group) {
     				                grouping = group;
+    				                if (baseurl.indexOf('sandbox') == -1) {
+    				                    photoLoop();
+    				                }
     				            });
     				        });
-						    if (baseurl.indexOf('sandbox') == -1) {
-						        photoLoop();
-						    }
 					    });
 				    },1);
                 });
