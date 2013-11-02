@@ -70,26 +70,26 @@ function initialize() {
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
 
         if (document.getElementById("personid")) {
-            document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person","personid",10); }
+            document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person","personid","",10); }
         }
         if (document.getElementById("populateUser")) {
-            document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person", "populateUser", 10); }
+            document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person", "populateUser","", 10); }
         }
 
         if (document.getElementById("genSelect")) {
-            document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot","genSelect",10); }
+            document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot","genSelect","",10); }
         }
 
         if (document.getElementById("runButton")) {
-            document.getElementById("runButton").onmouseover = function () { tooltip("Begin the plotting process","runButton",10); }
+            document.getElementById("runButton").onmouseover = function () { tooltip("Begin the plotting process", "runButton", "", 10); }
         }
 
         if (document.getElementById("feedbackbutton")) {
-            document.getElementById("feedbackbutton").onmouseover = function () { tooltip("Leave some comments about your experience","feedbackbutton",-75,-100); }
+            document.getElementById("feedbackbutton").onmouseover = function () { tooltip("Leave some comments about your experience", "feedbackbutton", "", -75, -100); }
         }
 
         if (document.getElementById("donatebutton")) {
-            document.getElementById("donatebutton").onmouseover = function () { tooltip("Help keep this site up and running","donatebutton",-65,-65); }
+            document.getElementById("donatebutton").onmouseover = function () { tooltip("Help keep this site up and running", "donatebutton", "", -65, -65); }
         }
         
         if (accesstoken) {
@@ -365,11 +365,11 @@ function initialize() {
                 var person = familyTree.getNode(gen, node);
                 if (person.image && person.imageIcon) {
                     if (person.image == "none" && person.imageIcon == "none") {
-                        portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", 10); }
+                        portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", "", 10); }
                     } else {
                         var imageHTML = "<img style='height:300px;' src='" + person.image + "'>";
                         portrait.setAttribute('src', person.imageIcon);
-                        portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 10); }
+                        portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 600000, 10); }
                     }
                 } else {
                     setPhoto(gen, node, 50)
@@ -549,7 +549,17 @@ function initialize() {
             };
 
             var geodesicPoly = new google.maps.Polyline(geodesicOptions);
+            geodesicPoly.node = node;
+            geodesicPoly.gen = gen;
             familyTree.getNode(gen, node).polyline = geodesicPoly;
+
+            google.maps.event.addListener(geodesicPoly, 'mouseover', function () {
+                familyTree.getNode(this.gen, this.node).marker.setZIndex(100);
+            });
+
+            google.maps.event.addListener(geodesicPoly, 'click', function () {
+                infoBoxClick(familyTree.getNode(this.gen, this.node).marker);
+            });
 
 			var before = new Date();
             var step = 0;
@@ -783,13 +793,13 @@ function initialize() {
         google.maps.event.addListener(ib, 'domready', function () {
 
             if (document.getElementById("ebutton")) {
-                document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", 10); }    
+                document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", "", 10); }
 			}
             if (document.getElementById("trashcan")) { 
-                document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", 10); }
+                document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", "", 10); }
             }
-        document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", 10); }
-        document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", 10); }
+            document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", "", 10); }
+            document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", "", 10); }
 
         });
     }
@@ -911,9 +921,10 @@ function initialize() {
 
     }
 
-    function tooltip(tip, el, v, h) {
+    function tooltip(tip, el, stay, v, h) {
         var vert;
         var horiz;
+        stay || (stay = 4000);
         if (v) { vert = v } else { vert = 0 }
         if (h) { horiz = h } else { horiz = 0 }
         var tt;
@@ -934,7 +945,7 @@ function initialize() {
                     var m = document.getElementById('tt');
                     document.body.removeChild(m);
                 }
-            }, 4000);
+            }, stay);
 
             that.onmouseout = function () {
                 clearTimeout(timer);
