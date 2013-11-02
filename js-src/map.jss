@@ -472,7 +472,7 @@ function initialize() {
                         if (status == "OK") {
                             var form = $(result).find("form");
                             if (form[0]) {
-                                var split = form[0].split(",");
+                                var split = form[0].textContent.split(",");
                                 var country = split[split.length - 1];
                             }
                             var point = $(result).find("point");
