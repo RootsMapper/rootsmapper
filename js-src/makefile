@@ -7,20 +7,28 @@
 
 .SUFFIXES: .js .jss
 
-COMPILER=java -jar ~/compiler.jar
-
-SOURCES=map.js keyfilter.js oms.js loading.js infobox.js url-template.js binarytree.jss
+SOURCES=map.jss keyfilter.jss oms.jss loading.jss infobox.jss url-template.jss binarytree.jss
 JS=$(SOURCES:.jss=.js)
 OUTPUT=../public/scripts/
 
-
-compile: $(JS)
-
-.jss.js:
-	$(COMPILER) --js $< --js_output_file $@ 
-
 install: compile
 	cp *.js $(OUTPUT)
+
+set-compile:
+	$(eval COMPILER=java -jar ~/compiler.jar)
+	$(eval ARG1=--js)
+	$(eval ARG2=--js_output_file)
+
+set-copy:
+	$(eval COMPILER=cp)
+
+compile: set-compile $(JS)
+
+no-compile: set-copy $(JS)
+	cp *.js $(OUTPUT)
+
+.jss.js:
+	$(COMPILER) $(ARG1) $< $(ARG2) $@ 
 
 clean:
 	rm -rf *.js $(OUTPUT)*.js
