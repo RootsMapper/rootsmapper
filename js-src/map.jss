@@ -17,6 +17,7 @@ var userID;
 var familyTree;
 var discovery;
 var queue = 1;
+var grouping;
 
 
 
@@ -207,7 +208,10 @@ function initialize() {
     				    plotterLoop(function () {	
     					    completionEvents();
 						    if (baseurl.indexOf('sandbox') == -1) {
-    						    photoLoop();
+						        photoLoop();
+						        countryLoop(function (group) {
+						            grouping = group;
+						        });
 						    }
 					    });
 				    },1);
@@ -283,6 +287,20 @@ function initialize() {
 		}, function () {
 			typeof callback === 'function' && callback();
 		});
+	}
+
+	function countryLoop(callback) {
+	    var max = 0;
+	    var group = {};
+	    familyTree.IDDFS(function (tree, cont) {
+	        var node = tree.node;
+	        var gen = tree.generation;
+	        var value = familyTree.getNode(gen, node).birth.country;
+	        var n = group[value] = 1 + (group[value] | 0);
+	        if (n > max) { max = n;}
+	    }, function () {
+	        typeof callback === 'function' && callback(group);
+	    });
 	}
 
     function personRead(id, callback) {
@@ -383,7 +401,8 @@ function initialize() {
     function getMeABirthPlace(gen, node, callback) {
         getPlaceAuthority(gen,node, function (result, status) {
             if (status == "OK") {
-                familyTree.getNode(gen, node).birth.latlng = result;
+                familyTree.getNode(gen, node).birth.latlng = result.latlng;
+                familyTree.getNode(gen, node).birth.country = result.country;
                 if (gen == 0 && node == 0) {
                     createMarker(familyTree.root());
                     familyTree.root().isPlotted = true;
@@ -451,12 +470,17 @@ function initialize() {
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
                         if (status == "OK") {
+                            var form = $(result).find("form");
+                            if (form[0]) {
+                                var split = form[0].split(",");
+                                var country = split[split.length - 1];
+                            }
                             var point = $(result).find("point");
                             if (point[0]) {
                                 var lat = point[0].childNodes[0].textContent;
                                 var lng = point[0].childNodes[1].textContent;
                                 var latlng = new google.maps.LatLng(lat, lng);
-                                typeof callback === 'function' && callback(latlng, status);
+                                typeof callback === 'function' && callback({latlng: latlng, country: country}, status);
                             } else {
                                 typeof callback === 'function' && callback(undefined, "NONE");
                             }
@@ -554,7 +578,13 @@ function initialize() {
             familyTree.getNode(gen, node).polyline = geodesicPoly;
 
             google.maps.event.addListener(geodesicPoly, 'mouseover', function () {
-                familyTree.getNode(this.gen, this.node).marker.setZIndex(100);
+                var gen = this.gen;
+                var node = this.node;
+                var zindex = familyTree.getNode(gen, node).marker.getZIndex();
+                familyTree.getNode(gen, node).marker.setZIndex(9999);
+                setTimeout(function () {
+                    familyTree.getNode(gen, node).marker.setZIndex(zindex);
+                }, 300);
             });
 
             google.maps.event.addListener(geodesicPoly, 'click', function () {
