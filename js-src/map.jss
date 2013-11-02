@@ -206,12 +206,13 @@ function initialize() {
     		    placeReadLoop(function () {
     			    setTimeout(function () {
     				    plotterLoop(function () {	
-    					    completionEvents();
+    				        completionEvents(function () {
+    				            countryLoop(function (group) {
+    				                grouping = group;
+    				            });
+    				        });
 						    if (baseurl.indexOf('sandbox') == -1) {
 						        photoLoop();
-						        countryLoop(function (group) {
-						            grouping = group;
-						        });
 						    }
 					    });
 				    },1);
@@ -884,7 +885,7 @@ function initialize() {
         runButton.className = 'button disabled';
     }
 
-    function completionEvents() {
+    function completionEvents(callback) {
         markerCheckLoop(function () {
             loadingAnimationEnd();
             var runButton = document.getElementById('runButton');
@@ -894,6 +895,7 @@ function initialize() {
                 infoBoxClick(familyTree.root().marker);
                 firstTime.box = false;
             }
+            typeof callback === 'function' && callback();
         });
 
     }
