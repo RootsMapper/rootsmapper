@@ -298,7 +298,8 @@ function initialize() {
 	        var gen = tree.generation;
 	        var value = familyTree.getNode(gen, node).birth.country;
 	        var n = group[value] = 1 - - (group[value] | 0);
-	        if (n > max) { max = n;}
+	        if (n > max) { max = n; }
+	        cont();
 	    }, function () {
 	        typeof callback === 'function' && callback(group);
 	    });
