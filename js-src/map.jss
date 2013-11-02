@@ -204,18 +204,16 @@ function initialize() {
         getPedigree(generations,id,rootGen,rootNode, function () { 
             personReadLoop(function () {
     		    placeReadLoop(function () {
-    			    setTimeout(function () {
-    				    plotterLoop(function () {	
-    				        completionEvents(function () {
-    				            countryLoop(function (group) {
-    				                grouping = group;
-    				                if (baseurl.indexOf('sandbox') == -1) {
-    				                    photoLoop();
-    				                }
-    				            });
+    				plotterLoop(function () {	
+    				    completionEvents(function () {
+    				        countryLoop(function (group) {
+    				            grouping = group;
+    				            //if (baseurl.indexOf('sandbox') == -1) {
+    				            //    photoLoop();
+    				            //}
     				        });
-					    });
-				    },1);
+    				    });
+					});
                 });
             });
         });
@@ -476,6 +474,9 @@ function initialize() {
                             if (form[0]) {
                                 var split = form[0].textContent.split(",");
                                 var country = split[split.length - 1];
+                                while (country.charAt(0) === ' ') {
+                                    country = country.substr(1);
+                                }
                             }
                             var point = $(result).find("point");
                             if (point[0]) {
