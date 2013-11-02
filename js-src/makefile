@@ -11,17 +11,9 @@ SOURCES=map.jss keyfilter.jss oms.jss loading.jss infobox.jss url-template.jss b
 JS=$(SOURCES:.jss=.js)
 OUTPUT=../public/scripts/
 
-set-compile:
-	COMPILER=java -jar ~/compiler.jar
-	ARG1=--js
-	ARG2=--js_output_file
+compile: COMPILER="java -jar ~/compiler.jar" ARG1=--js ARG2=--js_output_file $(JS)
 
-set-copy:
-	COMPILER=cp
-
-compile: set-compile $(JS)
-
-no-compile: set-copy $(JS)
+no-compile: COMPILER=cp $(JS)
 	cp *.js $(OUTPUT)
 
 .jss.js:
