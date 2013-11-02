@@ -174,7 +174,7 @@ function initialize() {
 
 		fsAPI({ media: 'xml', url: url }, function (result, status) {
 			if (status == "OK") {
-				var p = $(result).find("gx\\:person, person");
+			    var p = $(result).find("gx\\:person, person");
 				for (var i = 0; i < p.length; i++) {
 					var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
 					var n = parseFloat(num[0].textContent);
@@ -184,9 +184,17 @@ function initialize() {
 						familyTree.setNode({ id: p[i].getAttribute("id") }, (gen +rootGen), node);
 					}
 				}
+				if (p.length == 1) {
+				    alert('No parents found for person with ID: ' + id);
+				} else if (p.length == 2) {
+				    alert('Only one parent found for person with ID: ' + id);
+				}
 				typeof callback === 'function' && callback();
 			} else {
-				completionEvents();
+			    loadingAnimationEnd();
+			    var runButton = document.getElementById('runButton');
+			    runButton.disabled = false;
+			    runButton.className = 'button green';
 			}
 		});  
     }
@@ -372,41 +380,6 @@ function initialize() {
         }, timer);
     }
 
-    function getMeABirthLatLng(gen,node,callback) {
-        getLatLng(familyTree.getNode(gen,node).birth.place, function (result,status) {
-            if (status == "OK") {
-                familyTree.getNode(gen, node).birth.latlng = result;
-                if (gen == 0 && node == 0) {
-                    createMarker(familyTree.root());
-                    familyTree.root().isPlotted = true;
-                    typeof callback === 'function' && callback();
-                } else {
-                    plotParent(gen, node);
-                    typeof callback === 'function' && callback();
-                }
-            } else if (status == "NONE") {
-                getPlaceAuthority(gen, node, function (result, status) {
-                    if (status == "OK") {
-                        familyTree.getNode(gen, node).birth.latlng = result;
-                        plotParent(gen, node);
-                    } else {
-                        getChildBirthPlace(gen, node, function (result) {
-                            familyTree.getNode(gen, node).birth.latlng = result;
-                            plotParent(gen, node);
-                        });
-                    }
-                });
-                typeof callback === 'function' && callback();
-            } else if (status == "EMPTY") {
-                getChildBirthPlace(gen, node, function (result) {
-                    familyTree.getNode(gen, node).birth.latlng = result;
-                    plotParent(gen, node);
-                    typeof callback === 'function' && callback();
-                });
-            }
-        });
-    }
-
     function getMeABirthPlace(gen, node, callback) {
         getPlaceAuthority(gen,node, function (result, status) {
             if (status == "OK") {
@@ -419,7 +392,7 @@ function initialize() {
                     typeof callback === 'function' && callback();
                 }
             } else {
-                console.log("Place authority fail. Try google.")
+           //     console.log("Place authority fail. Try google.")
                 getLatLng(familyTree.getNode(gen, node).birth.place, function (result, status) {
                     if (status == "OK") {
                         familyTree.getNode(gen, node).birth.latlng = result;
@@ -457,7 +430,7 @@ function initialize() {
                     } else {
                         if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
                             //typeof callback === 'function' && callback(undefined, "LIMIT");
-                            console.log("Google throttled. Delay = " + delay + "ms. Place: " + place);
+                //            console.log("Google throttled. Delay = " + delay + "ms. Place: " + place);
                             delay++;
                             getLatLng(place, callback);
                         } else {
@@ -476,7 +449,6 @@ function initialize() {
             var place = familyTree.getNode(gen, node).birth.place;
             if (place) {
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
-                if (baseurl.indexOf('sandbox') !== -1) {
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
                         if (status == "OK") {
                             var point = $(result).find("point");
@@ -492,26 +464,6 @@ function initialize() {
                             typeof callback === 'function' && callback(undefined, status);
                         }
                     });
-                } else {
-                    $.ajax({
-                        url: url,
-                        dataType: 'xml',
-                        success: function (result) {
-                            var point = $(result).find("point");
-                            if (point[0]) {
-                                var lat = point[0].childNodes[0].textContent;
-                                var lng = point[0].childNodes[1].textContent;
-                                var latlng = new google.maps.LatLng(lat, lng);
-                                typeof callback === 'function' && callback(latlng, "OK");
-                            } else {
-                                typeof callback === 'function' && callback(undefined, "NONE");
-                            }
-                        },
-                        error: function (request, textStatus, errorThrown) {
-                            typeof callback === 'function' && callback(undefined, textStatus);
-                        }
-                    });
-                }
             } else {
                 typeof callback === 'function' && callback(undefined, "EMPTY");
             }
@@ -540,13 +492,13 @@ function initialize() {
                     familyTree.getNode(gen, node).isPlotted = true;
                 });
             } else {
-                console.log("Recursion waiting for " + child.name + " ... ");
+              //  console.log("Recursion waiting for " + child.name + " ... ");
                 setTimeout(function () {
                     plotParent(gen, node);
                 }, 1000);
             }
         } else {
-            console.log("Recursion waiting for " + child + " ... ");
+            //console.log("Recursion waiting for " + child + " ... ");
             setTimeout(function () {
                 plotParent(gen, node);
             }, 1000);
@@ -642,8 +594,7 @@ function initialize() {
                         origin: new google.maps.Point(0,0),
                         anchor: new google.maps.Point(36*scaleFactor*0.5,36*scaleFactor*0.5),
                         scaledSize: new google.maps.Size(36*scaleFactor,36*scaleFactor)
-                    },
-                    zIndex: (50-p.generation)
+                    }
                 }
 
                 var mark = new google.maps.Marker(opts);
@@ -894,16 +845,17 @@ function initialize() {
     }
 
     function completionEvents() {
-        loadingAnimationEnd();
-        var runButton = document.getElementById('runButton');
-        runButton.disabled = false;
-        runButton.className = 'button green';
-        if (firstTime.box == true) {
-            markerCheckLoop(function () {
+        markerCheckLoop(function () {
+            loadingAnimationEnd();
+            var runButton = document.getElementById('runButton');
+            runButton.disabled = false;
+            runButton.className = 'button green';
+            if (firstTime.box == true) {
                 infoBoxClick(familyTree.root().marker);
                 firstTime.box = false;
-            });
-		}
+            }
+        });
+
     }
 
     function markerCheckLoop(callback) {
@@ -911,7 +863,7 @@ function initialize() {
             if (!leaf.value.marker) {
                 setTimeout(function () {
                     markerCheckLoop(callback);
-                    console.log("Test");
+                  //  console.log("Test");
                 }, 500);
             } else {
                 cont();
