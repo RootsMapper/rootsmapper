@@ -295,7 +295,7 @@ function initialize() {
 	        var node = tree.node;
 	        var gen = tree.generation;
 	        var value = familyTree.getNode(gen, node).birth.country;
-	        var n = group[value] = 1 - - (group[value] | 0);
+	        var n = group[value] = 1 - -(group[value] | 0);
 	        if (n > max) { max = n; }
 	        cont();
 	    }, function () {
@@ -514,6 +514,7 @@ function initialize() {
         if (child.birth && parent.birth) {
 
             if (child.birth.latlng && parent.birth.latlng) {
+                checkBounds(parent.birth.latlng);
                 polymap([child.birth.latlng, parent.birth.latlng], color, node, gen, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
                     createMarker(familyTree.getNode(gen, node));
                     familyTree.getNode(gen, node).isPlotted = true;
@@ -534,28 +535,12 @@ function initialize() {
 
     }
 
-    function checkBounds(progenitors,loop) {
-
-        var bounds = new google.maps.LatLngBounds;
+    function checkBounds(latlng) {
         var currentBounds = map.getBounds();
-
-        if (firstTime.plot == true) {
-            createMarker(progenitors[0]);
-            firstTime.plot = false;
+        if (currentBounds.contains(latlng) == false) {
+            currentBounds.extend(latlng);
+            map.fitBounds(currentBounds);
         }
-
-        for (var i = 0; i < progenitors.length; i++) {
-            if (progenitors[i]) {
-                if (progenitors[i].birth.latlng) {
-                    if (currentBounds.contains(progenitors[i].birth.latlng) == false) {
-                        currentBounds.extend(progenitors[i].birth.latlng);
-                        map.fitBounds(currentBounds);
-                    }
-                }
-            }
-        }
-       
-        plotNextGeneration(progenitors,loop);
     }
 
 
