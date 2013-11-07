@@ -39,9 +39,14 @@ $FAQ_URL = '';
 // Leave blank to disable button
 $DONATE_URL = '';
 
+// Allows for insertion of pledgie button code
+// on the lower right of the page
+// Leave blank to disable
+$PLEDGIE_CODE = "";
+
 // Tracking code
 // This allows for insertion of code such as
-// Google Analyitics tracking
+// Google Analytics tracking
 $TRACKING_CODE = "";
 
 ?>
