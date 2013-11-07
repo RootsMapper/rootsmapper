@@ -155,6 +155,10 @@ if (!empty($DONATE_URL))
             	<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
 <?php
 }
+if (!empty($PLEDGIE_CODE))
+{
+            	echo($PLEDGIE_CODE);
+}
 ?>
 		</div>
 </body>

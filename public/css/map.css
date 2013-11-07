@@ -368,8 +368,12 @@ html, body {
 
 #donatebutton {
     float: right;
-    margin: 0;
+    margin-left: 5px;
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
+}
+
+#pledgiebutton {
+    float: right;
 }
 
 @media print {
