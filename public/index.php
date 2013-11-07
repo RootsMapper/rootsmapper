@@ -137,6 +137,12 @@ else
 		</div>
 	    	<div id="lowerbuttonframe">
 <?php
+if (!empty($PLEDGIE_CODE))
+{
+?>
+            	 <a href='https://pledgie.com/campaigns/<?php echo($PLEDGIE_CODE); ?>' target='_blank'><img id="pledgiebutton" src='https://pledgie.com/campaigns/ <?php echo($PLEDGIE_CODE); ?> .png?skin_name=chrome' border='0' ></a>
+<?php
+}
 if (!empty($FAQ_URL))
 {
 ?>
@@ -154,10 +160,12 @@ if (!empty($DONATE_URL))
 ?>
             	<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
 <?php
-}
-if (!empty($PLEDGIE_CODE))
+} 
+if (!empty($BLOG_URL))
 {
-            	echo($PLEDGIE_CODE);
+?>
+            	<button id="blogbutton" class="button green" onclick="window.open('<?php echo($BLOG_URL); ?>', '_blank')">Blog</button>	
+<?php
 }
 ?>
 		</div>

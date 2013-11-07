@@ -39,10 +39,16 @@ $FAQ_URL = '';
 // Leave blank to disable button
 $DONATE_URL = '';
 
+// Set the URL for the Blog button on the lower
+// right of the page
+// Leave blank to disable button
+$BLOG_URL = '';
+
 // Allows for insertion of pledgie button code
 // on the lower right of the page
+// Just enter the campaign number
 // Leave blank to disable
-$PLEDGIE_CODE = "";
+$PLEDGIE_CODE = '22737';
 
 // Tracking code
 // This allows for insertion of code such as
