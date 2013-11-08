@@ -107,7 +107,6 @@ function initialize() {
         clearOverlays();
         startEvents();
 	    var select = document.getElementById('genSelect');
-	    //genquery = parseFloat(select.value);
 	    genquery = (gens || parseFloat(select.value));
 	    tooManyGens = false;
 	    if (genquery > 8) {
@@ -117,13 +116,20 @@ function initialize() {
 
     }
 
-    function ancestorExpand(id, rootGen, rootNode,gens,where,callback) {
-
+    function expandAncestor(id, rootGen, rootNode, gens) {
         startEvents();
+        var select = document.getElementById('genSelect');
+        genquery = (gens || parseFloat(select.value));
         tooManyGens = false;
         if (genquery > 8) {
             tooManyGens = true;
         }
+        mapper(genquery, id, rootGen, rootNode);
+    }
+
+    function ancestorExpand(id, rootGen, rootNode,gens,where,callback) {
+
+        startEvents();
         var select = document.getElementById('genSelect');
         genquery = (gens || parseFloat(select.value));
         mapper(genquery, id, rootGen, rootNode,where,callback);
@@ -660,7 +666,7 @@ function initialize() {
         mark.generation = p.generation;
         mark.node = p.node;
         mark.expandButton = "<div  style='height:38px;'>" +
-                            "<div id='ebutton' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.isExpanded=true; ancestorExpand(\"" + p.id +
+                            "<div id='ebutton' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.isExpanded=true; expandAncestor(\"" + p.id +
                             "\"," + p.generation + "," + p.node + "); ib.close();'>" +
                                 "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
                                 "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
