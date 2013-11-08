@@ -227,18 +227,22 @@ function initialize() {
             var node = leaf.node;
             var gen = leaf.generation;
             if (leaf.value.isPlotted !== true) {
-                personRead(leaf.value.links.self.href, function (result) {
-                    var person = familyTree.getNode(gen, node);
-                    person.generation = gen;
-                    person.node = node;
-                    if (node < Math.pow(2, gen -1)) {
-                        person.isPaternal = true;
-                    }
-                    person.display = result.display;
-                    person.place = result.place;
-                    person.links = result.links;
-                });
-                cont();
+                if (leaf.value.links.self) {
+                    personRead(leaf.value.links.self.href, function (result) {
+                        var person = familyTree.getNode(gen, node);
+                        person.generation = gen;
+                        person.node = node;
+                        if (node < Math.pow(2, gen - 1)) {
+                            person.isPaternal = true;
+                        }
+                        person.display = result.display;
+                        person.place = result.place;
+                        person.links = result.links;
+                    });
+                    cont();
+                } else {
+                    cont();
+                };
             } else {
                 cont();
             }
