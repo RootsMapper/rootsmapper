@@ -181,7 +181,7 @@ function initialize() {
 					var gen = Math.floor(log2(n));
 					var node = n +Math.pow(2, gen) * (rootNode -1);
 					if (!familyTree.getNode(gen +rootGen, node)) {
-						familyTree.setNode({ id: p[i].id }, (gen +rootGen), node);
+						familyTree.setNode(p[i], (gen +rootGen), node);
 					}
 				}
 				if (p.length == 1) {
@@ -224,12 +224,15 @@ function initialize() {
             var gen = leaf.generation;
             if (leaf.value.isPlotted !== true) {
                 personRead(leaf.value.id, function (result) {
-                    result.generation = gen;
-                    result.node = node;
+                    var person = familyTree.getNode(gen, node);
+                    person.generation = gen;
+                    person.node = node;
                     if (node < Math.pow(2, gen -1)) {
-                        result.isPaternal = true;
+                        person.isPaternal = true;
                     }
-                    familyTree.setNode(result, gen, node)
+                    person.display = result.display;
+                    person.place = result.place;
+                    //familyTree.setNode(result, gen, node)
                 });
                 cont();
             } else {
@@ -293,7 +296,7 @@ function initialize() {
 	    familyTree.IDDFS(function (tree, cont) {
 	        var node = tree.node;
 	        var gen = tree.generation;
-	        var value = familyTree.getNode(gen, node).birth.country;
+	        var value = familyTree.getNode(gen, node).display.birthCountry;
 	        var n = group[value] = 1 - -(group[value] | 0);
 	        if (n > max) { max = n; }
 	        cont();
@@ -310,46 +313,49 @@ function initialize() {
             access_token: accesstoken
         });
 
-        fsAPI({
-			url: url
-			}, function (result, status) {
-            if (status == "OK") {
-                var person = result.persons[0];
-                var display = person.display;
-                var places = result.places;
+        fsAPI({ media: 'x-gedcomx-v1+json', url: url + '&callback' },
+            function (result, status) {
+                if (status == "OK") {
+                    var person = result.persons[0];
+                    var display = person.display;
+                    var places = result.places;
 
-                var birth = {
-                	date: display.birthDate,
-                	place: display.birthPlace
+                    var birth = {
+                	    date: display.birthDate,
+                	    place: display.birthPlace
+                    }
+
+                    var death = {
+                	    date: display.deathDate,
+                	    place: display.deathPlace
+                    }
+
+                    if (person.living == true) {
+                        death.date = "Living";
+                        display.deathDate = "Living";
+                    }
+
+                    if (places) {
+                        var placestring = places[0].names[0].value;
+                    } else {
+                        var placestring = birth.place;
+                    }
+
+                    var personObject = {
+                	    name: display.name,
+                	    id: person.id,
+                	    birth: birth,
+                	    death: death,
+                	    gender: display.gender,
+                	    place: placestring
+			        }
+                    var object = {
+                        display: display,
+                        place: placestring
+                    }
+				    // Send reply
+                    callback(object);
                 }
-
-                var death = {
-                	date: display.deathDate,
-                	place: display.deathPlace
-                }
-
-                if (person.living == true) {
-                    death.date = "Living";
-                }
-
-                if (places) {
-                    var placestring = places[0].names[0].value;
-                } else {
-                    var placestring = birth.place;
-                }
-
-                var personObject = {
-                	name: display.name,
-                	id: person.id,
-                	birth: birth,
-                	death: death,
-                	gender: display.gender,
-                	place: placestring
-			}
-
-				// Send reply
-                callback(personObject);
-            }
         });
     }
 
@@ -405,8 +411,8 @@ function initialize() {
     function getMeABirthPlace(gen, node, callback) {
         getPlaceAuthority(gen,node, function (result, status) {
             if (status == "OK") {
-                familyTree.getNode(gen, node).birth.latlng = result.latlng;
-                familyTree.getNode(gen, node).birth.country = result.country;
+                familyTree.getNode(gen, node).display.birthLatLng = result.latlng;
+                familyTree.getNode(gen, node).display.birthCountry = result.country;
                 if (gen == 0 && node == 0) {
                     createMarker(familyTree.root());
                     familyTree.root().isPlotted = true;
@@ -416,9 +422,9 @@ function initialize() {
                 }
             } else {
            //     console.log("Place authority fail. Try google.")
-                getLatLng(familyTree.getNode(gen, node).birth.place, function (result, status) {
+                getLatLng(familyTree.getNode(gen, node).display.birthPlace, function (result, status) {
                     if (status == "OK") {
-                        familyTree.getNode(gen, node).birth.latlng = result;
+                        familyTree.getNode(gen, node).display.birthLatLng = result;
                         if (gen == 0 && node == 0) {
                             createMarker(familyTree.root());
                             familyTree.root().isPlotted = true;
@@ -428,7 +434,7 @@ function initialize() {
                         }
                     } else {
                         getChildBirthPlace(gen, node, function (result) {
-                            familyTree.getNode(gen, node).birth.latlng = result;
+                            familyTree.getNode(gen, node).display.birthLatLng = result;
                             typeof callback === 'function' && callback();
                         });
                     }
@@ -468,8 +474,8 @@ function initialize() {
     }
 
     function getPlaceAuthority(gen, node, callback) {
-        if (familyTree.getNode(gen, node).birth) {
-            var place = familyTree.getNode(gen, node).birth.place;
+        if (!familyTree.getNode(gen, node).display.ascendancyNumber) {
+            var place = familyTree.getNode(gen, node).display.birthPlace;
             if (place) {
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
@@ -501,7 +507,7 @@ function initialize() {
         } else {
             setTimeout(function () {
                 getPlaceAuthority(gen, node, callback)
-            }, 100);
+            }, 1000);
         }
     }
 
@@ -515,28 +521,18 @@ function initialize() {
             var color = rgbToHex(255, 96, 182);
         }
 
-        if (child.birth && parent.birth) {
-
-            if (child.birth.latlng && parent.birth.latlng) {
-                checkBounds(parent.birth.latlng);
-                polymap([child.birth.latlng, parent.birth.latlng], color, node, gen, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
-                    createMarker(familyTree.getNode(gen, node));
-                    familyTree.getNode(gen, node).isPlotted = true;
-                });
-            } else {
-              //  console.log("Recursion waiting for " + child.name + " ... ");
-                setTimeout(function () {
-                    plotParent(gen, node);
-                }, 1000);
-            }
+        if (child.display.birthLatLng && parent.display.birthLatLng) {
+            checkBounds(parent.display.birthLatLng);
+            polymap([child.display.birthLatLng, parent.display.birthLatLng], color, node, gen, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
+                createMarker(familyTree.getNode(gen, node));
+                familyTree.getNode(gen, node).isPlotted = true;
+            });
         } else {
-            //console.log("Recursion waiting for " + child + " ... ");
+            //  console.log("Recursion waiting for " + child.name + " ... ");
             setTimeout(function () {
                 plotParent(gen, node);
             }, 1000);
         }
-            
-
     }
 
     function checkBounds(latlng) {
@@ -585,7 +581,7 @@ function initialize() {
 
 			var before = new Date();
             var step = 0;
-            var numSteps = 200; //Change this to set animation resolution
+            var numSteps = 100; //Change this to set animation resolution
             var timePerStep = 5; //Change this to alter animation speed
             var interval = setInterval(function () {
 				var now = new Date();
@@ -608,9 +604,9 @@ function initialize() {
 
     function createMarker(p) {
         if (p) {
-            if (p.birth.latlng) {
+            if (p.display.birthLatLng) {
 
-                if (p.gender == "Male") {
+                if (p.display.gender == "Male") {
                     var icon = 'images/male' + p.generation + '.png?v=' + version;
                     var src = 'images/man.png?v=' + version;
                 } else {
@@ -620,7 +616,7 @@ function initialize() {
                 var scaleFactor = .5;
                 var opts = {
                     map: map,
-                    position: p.birth.latlng,
+                    position: p.display.birthLatLng,
                     icon: {
                         url: icon,
                         origin: new google.maps.Point(0,0),
@@ -675,7 +671,7 @@ function initialize() {
             "<div class='person'>" +
                 "<img id='portrait' class='profile-image' src='" + src + "'>" +
                 "<div class='box'>" +
-                    "<div class='xlarge'>" + p.name + "</div>" +
+                    "<div class='xlarge'>" + p.display.name + "</div>" +
                     "<div class='large'>" + p.id +
                     "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
                 "</div>" + "<img id='fsButton' class='profile-image' src='images/fs_logo.png?v=" + version + "' onclick='window.open(\"" + url + "\");'>" +
@@ -683,15 +679,15 @@ function initialize() {
             "<div class='person'>" +
                 "<div class='label'>BIRTH</div>" +
                 "<div class='box'>" +
-                    "<div class='large'>" + (p.birth.date || "") + "</div>" +
-                    "<div class='small'>" + (p.birth.place || "") + "</div>" +
+                    "<div class='large'>" + (p.display.birthDate || "") + "</div>" +
+                    "<div class='small'>" + (p.display.birthPlace || "") + "</div>" +
                 "</div>" +
             "</div>" +
             "<div class='person'>" +
                 "<div class='label'>DEATH</div>" +
                 "<div class='box'>" +
-                    "<div class='large'>" + (p.death.date || "") + "</div>" +
-                    "<div class='small'>" + (p.death.place || "") + "</div>" +
+                    "<div class='large'>" + (p.display.deathDate || "") + "</div>" +
+                    "<div class='small'>" + (p.display.deathPlace || "") + "</div>" +
                 "</div>" +
             "</div>";
     }
@@ -750,9 +746,9 @@ function initialize() {
         // It will check if the person has children, and if so, returns the child's birthplace instead
 
         var child = familyTree.getChild(gen, node);
-        if (child.birth) {
-            if (child.birth.latlng) {
-                typeof callback === 'function' && callback(child.birth.latlng);
+        if (child.display.birthPlace) {
+            if (child.display.birthLatLng) {
+                typeof callback === 'function' && callback(child.display.birthLatLng);
             } else {
                 setTimeout(function () {
                     getChildBirthPlace(gen, node, callback);
@@ -897,7 +893,7 @@ function initialize() {
                 setTimeout(function () {
                     markerCheckLoop(callback);
                   //  console.log("Test");
-                }, 500);
+                }, 1000);
             } else {
                 cont();
             }
