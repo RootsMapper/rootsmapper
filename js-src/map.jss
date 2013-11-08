@@ -113,12 +113,12 @@ function initialize() {
 
     }
 
-    function ancestorExpand(id, rootGen, rootNode,gens,callback) {
+    function ancestorExpand(id, rootGen, rootNode,gens,where,callback) {
 
         startEvents();
         var select = document.getElementById('genSelect');
         genquery = (gens || parseFloat(select.value));
-        mapper(genquery, id, rootGen, rootNode,callback);
+        mapper(genquery, id, rootGen, rootNode,where,callback);
 
     }
     
@@ -205,14 +205,28 @@ function initialize() {
 		});  
     }
 
-    function mapper(generations,id,rootGen,rootNode,callback) {
-        getPedigree(generations,id,rootGen,rootNode, function () { 
+    function mapper(generations, id, rootGen, rootNode, where, callback) {
+        getPedigree(generations, id, rootGen, rootNode, function () {
+            if (where == 'pedigree') {
+                typeof callback === 'function' && callback();
+            }
             personReadLoop(function () {
-    		    placeReadLoop(function () {
+                if (where == 'person') {
+                    typeof callback === 'function' && callback();
+                }
+                placeReadLoop(function () {
+                    if (where == 'place') {
+                        typeof callback === 'function' && callback();
+                    }
     		        plotterLoop(function () {
-    		            typeof callback === 'function' && callback();
-    				    completionEvents(function () {
-    				        countryLoop(function (group) {
+    		            if (where == 'plot') {
+    		                typeof callback === 'function' && callback();
+    		            }
+    		            completionEvents(rootGen, rootNode, function () {
+    		                if (where == 'done') {
+    		                    typeof callback === 'function' && callback();
+    		                }
+    		                countryLoop(function (group) {
     				            grouping = group;
     				            //if (baseurl.indexOf('sandbox') == -1) {
     				            //    photoLoop();
@@ -853,15 +867,23 @@ function initialize() {
         runButton.className = 'button disabled';
     }
 
-    function completionEvents(callback) {
+    function completionEvents(rootGen, rootNode, callback) {
         markerCheckLoop(function () {
             if (genquery > 8) {
                 var origins = genquery;
                 familyTree.IDDFS(function (leaf, cont) {
-                    if (leaf.generation == origins - 8) {
-                        ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, function () {
-                            cont();
-                        });
+                    var expandGen = origins + rootGen - 8;
+
+                    if (leaf.generation == expandGen && leaf.node > rootNode * Math.pow(2, expandGen) - 1 && leaf.node < rootNode * Math.pow(2, origins-8) + Math.pow(2, origins-8)) {
+                        //if (leaf.node == rootNode * Math.pow(2, origins - 8) + Math.pow(2, origins - 8) - 1) {
+                            ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'done', function () {
+                                cont();
+                            });
+                        //} else {
+                        //    ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'plot', function () {
+                        //        cont();
+                        //    });
+                        //}
                     } else {
                         cont();
                     }
