@@ -109,6 +109,10 @@ function initialize() {
 	    var select = document.getElementById('genSelect');
 	    //genquery = parseFloat(select.value);
 	    genquery = (gens || parseFloat(select.value));
+	    tooManyGens = false;
+	    if (genquery > 8) {
+	        tooManyGens = true;
+	    }
 	    mapper(genquery);
 
     }
@@ -116,6 +120,10 @@ function initialize() {
     function ancestorExpand(id, rootGen, rootNode,gens,where,callback) {
 
         startEvents();
+        tooManyGens = false;
+        if (genquery > 8) {
+            tooManyGens = true;
+        }
         var select = document.getElementById('genSelect');
         genquery = (gens || parseFloat(select.value));
         mapper(genquery, id, rootGen, rootNode,where,callback);
@@ -165,13 +173,9 @@ function initialize() {
     }
 
     function getPedigree(generations, id, rootGen, rootNode, callback) {
-        rootGen || (rootGen = 0);
-        rootNode || (rootNode = 0);
         id = id ? id : document.getElementById('personid').value;
-        tooManyGens = false;
         if (generations > 8) {
             generations = generations - 8;
-            tooManyGens = true;
         }
         var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
             generations: generations,
@@ -206,6 +210,8 @@ function initialize() {
     }
 
     function mapper(generations, id, rootGen, rootNode, where, callback) {
+        rootGen || (rootGen = 0);
+        rootNode || (rootNode = 0);
         getPedigree(generations, id, rootGen, rootNode, function () {
             if (where == 'pedigree') {
                 typeof callback === 'function' && callback();
@@ -874,7 +880,7 @@ function initialize() {
                 familyTree.IDDFS(function (leaf, cont) {
                     var expandGen = origins + rootGen - 8;
 
-                    if (leaf.generation == expandGen && leaf.node > rootNode * Math.pow(2, expandGen) - 1 && leaf.node < rootNode * Math.pow(2, origins-8) + Math.pow(2, origins-8)) {
+                    if (leaf.generation == expandGen && leaf.node > rootNode * Math.pow(2, origins-8) - 1 && leaf.node < rootNode * Math.pow(2, origins-8) + Math.pow(2, origins-8)) {
                         //if (leaf.node == rootNode * Math.pow(2, origins - 8) + Math.pow(2, origins - 8) - 1) {
                             ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'done', function () {
                                 cont();
