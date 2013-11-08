@@ -914,8 +914,8 @@ function initialize() {
                         infoBoxClick(familyTree.root().marker);
                         firstTime.box = false;
                     }
-                    typeof callback === 'function' && callback();
                 }
+                typeof callback === 'function' && callback();
             }
         });
 
