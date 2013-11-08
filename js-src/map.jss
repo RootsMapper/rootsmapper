@@ -18,7 +18,7 @@ var familyTree;
 var discovery;
 var queue = 1;
 var grouping;
-
+var tooManyGens;
 
 
 function discoveryResource() {
@@ -167,9 +167,11 @@ function initialize() {
     function getPedigree(generations, id, rootGen, rootNode, callback) {
         rootGen || (rootGen = 0);
         rootNode || (rootNode = 0);
-        id = id ? id: document.getElementById('personid').value;
+        id = id ? id : document.getElementById('personid').value;
+        tooManyGens = false;
         if (generations > 8) {
             generations = generations - 8;
+            tooManyGens = true;
         }
         var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
             generations: generations,
@@ -863,17 +865,29 @@ function initialize() {
                     } else {
                         cont();
                     }
-                }, function () { });
+                }, function () {
+                    loadingAnimationEnd();
+                    var runButton = document.getElementById('runButton');
+                    runButton.disabled = false;
+                    runButton.className = 'button green';
+                    if (firstTime.box == true) {
+                        infoBoxClick(familyTree.root().marker);
+                        firstTime.box = false;
+                    }
+                    typeof callback === 'function' && callback();
+                });
             } else {
-                loadingAnimationEnd();
-                var runButton = document.getElementById('runButton');
-                runButton.disabled = false;
-                runButton.className = 'button green';
-                if (firstTime.box == true) {
-                    infoBoxClick(familyTree.root().marker);
-                    firstTime.box = false;
+                if (tooManyGens == false) {
+                    loadingAnimationEnd();
+                    var runButton = document.getElementById('runButton');
+                    runButton.disabled = false;
+                    runButton.className = 'button green';
+                    if (firstTime.box == true) {
+                        infoBoxClick(familyTree.root().marker);
+                        firstTime.box = false;
+                    }
+                    typeof callback === 'function' && callback();
                 }
-                typeof callback === 'function' && callback();
             }
         });
 
