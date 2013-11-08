@@ -93,83 +93,96 @@ else
     </head>
     <body>
         <?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
-        <div id="rootGrid">
-            <div id="mapdisplay"></div>
-	    <div id="inputFrame">
+		<div id="bigDiv">
+			<div id="adDiv">
+<?php 
+if (!empty($SIDEAD_CODE))
+{
+?>
+<?php echo($SIDEAD_CODE)?>
+<?php
+}
+?>
+			</div>
+			<div id="rootGrid">
+				<div id="mapdisplay"></div>
+				<div id="inputFrame">
 <?php
 // If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
 { ?>
-			<div class="hoverdiv">
-				<label id="username" class="labelbox" for"logoutbutton">User Name</label>
-				<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
-			</div>
-			<div class="hoverdiv">
-				<label id="prompt" class="labelbox" for="personid">Root Person ID:</label>
-				<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-				<script type="text/javascript" src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-				<button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
-			</div>
-			<div class="hoverdiv">
-				<select id="genSelect" class="boxes">
-					<option selected="selected" value="1">1 generation</option>
-					<option value="2">2 generations</option>
-					<option value="3">3 generations</option>
-					<option value="4">4 generations</option>
-					<option value="5">5 generations</option>
-					<option value="6">6 generations</option>
-					<option value="7">7 generations</option>
-					<option value="8">8 generations</option>
-					<option value="9">9 generations</option>
-					<option value="10">10 generations</option>
-				</select>
-				<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
+					<div class="hoverdiv">
+						<label id="username" class="labelbox" for"logoutbutton">User Name</label>
+						<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
+					</div>
+					<div class="hoverdiv">
+						<label id="prompt" class="labelbox" for="personid">Root Person ID:</label>
+						<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
+						<script type="text/javascript" src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+						<button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
+					</div>
+					<div class="hoverdiv">
+						<select id="genSelect" class="boxes">
+							<option selected="selected" value="1">1 generation</option>
+							<option value="2">2 generations</option>
+							<option value="3">3 generations</option>
+							<option value="4">4 generations</option>
+							<option value="5">5 generations</option>
+							<option value="6">6 generations</option>
+							<option value="7">7 generations</option>
+							<option value="8">8 generations</option>
+							<option value="9">9 generations</option>
+							<option value="10">10 generations</option>
+						</select>
+						<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
 <?php
 }
 else
 {
 ?>
-			<div class="hoverdiv">
-				<button id="loginbutton" onclick="window.location='?login'">Login to FamilySearch</button>
+					<div class="hoverdiv">
+						<button id="loginbutton" onclick="window.location='?login'">Login to FamilySearch</button>
 <?php
 }
 ?>
-			</div>
-            	<div id="loading" class="square"></div>
-		</div>
-	    	<div id="lowerbuttonframe">
+					</div>
+					<div id="loading" class="square"></div>
+				</div>
+			    <div id="lowerbuttonframe">
 <?php
 if (!empty($PLEDGIE_CODE))
 {
 ?>
-            	 <a href='https://pledgie.com/campaigns/<?php echo($PLEDGIE_CODE); ?>' target='_blank'><img id="pledgiebutton" src='https://pledgie.com/campaigns/ <?php echo($PLEDGIE_CODE); ?> .png?skin_name=chrome' border='0' ></a>
+            		<a href='https://pledgie.com/campaigns/<?php echo($PLEDGIE_CODE); ?>' target='_blank'><img id="pledgiebutton" src='https://pledgie.com/campaigns/ <?php echo($PLEDGIE_CODE); ?> .png?skin_name=chrome' border='0' ></a>
 <?php
 }
 if (!empty($FAQ_URL))
 {
 ?>
-            	<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
+            		<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
 <?php
 }
 if (!empty($FEEDBACK_URL))
 {
 ?>
-            	<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
+            		<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
 <?php
 }
 if (!empty($DONATE_URL))
 {
 ?>
-            	<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
+            		<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
 <?php
 } 
 if (!empty($BLOG_URL))
 {
 ?>
-            	<button id="blogbutton" class="button green" onclick="window.open('<?php echo($BLOG_URL); ?>', '_blank')">Blog</button>	
+            		<button id="blogbutton" class="button green" onclick="window.open('<?php echo($BLOG_URL); ?>', '_blank')">Blog</button>	
 <?php
 }
 ?>
+				</div>
+			</div>
 		</div>
 </body>
 </html>
