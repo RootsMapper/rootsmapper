@@ -170,19 +170,19 @@ function initialize() {
         var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
             generations: generations,
             person: id,
-            access_token: accesstoken
+            access_token: accesstoken,
+            personDetails: ''
         });
 
-		fsAPI({ media: 'xml', url: url }, function (result, status) {
+		fsAPI({ url: url }, function (result, status) {
 			if (status == "OK") {
-			    var p = $(result).find("gx\\:person, person");
+			    var p = result.persons;
 				for (var i = 0; i < p.length; i++) {
-					var num = $(p[i]).find("gx\\:ascendancyNumber,ascendancyNumber");
-					var n = parseFloat(num[0].textContent);
+				    var n = parseFloat(p[i].display.ascendancyNumber);
 					var gen = Math.floor(log2(n));
 					var node = n +Math.pow(2, gen) * (rootNode -1);
 					if (!familyTree.getNode(gen +rootGen, node)) {
-						familyTree.setNode({ id: p[i].getAttribute("id") }, (gen +rootGen), node);
+						familyTree.setNode({ id: p[i].id }, (gen +rootGen), node);
 					}
 				}
 				if (p.length == 1) {
