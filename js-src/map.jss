@@ -44,7 +44,7 @@ function currentUser() {
             populateIdField(userID);
             document.getElementById("username").innerHTML = f[0].textContent;
 
-            ancestorgens();
+            ancestorgens(1);
         }
     });
     
@@ -107,16 +107,17 @@ function initialize() {
         clearOverlays();
         startEvents();
 	    var select = document.getElementById('genSelect');
-	    genquery = parseFloat(select.value);
+	    //genquery = parseFloat(select.value);
+	    genquery = (gens || parseFloat(select.value));
 	    mapper(genquery);
 
     }
 
-    function ancestorExpand(id, rootGen, rootNode) {
+    function ancestorExpand(id, rootGen, rootNode,gens) {
 
         startEvents();
         var select = document.getElementById('genSelect');
-        genquery = parseFloat(select.value);
+        genquery = (gens || parseFloat(select.value));
         mapper(genquery, id, rootGen, rootNode);
 
     }
@@ -167,7 +168,9 @@ function initialize() {
         rootGen || (rootGen = 0);
         rootNode || (rootNode = 0);
         id = id ? id: document.getElementById('personid').value;
-
+        if (generations > 8) {
+            generations = generations - 8;
+        }
         var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
             generations: generations,
             person: id,
@@ -845,15 +848,27 @@ function initialize() {
 
     function completionEvents(callback) {
         markerCheckLoop(function () {
-            loadingAnimationEnd();
-            var runButton = document.getElementById('runButton');
-            runButton.disabled = false;
-            runButton.className = 'button green';
-            if (firstTime.box == true) {
-                infoBoxClick(familyTree.root().marker);
-                firstTime.box = false;
+            if (genquery > 8) {
+                var origins = genquery;
+                familyTree.IDDFS(function (leaf, cont) {
+                    if (leaf.generation == origins - 8) {
+                        ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8);
+                        cont();
+                    } else {
+                        cont();
+                    }
+                }, function () { });
+            } else {
+                loadingAnimationEnd();
+                var runButton = document.getElementById('runButton');
+                runButton.disabled = false;
+                runButton.className = 'button green';
+                if (firstTime.box == true) {
+                    infoBoxClick(familyTree.root().marker);
+                    firstTime.box = false;
+                }
+                typeof callback === 'function' && callback();
             }
-            typeof callback === 'function' && callback();
         });
 
     }
