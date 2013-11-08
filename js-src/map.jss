@@ -223,7 +223,7 @@ function initialize() {
             var node = leaf.node;
             var gen = leaf.generation;
             if (leaf.value.isPlotted !== true) {
-                personRead(leaf.value.id, function (result) {
+                personRead(leaf.value.links.self.href, function (result) {
                     var person = familyTree.getNode(gen, node);
                     person.generation = gen;
                     person.node = node;
@@ -232,7 +232,7 @@ function initialize() {
                     }
                     person.display = result.display;
                     person.place = result.place;
-                    //familyTree.setNode(result, gen, node)
+                    person.links = result.links;
                 });
                 cont();
             } else {
@@ -305,52 +305,28 @@ function initialize() {
 	    });
 	}
 
-    function personRead(id, callback) {
-
-        var url = discovery.persons.href + '/' + id + '?&access_token=' + accesstoken;
-        var url = urltemplate.parse(discovery['person-template'].template).expand({
-            pid: id,
-            access_token: accesstoken
-        });
-
+    function personRead(url, callback) {
         fsAPI({ media: 'x-gedcomx-v1+json', url: url + '&callback' },
             function (result, status) {
                 if (status == "OK") {
                     var person = result.persons[0];
-                    var display = person.display;
                     var places = result.places;
-
-                    var birth = {
-                	    date: display.birthDate,
-                	    place: display.birthPlace
-                    }
-
-                    var death = {
-                	    date: display.deathDate,
-                	    place: display.deathPlace
-                    }
-
+                    var display = person.display;
+                    var links = person.links;
+                    
                     if (person.living == true) {
-                        death.date = "Living";
                         display.deathDate = "Living";
                     }
 
                     if (places) {
                         var placestring = places[0].names[0].value;
                     } else {
-                        var placestring = birth.place;
+                        var placestring = display.birthPlace;
                     }
 
-                    var personObject = {
-                	    name: display.name,
-                	    id: person.id,
-                	    birth: birth,
-                	    death: death,
-                	    gender: display.gender,
-                	    place: placestring
-			        }
                     var object = {
                         display: display,
+                        links: links,
                         place: placestring
                     }
 				    // Send reply
