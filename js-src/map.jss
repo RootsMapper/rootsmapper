@@ -115,8 +115,9 @@ function initialize() {
     function ancestorExpand(id, rootGen, rootNode) {
 
         startEvents();
-        genquery = 1;
-        mapper(1, id, rootGen, rootNode);
+        var select = document.getElementById('genSelect');
+        genquery = parseFloat(select.value);
+        mapper(genquery, id, rootGen, rootNode);
 
     }
     
