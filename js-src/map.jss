@@ -113,12 +113,12 @@ function initialize() {
 
     }
 
-    function ancestorExpand(id, rootGen, rootNode,gens) {
+    function ancestorExpand(id, rootGen, rootNode,gens,callback) {
 
         startEvents();
         var select = document.getElementById('genSelect');
         genquery = (gens || parseFloat(select.value));
-        mapper(genquery, id, rootGen, rootNode);
+        mapper(genquery, id, rootGen, rootNode,callback);
 
     }
     
@@ -203,11 +203,12 @@ function initialize() {
 		});  
     }
 
-    function mapper(generations,id,rootGen,rootNode) {
+    function mapper(generations,id,rootGen,rootNode,callback) {
         getPedigree(generations,id,rootGen,rootNode, function () { 
             personReadLoop(function () {
     		    placeReadLoop(function () {
-    				plotterLoop(function () {	
+    		        plotterLoop(function () {
+    		            typeof callback === 'function' && callback();
     				    completionEvents(function () {
     				        countryLoop(function (group) {
     				            grouping = group;
@@ -856,8 +857,9 @@ function initialize() {
                 var origins = genquery;
                 familyTree.IDDFS(function (leaf, cont) {
                     if (leaf.generation == origins - 8) {
-                        ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8);
-                        cont();
+                        ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, function () {
+                            cont();
+                        });
                     } else {
                         cont();
                     }
