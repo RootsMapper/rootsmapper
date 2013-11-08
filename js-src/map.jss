@@ -170,8 +170,7 @@ function initialize() {
         var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
             generations: generations,
             person: id,
-            access_token: accesstoken,
-            personDetails: ''
+            access_token: accesstoken
         });
 
 		fsAPI({ url: url }, function (result, status) {
@@ -305,7 +304,12 @@ function initialize() {
 
     function personRead(id, callback) {
 
-        var url = discovery.persons.href + '/' + id + '?&access_token=' +accesstoken;
+        var url = discovery.persons.href + '/' + id + '?&access_token=' + accesstoken;
+        var url = urltemplate.parse(discovery['person-template'].template).expand({
+            pid: id,
+            access_token: accesstoken
+        });
+
         fsAPI({
 			url: url
 			}, function (result, status) {
