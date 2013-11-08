@@ -722,14 +722,8 @@ function initialize() {
         // It will check if the person has children, and if so, returns the child's birthplace instead
 
         var child = familyTree.getChild(gen, node);
-        if (child.display.birthPlace) {
-            if (child.display.birthLatLng) {
-                typeof callback === 'function' && callback(child.display.birthLatLng);
-            } else {
-                setTimeout(function () {
-                    getChildBirthPlace(gen, node, callback);
-                }, 1000);
-            }
+        if (child.display.birthLatLng) {
+            typeof callback === 'function' && callback(child.display.birthLatLng);
         } else {
             setTimeout(function () {
                 getChildBirthPlace(gen, node, callback);
