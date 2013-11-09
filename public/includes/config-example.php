@@ -50,6 +50,9 @@ $BLOG_URL = '';
 // Leave blank to disable
 $PLEDGIE_CODE = '22737';
 
+// Allows for Google ad insertion
+$SIDEAD_CODE = "";
+
 // Tracking code
 // This allows for insertion of code such as
 // Google Analytics tracking
