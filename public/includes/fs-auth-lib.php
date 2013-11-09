@@ -1,7 +1,5 @@
 <?php
 
-require_once('config.php');
-
 class FSAuthentication {
     public $CurlHeaders;
     public $ResponseCode;

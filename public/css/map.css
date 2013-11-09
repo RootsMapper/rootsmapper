@@ -99,11 +99,13 @@ html, body {
 #adDiv {
     white-space: nowrap;
     float: right;
+    background: #b3d1ff;
 }
 
 #bigDiv {
     width: 100%;
     height: 100%;
+    background: #b3d1ff;
 }
 
 #mapdisplay {
