@@ -97,10 +97,8 @@ else
 			<div id="adDiv">
 <?php 
 if (!empty($SIDEAD_CODE))
-{
-?>
-<?php echo($SIDEAD_CODE)?>
-<?php
+{ 
+echo($SIDEAD_CODE);
 }
 ?>
 			</div>

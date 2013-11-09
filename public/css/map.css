@@ -398,6 +398,16 @@ html, body {
     margin-left: 5px;
 }
 
+@media only screen
+and (max-width: 830px) {
+    #adDiv { display: none}
+}
+
+@media only screen
+and (max-height: 605px) {
+    #adDiv { display: none}
+}
+
 @media print {
     #inputFrame { display: none }
     #lowerbuttonframe { display: none }
