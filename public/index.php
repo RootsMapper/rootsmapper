@@ -151,31 +151,31 @@ else
 if (!empty($PLEDGIE_CODE))
 {
 ?>
-            		<a href='https://pledgie.com/campaigns/<?php echo($PLEDGIE_CODE); ?>' target='_blank'><img id="pledgiebutton" src='https://pledgie.com/campaigns/ <?php echo($PLEDGIE_CODE); ?> .png?skin_name=chrome' border='0' ></a>
+            		<div class="hoverdiv"><a href='https://pledgie.com/campaigns/<?php echo($PLEDGIE_CODE); ?>' target='_blank'><img id="pledgiebutton" src='https://pledgie.com/campaigns/ <?php echo($PLEDGIE_CODE); ?> .png?skin_name=chrome' border='0' ></a></div>
 <?php
 }
 if (!empty($FAQ_URL))
 {
 ?>
-            		<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
+            		<div class="hoverdiv"><button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button></div>
 <?php
 }
 if (!empty($FEEDBACK_URL))
 {
 ?>
-            		<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	
+            		<div class="hoverdiv"><button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	</div>
 <?php
 }
 if (!empty($DONATE_URL))
 {
 ?>
-            		<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	
+            		<div class="hoverdiv"><button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	</div>
 <?php
 } 
 if (!empty($BLOG_URL))
 {
 ?>
-            		<button id="blogbutton" class="button green" onclick="window.open('<?php echo($BLOG_URL); ?>', '_blank')">Blog</button>	
+            		<div class="hoverdiv"><button id="blogbutton" class="button green" onclick="window.open('<?php echo($BLOG_URL); ?>', '_blank')">Blog</button>	</div>
 <?php
 }
 ?>

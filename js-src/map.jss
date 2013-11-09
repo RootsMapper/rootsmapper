@@ -429,6 +429,7 @@ function initialize() {
                 if (gen == 0 && node == 0) {
                     createMarker(familyTree.root());
                     familyTree.root().isPlotted = true;
+                    map.setCenter(familyTree.root().display.birthLatLng);
                     typeof callback === 'function' && callback();
                 } else {
                     typeof callback === 'function' && callback();
@@ -667,7 +668,7 @@ function initialize() {
         mark.node = p.node;
         mark.expandButton = "<div  style='height:38px;'>" +
                             "<div id='ebutton' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.isExpanded=true; expandAncestor(\"" + p.id +
-                            "\"," + p.generation + "," + p.node + "); ib.close();'>" +
+                            "\"," + p.generation + "," + p.node + ",1); ib.close();'>" +
                                 "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
                                 "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
                                 "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +

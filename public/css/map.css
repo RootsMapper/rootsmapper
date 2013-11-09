@@ -97,9 +97,13 @@ html, body {
 }
 
 #adDiv {
+    height: 100%;
     white-space: nowrap;
     float: right;
-    background: #b3d1ff;
+    /*background: #b3d1ff;*/
+    /*padding-left: 20px;*/
+    background-color: rgba(227, 227, 221, 1.0);
+    /*box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8) inset;*/
 }
 
 #bigDiv {
@@ -124,7 +128,6 @@ html, body {
     white-space: nowrap;
     z-index: 1;
     background-color: transparent;
-    max-height: 608px;
 }
 
 #loading {
@@ -359,43 +362,33 @@ html, body {
  }
 
 #lowerbuttonframe {
-    position: absolute;
-    bottom: 20px;
+    position: fixed;
+    bottom: 15px;
     right: 5px;
     margin: 0 auto;
     white-space: nowrap;
     z-index: 1;
     background-color: transparent;
-    max-height: 608px;
 }
 
 #faqbutton {
     float: right;
-    margin-left: 5px;
-    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
 }
 
 #feedbackbutton {
     float: right;
-    margin-left: 5px;
-    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
 }
 
 #donatebutton {
     float: right;
-    margin-left: 5px;
-    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
 }
 
 #blogbutton {
     float: right;
-    margin-left: 5px;
-    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
 }
 
 #pledgiebutton {
     float: right;
-    margin-left: 5px;
 }
 
 @media only screen
