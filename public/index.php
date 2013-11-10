@@ -129,8 +129,6 @@ if (isset($access_token))
 							<option value="6">6 generations</option>
 							<option value="7">7 generations</option>
 							<option value="8">8 generations</option>
-							<option value="9">9 generations</option>
-							<option value="10">10 generations</option>
 						</select>
 						<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
 <?php
