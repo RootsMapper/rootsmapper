@@ -126,6 +126,7 @@ html, body {
     white-space: nowrap;
     z-index: 1;
     background-color: transparent;
+    max-width: 600px;
 }
 
 #loading {
@@ -358,6 +359,55 @@ html, body {
      font-size: smaller;
      font-weight: bold;
  }
+
+#pedigreeChart {
+    padding-right: 25px;
+    background-color: rgba(20,20,20,0.8);
+    color: white;
+    font-family: helvetica, arial, sans serif;
+    font-weight: bold;
+    font-size: small;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+    #pedigreeChart li.Male{
+        list-style-image:url('../images/openMale.png');
+    }
+
+    #pedigreeChart li.Feale{
+        list-style-image:url('../images/openFemale.png');
+    }
+
+#pedigreeChart li.collapsibleListOpen.Male {
+  list-style-image:url('../images/minMale.png');
+  cursor:pointer;
+}
+
+#pedigreeChart li.collapsibleListClosed.Male {
+  list-style-image:url('../images/expandMale.png');
+  cursor:pointer;
+}
+
+#pedigreeChart li.collapsibleListOpen.Female {
+  list-style-image:url('../images/minFemale.png');
+  cursor:pointer;
+}
+
+#pedigreeChart li.collapsibleListClosed.Female {
+  list-style-image:url('../images/expandFemale.png');
+  cursor:pointer;
+}
+
+#pedigreeChart li.Male.lastChild {
+  list-style-image:url('../images/openMale.png');
+  cursor:auto;
+}
+
+#pedigreeChart li.Female.lastChild {
+  list-style-image:url('../images/openFemale.png');
+  cursor:auto;
+}
 
 #lowerbuttonframe {
     position: fixed;
