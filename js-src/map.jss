@@ -239,7 +239,8 @@ function initialize() {
     		                    typeof callback === 'function' && callback();
     		                }
     		                countryLoop(function (group) {
-    				            grouping = group;
+    		                    grouping = group;
+    		                    listLoop();
     				            //if (baseurl.indexOf('sandbox') == -1) {
     				            //    photoLoop();
     				            //}
@@ -340,6 +341,52 @@ function initialize() {
 	    }, function () {
 	        typeof callback === 'function' && callback(group);
 	    });
+	}
+
+	function listLoop() {
+	    if (document.getElementById('pedigreeChart')) {
+	        document.getElementById('pedigreeChart').innerHTML = '';
+	    }
+
+	    var div = document.createElement('div');
+	    div.className = 'hoverdiv';
+	    div.setAttribute('id', 'pedigreeChart');
+	    document.getElementById('inputFrame').appendChild(div);
+
+	    var rootElement = document.createElement("ul");
+	    rootElement.className = "collapsibleList";
+	    rootElement.setAttribute("id", "-1,0");
+	    document.getElementById("pedigreeChart").appendChild(rootElement);
+	    familyTree.root();
+	    familyTree.DFS(function (person, cont) {
+	        var li = document.createElement("li");
+	        li.innerHTML = person.value.display.name + '<br/>' + person.value.display.lifespan;
+	        if (familyTree.getFather(person.generation, person.node) && familyTree.getMother(person.generation, person.node)) {
+	            li.className = person.value.display.gender;
+	        } else {
+	            li.className = person.value.display.gender + ' lastChild';
+	        }
+	        
+	        var ul = document.createElement("ul");
+	        ul.setAttribute("id", person.generation + ',' + person.node );
+
+	        li.appendChild(ul);
+
+	        if (person.value.display.gender == "Male") {
+	            var childNode = person.node / 2;
+	        } else {
+	            var childNode = (person.node - 1) / 2;
+	        }
+
+	        if (person.generation == 0) {
+	            childNode = 0;
+	        }
+
+	        var childUl = document.getElementById((person.generation - 1) + ',' + childNode );
+	        childUl.appendChild(li);
+	    });
+	    //CollapsibleLists.apply();
+	    CollapsibleLists.applyTo(document.getElementById('-1,0'));
 	}
 
     function personRead(url, callback) {
