@@ -130,8 +130,6 @@ if (isset($access_token))
 							<option value="6">6 generations</option>
 							<option value="7">7 generations</option>
 							<option value="8">8 generations</option>
-							<option value="9">9 generations</option>
-							<option value="10">10 generations</option>
 						</select>
 						<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
 <?php
@@ -152,31 +150,31 @@ else
 if (!empty($PLEDGIE_CODE))
 {
 ?>
-            		<div class="hoverdiv"><a href='https://pledgie.com/campaigns/<?php echo($PLEDGIE_CODE); ?>' target='_blank'><img id="pledgiebutton" src='https://pledgie.com/campaigns/ <?php echo($PLEDGIE_CODE); ?> .png?skin_name=chrome' border='0' ></a></div>
+            		<a href='https://pledgie.com/campaigns/<?php echo($PLEDGIE_CODE); ?>' target='_blank'><img id="pledgiebutton" src='https://pledgie.com/campaigns/ <?php echo($PLEDGIE_CODE); ?> .png?skin_name=chrome' border='0' ></a>
 <?php
 }
 if (!empty($FAQ_URL))
 {
 ?>
-            		<div class="hoverdiv"><button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button></div>
+            		<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
 <?php
 }
 if (!empty($FEEDBACK_URL))
 {
 ?>
-            		<div class="hoverdiv"><button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>	</div>
+            		<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>
 <?php
 }
 if (!empty($DONATE_URL))
 {
 ?>
-            		<div class="hoverdiv"><button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>	</div>
+            		<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>
 <?php
 } 
 if (!empty($BLOG_URL))
 {
 ?>
-            		<div class="hoverdiv"><button id="blogbutton" class="button green" onclick="window.open('<?php echo($BLOG_URL); ?>', '_blank')">Blog</button>	</div>
+            		<button id="blogbutton" class="button green" onclick="window.open('<?php echo($BLOG_URL); ?>', '_blank')">Blog</button>
 <?php
 }
 ?>
