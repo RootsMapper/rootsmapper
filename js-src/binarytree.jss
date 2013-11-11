@@ -11,7 +11,7 @@ function BinaryTree() {
                 that.traverse(run, index, callback)
             });
         } else {
-            callback();
+            typeof callback === 'function' && callback();
         }
     }
 
@@ -40,6 +40,18 @@ function BinaryTree() {
             }
             this.child();
         }
+    }
+
+    this.DFS = function (run) {
+        run({ node: this.node, generation: this.generation, value: this.getNode() });
+        if (this.father() !== undefined) {
+            this.DFS(run);
+        }
+        this.child();
+        if (this.mother() !== undefined) {
+            this.DFS(run);
+        }
+        this.child();
     }
 
     this.generations = function () {
