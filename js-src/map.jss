@@ -536,7 +536,8 @@ function initialize() {
 
     function getPlaceAuthority(gen, node, callback) {
         if (!familyTree.getNode(gen, node).display.ascendancyNumber) {
-            var place = familyTree.getNode(gen, node).display.birthPlace;
+            //var place = familyTree.getNode(gen, node).display.birthPlace;
+            var place = familyTree.getNode(gen, node).place;
             if (place) {
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
