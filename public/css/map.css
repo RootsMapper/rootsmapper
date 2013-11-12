@@ -216,6 +216,7 @@ html, body {
     width: 22px;
     height: 22px;
     opacity: 0.75;
+    vertical-align: top;
 }
 
     #fsButton:hover {
@@ -369,12 +370,13 @@ html, body {
     max-height: 400px;
     overflow-y: auto;
 }
-
+    #pedigreeChart li {
+    }
     #pedigreeChart li.Male{
         list-style-image:url('../images/openMale.png');
     }
 
-    #pedigreeChart li.Feale{
+    #pedigreeChart li.Female{
         list-style-image:url('../images/openFemale.png');
     }
 
