@@ -167,6 +167,7 @@ html, body {
     border: 1px solid white;
     border-radius: 0px 0px 0px 0px;
     text-indent: 0;
+    padding-right: 5px;
     padding-top: 5px;
     padding-bottom: 5px;
 }
