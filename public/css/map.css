@@ -167,6 +167,8 @@ html, body {
     border: 1px solid white;
     border-radius: 0px 0px 0px 0px;
     text-indent: 0;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
     #genSelect:focus {
