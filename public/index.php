@@ -115,12 +115,10 @@ if (isset($access_token))
 						<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
 					</div>
 					<div class="hoverdiv">
+                 <button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
 						<label id="prompt" class="labelbox" for="personid">Root Person ID:</label>
 						<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
 						<script type="text/javascript" src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-						<button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
-					</div>
-					<div class="hoverdiv">
 						<select id="genSelect" class="boxes">
 							<option selected="selected" value="1">1 generation</option>
 							<option value="2">2 generations</option>
