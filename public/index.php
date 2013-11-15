@@ -76,6 +76,7 @@ else
 	<!-- loading animation references -->
 		<script src="scripts/binarytree.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/CollapsibleLists.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+      <script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
         <script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
@@ -118,7 +119,6 @@ if (isset($access_token))
                  <button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
 						<label id="prompt" class="labelbox" for="personid">Root Person ID:</label>
 						<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-						<script type="text/javascript" src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 						<select id="genSelect" class="boxes">
 							<option selected="selected" value="1">1 generation</option>
 							<option value="2">2 generations</option>

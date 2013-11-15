@@ -733,7 +733,7 @@ function initialize() {
             "<div class='person'>" +
                 "<img id='portrait' class='profile-image' src='" + src + "'>" +
                 "<div class='box'>" +
-                    "<div class='xlarge'>" + p.display.name + "</div>" +
+                    "<div class='xlarge'>" + HtmlEncode(p.display.name) + "</div>" +
                     "<div class='large'>" + p.id +
                     "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
                 "</div>" + "<img id='fsButton' class='profile-image' src='images/fs_logo.png?v=" + version + "' onclick='window.open(\"" + url + "\");'>" +
@@ -741,15 +741,15 @@ function initialize() {
             "<div class='person'>" +
                 "<div class='label'>BIRTH</div>" +
                 "<div class='box'>" +
-                    "<div class='large'>" + (p.display.birthDate || "") + "</div>" +
-                    "<div class='small'>" + (p.display.birthPlace || "") + "</div>" +
+                    "<div class='large'>" + (HtmlEncode(p.display.birthDate) || "") + "</div>" +
+                    "<div class='small'>" + (HtmlEncode(p.display.birthPlace) || "") + "</div>" +
                 "</div>" +
             "</div>" +
             "<div class='person'>" +
                 "<div class='label'>DEATH</div>" +
                 "<div class='box'>" +
-                    "<div class='large'>" + (p.display.deathDate || "") + "</div>" +
-                    "<div class='small'>" + (p.display.deathPlace || "") + "</div>" +
+                    "<div class='large'>" + (HtmlEncode(p.display.deathDate) || "") + "</div>" +
+                    "<div class='small'>" + (HtmlEncode(p.display.deathPlace) || "") + "</div>" +
                 "</div>" +
             "</div>";
     }
