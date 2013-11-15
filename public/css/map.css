@@ -215,6 +215,7 @@ html, body {
     width: 22px;
     height: 22px;
     opacity: 0.75;
+    vertical-align: top;
 }
 
     #fsButton:hover {
