@@ -143,6 +143,7 @@ else
 					</div>
 					<div id="loading" class="square"></div>
 				</div>
+           <br/>
 			    <div id="lowerbuttonframe">
 <?php
 if (!empty($PLEDGIE_CODE))
