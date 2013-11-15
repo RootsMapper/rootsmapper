@@ -19,6 +19,7 @@ var discovery;
 var queue = 1;
 var grouping;
 var tooManyGens;
+var title;
 
 
 function discoveryResource() {
@@ -819,6 +820,7 @@ function initialize() {
     }
 
     function loadingAnimationStart() {
+        document.title = "*" + title;
         $(function () {
             $('#loading').show();
         });
@@ -828,6 +830,7 @@ function initialize() {
     }
 
     function loadingAnimationEnd() {
+        document.title = title;
         $(function () {
             $('#loading').activity(false);
         });
