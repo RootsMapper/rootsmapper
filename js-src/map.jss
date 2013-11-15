@@ -347,10 +347,11 @@ function initialize() {
 	    if (document.getElementById('pedigreeChart')) {
 	        document.getElementById('pedigreeChart').innerHTML = '';
 	    }
-
+       var br = document.createElement('br');
 	    var div = document.createElement('div');
 	    div.className = 'hoverdiv';
 	    div.setAttribute('id', 'pedigreeChart');
+       document.getElementById('inputFrame').appendChild(br);
 	    document.getElementById('inputFrame').appendChild(div);
 
 	    var rootElement = document.createElement("ul");
