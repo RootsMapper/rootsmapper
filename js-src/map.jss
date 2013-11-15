@@ -361,7 +361,7 @@ function initialize() {
 	    familyTree.root();
 	    familyTree.DFS(function (person, cont) {
 	        var li = document.createElement("li");
-	        li.innerHTML = person.value.display.name + '<br/>' + person.value.display.lifespan;
+	        li.innerHTML = HtmlEncode(person.value.display.name) + '<br/>' + HtmlEncode(person.value.display.lifespan);
 	        if (familyTree.getFather(person.generation, person.node) && familyTree.getMother(person.generation, person.node)) {
 	            li.className = person.value.display.gender;
 	        } else {
