@@ -165,7 +165,7 @@ html, body {
 
 #genSelect {
     border: 1px solid white;
-    border-radius: 2px 0px 0px 2px;
+    border-radius: 0px 0px 0px 0px;
     text-indent: 0;
 }
 
@@ -180,7 +180,7 @@ html, body {
     float:left;
     background-color: white;
     border: 1px solid white;
-    border-radius: 2px 0px 0px 2px; 
+    border-radius: 0px 0px 0px 0px; 
     padding: 5px;
     font-family: helvetica, arial, sans serif;
     font-weight: bold;
@@ -303,7 +303,8 @@ html, body {
     }
 
 #populateUser {
-    border-radius: 0px 2px 2px 0px; 
+    border-radius: 2px 0px 0px 2px; 
+    float: left;
 }
 
 
