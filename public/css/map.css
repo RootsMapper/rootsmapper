@@ -126,7 +126,7 @@ html, body {
     white-space: nowrap;
     z-index: 1;
     background-color: transparent;
-    max-width: 600px;
+    max-width: 610px;
 }
 
 #loading {
