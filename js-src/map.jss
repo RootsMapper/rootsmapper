@@ -347,13 +347,18 @@ function initialize() {
 	function listLoop() {
 	    if (document.getElementById('pedigreeChart')) {
 	        document.getElementById('pedigreeChart').innerHTML = '';
+	    } else {
+	        var br = document.createElement('br');
+	        var div = document.createElement('div');
+	        div.className = 'hoverdiv';
+	        div.setAttribute('id', 'pedigreeWrapper');
+
+	        var div2 = document.createElement('div');
+	        div2.setAttribute('id', 'pedigreeChart');
+	        div.appendChild(div2);
+	        document.getElementById('inputFrame').appendChild(br);
+	        document.getElementById('inputFrame').appendChild(div);
 	    }
-        var br = document.createElement('br');
-	    var div = document.createElement('div');
-	    div.className = 'hoverdiv';
-	    div.setAttribute('id', 'pedigreeChart');
-        document.getElementById('inputFrame').appendChild(br);
-	    document.getElementById('inputFrame').appendChild(div);
 
 	    var rootElement = document.createElement("ul");
 	    rootElement.className = "collapsibleList";
@@ -363,16 +368,32 @@ function initialize() {
 	    familyTree.DFS(function (person, cont) {
 	        var li = document.createElement("li");
 	        li.innerHTML = HtmlEncode(person.value.display.name) + ' (' + HtmlEncode(person.value.display.lifespan) + ')';
-	        if (familyTree.getFather(person.generation, person.node) && familyTree.getMother(person.generation, person.node)) {
-	            li.className = person.value.display.gender;
+	        if (familyTree.getFather(person.generation, person.node) || familyTree.getMother(person.generation, person.node)) {
+	            var lastGen = false;
+	            if (person.value.display.gender == "Female") {
+	                li.className = person.value.display.gender + ' lastChild';
+	            } else {
+	                li.className = person.value.display.gender;
+	            }
 	        } else {
-	            li.className = person.value.display.gender + ' lastChild';
+	            var lastGen = true;
+	            if (person.value.display.gender == "Female") {
+	                li.className = person.value.display.gender + ' lastGen lastChild';
+	            } else {
+	                li.className = person.value.display.gender + ' lastGen';
+	            }
 	        }
 	        
+	        if (person.generation == 0) {
+	            li.className = li.className + ' Root';
+	        }
+
 	        var ul = document.createElement("ul");
 	        ul.setAttribute("id", person.generation + ',' + person.node );
 
-	        li.appendChild(ul);
+	        if (lastGen == false) {
+	            li.appendChild(ul);
+	        }
 
 	        if (person.value.display.gender == "Male") {
 	            var childNode = person.node / 2;
