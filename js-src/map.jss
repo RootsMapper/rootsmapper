@@ -348,11 +348,11 @@ function initialize() {
 	    if (document.getElementById('pedigreeChart')) {
 	        document.getElementById('pedigreeChart').innerHTML = '';
 	    }
-       var br = document.createElement('br');
+        var br = document.createElement('br');
 	    var div = document.createElement('div');
 	    div.className = 'hoverdiv';
 	    div.setAttribute('id', 'pedigreeChart');
-       document.getElementById('inputFrame').appendChild(br);
+        document.getElementById('inputFrame').appendChild(br);
 	    document.getElementById('inputFrame').appendChild(div);
 
 	    var rootElement = document.createElement("ul");
@@ -362,7 +362,7 @@ function initialize() {
 	    familyTree.root();
 	    familyTree.DFS(function (person, cont) {
 	        var li = document.createElement("li");
-	        li.innerHTML = HtmlEncode(person.value.display.name) + '<br/>' + HtmlEncode(person.value.display.lifespan);
+	        li.innerHTML = HtmlEncode(person.value.display.name) + ' (' + HtmlEncode(person.value.display.lifespan) + ')';
 	        if (familyTree.getFather(person.generation, person.node) && familyTree.getMother(person.generation, person.node)) {
 	            li.className = person.value.display.gender;
 	        } else {
@@ -483,6 +483,20 @@ function initialize() {
                 } else {
                     typeof callback === 'function' && callback();
                 }
+            } else if (status == "EMPTY") {
+				if (gen == 0 && node == 0) {
+					alert("Root person has no location information in FamilySearch Family Tree. " +
+						  "Please update their information or enter a new root person.");
+					loadingAnimationEnd();
+					var runButton = document.getElementById('runButton');
+					runButton.disabled = false;
+					runButton.className = 'button green';
+	            } else {
+					getChildBirthPlace(gen, node, function (result) {
+                        familyTree.getNode(gen, node).display.birthLatLng = result;
+                        typeof callback === 'function' && callback();
+                    });
+				}
             } else {
            //     console.log("Place authority fail. Try google.")
                 getLatLng(familyTree.getNode(gen, node).display.birthPlace, function (result, status) {
@@ -743,15 +757,15 @@ function initialize() {
             "<div class='person'>" +
                 "<div class='label'>BIRTH</div>" +
                 "<div class='box'>" +
-                    "<div class='large'>" + (HtmlEncode(p.display.birthDate) || "") + "</div>" +
-                    "<div class='small'>" + (HtmlEncode(p.display.birthPlace) || "") + "</div>" +
+                    "<div class='large'>" + (HtmlEncode(p.display.birthDate || "")) + "</div>" +
+                    "<div class='small'>" + (HtmlEncode(p.display.birthPlace || "")) + "</div>" +
                 "</div>" +
             "</div>" +
             "<div class='person'>" +
                 "<div class='label'>DEATH</div>" +
                 "<div class='box'>" +
-                    "<div class='large'>" + (HtmlEncode(p.display.deathDate) || "") + "</div>" +
-                    "<div class='small'>" + (HtmlEncode(p.display.deathPlace) || "") + "</div>" +
+                    "<div class='large'>" + (HtmlEncode(p.display.deathDate || "")) + "</div>" +
+                    "<div class='small'>" + (HtmlEncode(p.display.deathPlace || "")) + "</div>" +
                 "</div>" +
             "</div>";
     }

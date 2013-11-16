@@ -365,53 +365,102 @@ html, body {
  }
 
 #pedigreeChart {
-    padding-right: 25px;
+    padding-right: 50px;
     background-color: rgba(20,20,20,0.8);
     color: white;
-    font-family: helvetica, arial, sans serif;
+    /*font-family: helvetica, arial, sans serif;
     font-weight: bold;
-    font-size: small;
+    font-size: small;*/
     max-height: 400px;
     overflow-y: auto;
 }
-    #pedigreeChart li {
+    #pedigreeChart ul {
+        margin:0 0 0 -1.5em;
+        padding:0 0 0 1.5em;
     }
+
+        #pedigreeChart ul ul{
+            background:url('../images/list-item-contents.png') repeat-y left;
+        }
+        
+        #pedigreeChart li.lastChild > ul{
+            background-image:none;
+        }
+    #pedigreeChart li {
+        margin:0;
+        padding:0;
+        background:url('../images/list-item-root.png') no-repeat top left;
+        /*list-style-image:url('button.png');*/
+        cursor:auto;        
+    }
+
+
+
     #pedigreeChart li.Male{
         list-style-image:url('../images/openMale.png');
+        list-style-position:inside;
     }
 
     #pedigreeChart li.Female{
         list-style-image:url('../images/openFemale.png');
+        list-style-position:inside;
     }
 
 #pedigreeChart li.collapsibleListOpen.Male {
-  list-style-image:url('../images/minMale.png');
-  cursor:pointer;
+    list-style-image:url('../images/minMale.png');
+        list-style-position:inside;
+    /*background-image:url('../images/list-item-open.png');*/
+    cursor:pointer;
 }
 
 #pedigreeChart li.collapsibleListClosed.Male {
-  list-style-image:url('../images/expandMale.png');
-  cursor:pointer;
+        list-style-position:inside;
+    list-style-image:url('../images/expandMale.png');
+    cursor:pointer;
 }
 
 #pedigreeChart li.collapsibleListOpen.Female {
-  list-style-image:url('../images/minFemale.png');
-  cursor:pointer;
+        list-style-position:inside;
+    list-style-image:url('../images/minFemale.png');
+    /*background-image:url('../images/list-item-open.png');*/
+    cursor:pointer;
 }
 
 #pedigreeChart li.collapsibleListClosed.Female {
-  list-style-image:url('../images/expandFemale.png');
-  cursor:pointer;
+        list-style-position:inside;
+    list-style-image:url('../images/expandFemale.png');
+    cursor:pointer;
 }
 
 #pedigreeChart li.Male.lastChild {
-  list-style-image:url('../images/openMale.png');
-  cursor:auto;
+        list-style-position:inside;
+    list-style-image:url('../images/openMale.png');
+    /*background-image:url('../images/list-item-last.png');*/
+    cursor:auto;
 }
 
 #pedigreeChart li.Female.lastChild {
-  list-style-image:url('../images/openFemale.png');
-  cursor:auto;
+        list-style-position:inside;
+    list-style-image:url('../images/openFemale.png');
+    /*background-image:url('../images/list-item-last.png');*/
+    cursor:auto;
+}
+
+#pedigreeChart li li {
+    background-image:url('../images/list-item.png');
+    padding-left:1.5em;
+}
+
+#pedigreeChart li.lastChild {
+    background-image:url('../images/list-item-last.png');
+}
+
+#pedigreeChart li.collapsibleListOpen {
+    background-image:url('../images/list-item-open.png');
+}
+
+#pedigreeChart li.collapsibleListOpen.lastChild {
+    background-image:url('../images/list-item-last-open.png');
 }
 
 #lowerbuttonframe {
