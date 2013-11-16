@@ -126,7 +126,7 @@ html, body {
     white-space: nowrap;
     z-index: 1;
     background-color: transparent;
-    max-width: 600px;
+    /*max-width: 610px;*/
 }
 
 #loading {
@@ -165,8 +165,11 @@ html, body {
 
 #genSelect {
     border: 1px solid white;
-    border-radius: 2px 0px 0px 2px;
+    border-radius: 0px 0px 0px 0px;
     text-indent: 0;
+    padding-right: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
     #genSelect:focus {
@@ -180,7 +183,7 @@ html, body {
     float:left;
     background-color: white;
     border: 1px solid white;
-    border-radius: 2px 0px 0px 2px; 
+    border-radius: 0px 0px 0px 0px; 
     padding: 5px;
     font-family: helvetica, arial, sans serif;
     font-weight: bold;
@@ -303,7 +306,8 @@ html, body {
     }
 
 #populateUser {
-    border-radius: 0px 2px 2px 0px; 
+    border-radius: 2px 0px 0px 2px; 
+    float: left;
 }
 
 

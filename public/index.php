@@ -71,16 +71,18 @@ else
 	<!-- map references -->
 
 	<!-- loading animation references -->
-	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/loading.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 	<!-- loading animation references -->
 		<script src="scripts/binarytree.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/CollapsibleLists.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+      <script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
         <script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/url-template.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
         <script type="text/javascript">
+             title=' <?php echo isset($TITLE)? $TITLE : ""; ?>';
              accesstoken='<?php echo isset($access_token) ? $access_token : ""; ?>';
              baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
              version='<?php echo isset($VERSION)? $VERSION : ""; ?>';
@@ -115,12 +117,9 @@ if (isset($access_token))
 						<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
 					</div>
 					<div class="hoverdiv">
+                 <button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
 						<label id="prompt" class="labelbox" for="personid">Root Person ID:</label>
 						<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-						<script type="text/javascript" src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-						<button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
-					</div>
-					<div class="hoverdiv">
 						<select id="genSelect" class="boxes">
 							<option selected="selected" value="1">1 generation</option>
 							<option value="2">2 generations</option>

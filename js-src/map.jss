@@ -19,6 +19,7 @@ var discovery;
 var queue = 1;
 var grouping;
 var tooManyGens;
+var title;
 
 
 function discoveryResource() {
@@ -347,10 +348,11 @@ function initialize() {
 	    if (document.getElementById('pedigreeChart')) {
 	        document.getElementById('pedigreeChart').innerHTML = '';
 	    }
-
+       var br = document.createElement('br');
 	    var div = document.createElement('div');
 	    div.className = 'hoverdiv';
 	    div.setAttribute('id', 'pedigreeChart');
+       document.getElementById('inputFrame').appendChild(br);
 	    document.getElementById('inputFrame').appendChild(div);
 
 	    var rootElement = document.createElement("ul");
@@ -360,7 +362,7 @@ function initialize() {
 	    familyTree.root();
 	    familyTree.DFS(function (person, cont) {
 	        var li = document.createElement("li");
-	        li.innerHTML = person.value.display.name + '<br/>' + person.value.display.lifespan;
+	        li.innerHTML = HtmlEncode(person.value.display.name) + '<br/>' + HtmlEncode(person.value.display.lifespan);
 	        if (familyTree.getFather(person.generation, person.node) && familyTree.getMother(person.generation, person.node)) {
 	            li.className = person.value.display.gender;
 	        } else {
@@ -733,7 +735,7 @@ function initialize() {
             "<div class='person'>" +
                 "<img id='portrait' class='profile-image' src='" + src + "'>" +
                 "<div class='box'>" +
-                    "<div class='xlarge'>" + p.display.name + "</div>" +
+                    "<div class='xlarge'>" + HtmlEncode(p.display.name) + "</div>" +
                     "<div class='large'>" + p.id +
                     "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
                 "</div>" + "<img id='fsButton' class='profile-image' src='images/fs_logo.png?v=" + version + "' onclick='window.open(\"" + url + "\");'>" +
@@ -741,15 +743,15 @@ function initialize() {
             "<div class='person'>" +
                 "<div class='label'>BIRTH</div>" +
                 "<div class='box'>" +
-                    "<div class='large'>" + (p.display.birthDate || "") + "</div>" +
-                    "<div class='small'>" + (p.display.birthPlace || "") + "</div>" +
+                    "<div class='large'>" + (HtmlEncode(p.display.birthDate) || "") + "</div>" +
+                    "<div class='small'>" + (HtmlEncode(p.display.birthPlace) || "") + "</div>" +
                 "</div>" +
             "</div>" +
             "<div class='person'>" +
                 "<div class='label'>DEATH</div>" +
                 "<div class='box'>" +
-                    "<div class='large'>" + (p.display.deathDate || "") + "</div>" +
-                    "<div class='small'>" + (p.display.deathPlace || "") + "</div>" +
+                    "<div class='large'>" + (HtmlEncode(p.display.deathDate) || "") + "</div>" +
+                    "<div class='small'>" + (HtmlEncode(p.display.deathPlace) || "") + "</div>" +
                 "</div>" +
             "</div>";
     }
@@ -819,6 +821,7 @@ function initialize() {
     }
 
     function loadingAnimationStart() {
+        document.title = "*" + title;
         $(function () {
             $('#loading').show();
         });
@@ -828,6 +831,7 @@ function initialize() {
     }
 
     function loadingAnimationEnd() {
+        document.title = title;
         $(function () {
             $('#loading').activity(false);
         });
