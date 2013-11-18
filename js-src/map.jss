@@ -588,7 +588,7 @@ function initialize() {
             var place = familyTree.getNode(gen, node).display.birthPlace;
             //var place = familyTree.getNode(gen, node).place; // uncomment to use normalized place strings
             if (place) {
-                cont();
+                typeof cont === 'function' && cont();
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&filter=true&locale=en&sessionId=" + accesstoken;
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
                         if (status == "OK") {
@@ -617,9 +617,16 @@ function initialize() {
                 typeof callback === 'function' && callback(cont, "EMPTY");
             }
         } else {
-            setTimeout(function () {
-                getPlaceAuthority(gen, node, cont, callback)
-            }, 100);
+            if (gen == 0 && node == 0) {
+                setTimeout(function () {
+                    getPlaceAuthority(gen, node, cont, callback)
+                }, 100);
+            } else {
+                typeof cont === 'function' && cont();
+                setTimeout(function () {
+                    getPlaceAuthority(gen, node, '', callback)
+                }, 100);
+            }
         }
     }
 
