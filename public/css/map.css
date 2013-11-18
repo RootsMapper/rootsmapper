@@ -312,6 +312,7 @@ html, body {
 #populateUser {
     border-radius: 2px 0px 0px 2px; 
     float: left;
+    cursor: pointer;
 }
 
 
