@@ -317,18 +317,22 @@ html, body {
 
 #logoutbutton {
     border-radius: 0px 2px 2px 0px; 
+    cursor: pointer;
 }
 
 #runButton {
     border-radius: 0px 2px 2px 0px; 
+    cursor: pointer;
 }
 
 #expandButton {
     float:right;
+    cursor: pointer;
 }
 
 #idButton {
     float:left;
+    cursor: pointer;
 }
 
 #loginbutton {
@@ -341,6 +345,7 @@ html, body {
     float: left;
     margin: 0;
     white-space: normal;
+    cursor: pointer;
 }
 
         #loginbutton:hover {
