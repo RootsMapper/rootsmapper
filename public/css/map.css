@@ -533,7 +533,7 @@ and (max-width: 830px) {
 }
 
 @media only screen
-and (max-height: 601px) {
+and (max-height: 605px) {
     #adDiv { display: none}
 }
 
