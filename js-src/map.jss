@@ -532,7 +532,7 @@ function initialize() {
                             typeof callback === 'function' && callback();
                         }
                     } else {
-                        getChildBirthPlace(gen, node, function (result) {
+                        //getChildBirthPlace(gen, node, function (result) {
                             if (gen == 0 && node == 0) {
                                 alert("Root person's location information in FamilySearch Family Tree does not match any known locations. " +
                                       "Please update their information.");
@@ -546,7 +546,7 @@ function initialize() {
                                     typeof callback === 'function' && callback();
                                 });
                             }
-                        });
+                        //});
                     }
                 });   
             }
