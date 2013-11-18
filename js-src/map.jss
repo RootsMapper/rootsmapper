@@ -497,6 +497,7 @@ function initialize() {
                 familyTree.getNode(gen, node).display.birthLatLng = result.latlng;
                 familyTree.getNode(gen, node).display.birthCountry = result.country;
                 if (gen == 0 && node == 0) {
+                    result.cont();
                     createMarker(familyTree.root());
                     familyTree.root().isPlotted = true;
                     map.setCenter(familyTree.root().display.birthLatLng);
@@ -521,10 +522,11 @@ function initialize() {
 				}
             } else {
            //     console.log("Place authority fail. Try google.")
-                getLatLng(familyTree.getNode(gen, node).display.birthPlace, function (result, status) {
+                getLatLng(familyTree.getNode(gen, node).display.birthPlace, cont, function (result, status) {
                     if (status == "OK") {
-                        familyTree.getNode(gen, node).display.birthLatLng = result;
+                        familyTree.getNode(gen, node).display.birthLatLng = result.latlng;
                         if (gen == 0 && node == 0) {
+                            result.cont();
                             createMarker(familyTree.root());
                             familyTree.root().isPlotted = true;
                             typeof callback === 'function' && callback();
@@ -553,7 +555,7 @@ function initialize() {
         });
     }
 
-    function getLatLng(place, callback) {
+    function getLatLng(place, cont, callback) {
 
         if (place) {
             setTimeout(function () {
@@ -565,21 +567,21 @@ function initialize() {
                 geocoder.geocode(georequest, function (result, status) {
                     if (status == google.maps.GeocoderStatus.OK) {
                         var latlng = result[0].geometry.location;
-                        typeof callback === 'function' && callback(latlng, "OK");
+                        typeof callback === 'function' && callback({latlng: latlng, cont: cont}, "OK");
                     } else {
                         if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
                             //typeof callback === 'function' && callback(undefined, "LIMIT");
                 //            console.log("Google throttled. Delay = " + delay + "ms. Place: " + place);
                             delay++;
-                            getLatLng(place, callback);
+                            getLatLng(place, cont, callback);
                         } else {
-                            typeof callback === 'function' && callback(undefined, "NONE");
+                            typeof callback === 'function' && callback(cont, "NONE");
                         }
                     }
                 })
             }, delay);
         } else {
-            typeof callback === 'function' && callback(undefined,"EMPTY");
+            typeof callback === 'function' && callback(cont, "EMPTY");
         }
     }
 
@@ -588,7 +590,9 @@ function initialize() {
             var place = familyTree.getNode(gen, node).display.birthPlace;
             //var place = familyTree.getNode(gen, node).place; // uncomment to use normalized place strings
             if (place) {
-                typeof cont === 'function' && cont();
+                if (!(gen == 0 && node == 0)) {
+                    typeof cont === 'function' && cont();
+                }
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&filter=true&locale=en&sessionId=" + accesstoken;
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
                         if (status == "OK") {
@@ -605,12 +609,12 @@ function initialize() {
                                 var lat = point[0].childNodes[0].textContent;
                                 var lng = point[0].childNodes[1].textContent;
                                 var latlng = new google.maps.LatLng(lat, lng);
-                                typeof callback === 'function' && callback({latlng: latlng, country: country}, status);
+                                typeof callback === 'function' && callback({latlng: latlng, country: country, cont: cont}, status);
                             } else {
-                                typeof callback === 'function' && callback(undefined, "NONE");
+                                typeof callback === 'function' && callback(cont, "NONE");
                             }
                         } else {
-                            typeof callback === 'function' && callback(undefined, status);
+                            typeof callback === 'function' && callback(cont, status);
                         }
                     });
             } else {
