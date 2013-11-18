@@ -287,10 +287,8 @@ function initialize() {
     		var node = leaf.node;
     		var gen = leaf.generation;
     		if (leaf.value.isPlotted !== true) {
-    		    getMeABirthPlace(gen, node, function () {
-    		        callback = null;
-    		    });
-				cont();
+    		    getMeABirthPlace(gen, node,cont);
+				//cont();
     		} else {
     			cont();
     		}
@@ -493,8 +491,8 @@ function initialize() {
         }, timer);
     }
 
-    function getMeABirthPlace(gen, node, callback) {
-        getPlaceAuthority(gen,node, function (result, status) {
+    function getMeABirthPlace(gen, node, cont, callback) {
+        getPlaceAuthority(gen,node,cont, function (result, status) {
             if (status == "OK") {
                 familyTree.getNode(gen, node).display.birthLatLng = result.latlng;
                 familyTree.getNode(gen, node).display.birthCountry = result.country;
@@ -514,7 +512,8 @@ function initialize() {
 					var runButton = document.getElementById('runButton');
 					runButton.disabled = false;
 					runButton.className = 'button green';
-	            } else {
+				} else {
+				    result();
 					getChildBirthPlace(gen, node, function (result) {
                         familyTree.getNode(gen, node).display.birthLatLng = result;
                         typeof callback === 'function' && callback();
@@ -584,11 +583,12 @@ function initialize() {
         }
     }
 
-    function getPlaceAuthority(gen, node, callback) {
+    function getPlaceAuthority(gen, node, cont, callback) {
         if (!familyTree.getNode(gen, node).display.ascendancyNumber) {
             var place = familyTree.getNode(gen, node).display.birthPlace;
             //var place = familyTree.getNode(gen, node).place; // uncomment to use normalized place strings
             if (place) {
+                cont();
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&filter=true&locale=en&sessionId=" + accesstoken;
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
                         if (status == "OK") {
@@ -614,12 +614,12 @@ function initialize() {
                         }
                     });
             } else {
-                typeof callback === 'function' && callback(undefined, "EMPTY");
+                typeof callback === 'function' && callback(cont, "EMPTY");
             }
         } else {
             setTimeout(function () {
-                getPlaceAuthority(gen, node, callback)
-            }, 1000);
+                getPlaceAuthority(gen, node, cont, callback)
+            }, 100);
         }
     }
 
