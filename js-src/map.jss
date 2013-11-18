@@ -513,7 +513,7 @@ function initialize() {
 					runButton.disabled = false;
 					runButton.className = 'button green';
 				} else {
-				    result();
+				    typeof result === 'function' && result();
 					getChildBirthPlace(gen, node, function (result) {
                         familyTree.getNode(gen, node).display.birthLatLng = result;
                         typeof callback === 'function' && callback();
