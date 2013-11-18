@@ -391,7 +391,8 @@ html, body {
         
         #pedigreeChart li.lastChild > ul{
             background-image:none;
-        }
+        }
+
     #pedigreeChart li {
         margin:0;
         padding:0;
@@ -474,7 +475,7 @@ html, body {
 }
 
 #lowerbuttonframe {
-    position: fixed;
+    position: relative;
     bottom: 12px;
     right: 5px;
     margin: 0 auto;

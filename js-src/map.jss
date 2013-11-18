@@ -573,8 +573,8 @@ function initialize() {
 
     function getPlaceAuthority(gen, node, callback) {
         if (!familyTree.getNode(gen, node).display.ascendancyNumber) {
-            //var place = familyTree.getNode(gen, node).display.birthPlace;
-            var place = familyTree.getNode(gen, node).place;
+            var place = familyTree.getNode(gen, node).display.birthPlace;
+            //var place = familyTree.getNode(gen, node).place; // uncomment to use normalized place strings
             if (place) {
                 var url = discovery.authorities.href + '/v1/place?place=' + place + "&filter=true&locale=en&sessionId=" + accesstoken;
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
