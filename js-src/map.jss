@@ -576,7 +576,7 @@ function initialize() {
             //var place = familyTree.getNode(gen, node).display.birthPlace;
             var place = familyTree.getNode(gen, node).place;
             if (place) {
-                var url = discovery.authorities.href + '/v1/place?place=' + place + "&locale=en&sessionId=" + accesstoken;
+                var url = discovery.authorities.href + '/v1/place?place=' + place + "&filter=true&locale=en&sessionId=" + accesstoken;
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
                         if (status == "OK") {
                             var form = $(result).find("form");
