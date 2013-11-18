@@ -287,7 +287,9 @@ function initialize() {
     		var node = leaf.node;
     		var gen = leaf.generation;
     		if (leaf.value.isPlotted !== true) {
-    			getMeABirthPlace(gen, node);
+    		    getMeABirthPlace(gen, node, function () {
+    		        callback = null;
+    		    });
 				cont();
     		} else {
     			cont();
@@ -532,8 +534,19 @@ function initialize() {
                         }
                     } else {
                         getChildBirthPlace(gen, node, function (result) {
-                            familyTree.getNode(gen, node).display.birthLatLng = result;
-                            typeof callback === 'function' && callback();
+                            if (gen == 0 && node == 0) {
+                                alert("Root person's location information in FamilySearch Family Tree does not match any known locations. " +
+                                      "Please update their information.");
+                                loadingAnimationEnd();
+                                var runButton = document.getElementById('runButton');
+                                runButton.disabled = false;
+                                runButton.className = 'button green';
+                            } else {
+                                getChildBirthPlace(gen, node, function (result) {
+                                    familyTree.getNode(gen, node).display.birthLatLng = result;
+                                    typeof callback === 'function' && callback();
+                                });
+                            }
                         });
                     }
                 });   
