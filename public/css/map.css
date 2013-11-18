@@ -208,6 +208,7 @@ html, body {
     width: 15px;
     height: 15px;
     opacity: 0.5;
+    cursor: pointer;
 }
 
     #copyButton:hover {
@@ -220,6 +221,7 @@ html, body {
     height: 22px;
     opacity: 0.75;
     vertical-align: top;
+    cursor: pointer;
 }
 
     #fsButton:hover {
@@ -231,6 +233,7 @@ html, body {
     width:55px;
     float:right;
     opacity:0.5;
+    cursor: pointer;
 }
 
     #ebutton:hover {
@@ -239,6 +242,7 @@ html, body {
 
 #trashcan {
     opacity: 0.5;
+    cursor: pointer;
 }
 
     #trashcan:hover {
@@ -476,7 +480,7 @@ html, body {
 
 #lowerbuttonframe {
     position: relative;
-    bottom: 45px;
+    bottom: 50px;
     right: 5px;
     margin: 0 auto;
     white-space: nowrap;
@@ -488,24 +492,28 @@ html, body {
     float: right;
     margin-left: 5px;
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
+    cursor: pointer;
 }
 
 #feedbackbutton {
     float: right;
     margin-left: 5px;
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
+    cursor: pointer;
 }
 
 #donatebutton {
     float: right;
     margin-left: 5px;
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
+    cursor: pointer;
 }
 
 #blogbutton {
     float: right;
     margin-left: 5px;
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
+    cursor: pointer;
 }
 
 #pledgiebutton {
