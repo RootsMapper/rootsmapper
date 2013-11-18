@@ -532,10 +532,10 @@ and (max-width: 830px) {
     #adDiv { display: none}
 }
 
-/*@media only screen
-and (max-height: 600px) {
+@media only screen
+and (max-height: 601px) {
     #adDiv { display: none}
-}*/
+}
 
 @media print {
     #inputFrame { display: none }
