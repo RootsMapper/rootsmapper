@@ -241,7 +241,7 @@ function initialize() {
     		                }
     		                countryLoop(function (group) {
     		                    grouping = group;
-    		                    listLoop();
+    		                    //listLoop();
     				            //if (baseurl.indexOf('sandbox') == -1) {
     				            //    photoLoop();
     				            //}
