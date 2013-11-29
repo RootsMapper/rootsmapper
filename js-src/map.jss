@@ -187,7 +187,8 @@ function initialize() {
         var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
             generations: generations,
             person: id,
-            access_token: accesstoken
+            access_token: accesstoken,
+			personDetails: true
         });
 
 		fsAPI({ url: url }, function (result, status) {
@@ -196,9 +197,18 @@ function initialize() {
 				for (var i = 0; i < p.length; i++) {
 				    var n = parseFloat(p[i].display.ascendancyNumber);
 					var gen = Math.floor(log2(n));
-					var node = n +Math.pow(2, gen) * (rootNode -1);
+					var node = n + Math.pow(2, gen) * (rootNode - 1);
+                    p[i].generation = gen+rootGen;
+                    p[i].node = node;
+					if (node < Math.pow(2, gen+rootGen -1)) {
+                        p[i].isPaternal = true;
+					}
+					if (p[i].living == true) {
+						p[i].display.deathDate = "Living";
+					}
 					if (!familyTree.getNode(gen +rootGen, node)) {
-						familyTree.setNode(p[i], (gen +rootGen), node);
+						familyTree.setNode(p[i], (gen + rootGen), node);
+						delete familyTree.getNode(gen +rootGen, node).display.ascendancyNumber;
 					}
 				}
 				if (p.length == 1) {
@@ -223,10 +233,10 @@ function initialize() {
             if (where == 'pedigree') {
                 typeof callback === 'function' && callback();
             }
-            personReadLoop(function () {
-                if (where == 'person') {
-                    typeof callback === 'function' && callback();
-                }
+            //personReadLoop(function () {
+            //    if (where == 'person') {
+            //        typeof callback === 'function' && callback();
+            //    }
                 placeReadLoop(function () {
                     if (where == 'place') {
                         typeof callback === 'function' && callback();
@@ -241,7 +251,7 @@ function initialize() {
     		                }
     		                countryLoop(function (group) {
     		                    grouping = group;
-    		                    listLoop();
+    		                    //listLoop();
     				            //if (baseurl.indexOf('sandbox') == -1) {
     				            //    photoLoop();
     				            //}
@@ -249,7 +259,7 @@ function initialize() {
     				    });
 					});
                 });
-            });
+            //});
         });
     }
 
