@@ -158,12 +158,15 @@ function initialize() {
         }
         xhttp.onload = function (e) {
             if (this.readyState === 4) {
-                if (this.status === 200) { // works
+                if (this.status === 204 && options.media == "img") {
+                  queue = 1;
+                  var status = this.statusText;
+                  var result = '';
+                  typeof callback === 'function' && callback(result, status);
+                } else if (this.status === 200) { // works
                     queue = 1;
                     var status = this.statusText;
-                    if (options.media == "img") {
-                        var result = '';
-                    } else if (options.media == "xml") {
+                    if (options.media == "xml") {
                         var result = this.responseXML.documentElement;
                     } else {
                         var result = JSON.parse(this.response);
