@@ -481,8 +481,8 @@ function initialize() {
                     if (person.image == "none" && person.imageIcon == "none") {
                         portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", "", 10); }
                     } else {
-                        //var imageHTML = "<img style='height:300px;' src='" + person.image + "'>";
-                        var imageHTML = "<img src='" + person.image + "'>";
+                        var imageHTML = "<img style='max-height:300px;' src='" + person.image + "'>";
+                        //var imageHTML = "<img src='" + person.image + "'>";
                         portrait.setAttribute('src', person.imageIcon);
                         portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 600000, 10); }
                     }
