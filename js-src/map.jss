@@ -146,7 +146,6 @@ function initialize() {
         if (options.media == "img" ) {
           xhttp.open("HEAD", options.url);
           xhttp.setRequestHeader('Accept', '*/*');
-        }
         } else {
           xhttp.open("GET", options.url);
           xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
