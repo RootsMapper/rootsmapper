@@ -467,7 +467,7 @@ function initialize() {
         if (!person.image && !person.imageIcon) {
             var url = discovery.persons.href + '/' + id + '/portrait?access_token=' + accesstoken;
             fsAPI({ url: url, media: 'img' }, function (result, status) {
-                if (status == "OK") {
+                if (status == "No Content") {
                         familyTree.getNode(gen, node).imageIcon = url;
                         familyTree.getNode(gen, node).image = url;
                         typeof callback === 'function' && callback();
