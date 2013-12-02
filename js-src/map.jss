@@ -143,8 +143,14 @@ function initialize() {
         // options.media = "xml" for xml, else JSON
         var xhttp;
         xhttp = new XMLHttpRequest();
-        xhttp.open("GET", options.url);
-        xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
+        if (options.media == "img" ) {
+          xhttp.open("HEAD", options.url);
+          xhttp.setRequestHeader('Accept', '*/*');
+        }
+        } else {
+          xhttp.open("GET", options.url);
+          xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
+        }
         if (timeout) {
             xhttp.timeout = timeout;
             xhttp.ontimeout = function () {
