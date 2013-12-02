@@ -47,6 +47,12 @@ html, body {
     display: inline-block;
 }
 
+.person .fs-image {
+    width: 44px;
+    height: 44px;
+    display: inline-block;
+}
+
 .person .label {
     display: inline-block;
     width: 44px;
