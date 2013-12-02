@@ -156,7 +156,9 @@ function initialize() {
                 if (this.status === 200) { // works
                     queue = 1;
                     var status = this.statusText;
-                    if (options.media == "xml") {
+                    if (options.media == "img") {
+                        var result = '';
+                    } else if (options.media == "xml") {
                         var result = this.responseXML.documentElement;
                     } else {
                         var result = JSON.parse(this.response);
@@ -456,7 +458,7 @@ function initialize() {
         var person = familyTree.getNode(gen, node);
         if (!person.image && !person.imageIcon) {
             var url = discovery.persons.href + '/' + id + '/portrait?access_token=' + accesstoken;
-            fsAPI({ url: url }, function (result, status) {
+            fsAPI({ url: url, media: 'img' }, function (result, status) {
                 if (status == "OK") {
                         familyTree.getNode(gen, node).imageIcon = url;
                         familyTree.getNode(gen, node).image = url;
