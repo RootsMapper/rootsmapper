@@ -796,12 +796,15 @@ function initialize() {
         mark.infoBoxContent =
         "<div id='infow'>" +
             "<div class='person'>" +
-                "<img id='portrait' class='profile-image' src='" + src + "'>" +
+                "<div class='box44'>" +
+                  "<img id='portrait' class='profile-image' src='" + src + "'>" +
+                "</div>" +
                 "<div class='box'>" +
                     "<div class='xlarge'>" + HtmlEncode(p.display.name) + "</div>" +
                     "<div class='large'>" + p.id +
                     "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
-                "</div>" + "<img id='fsButton' class='fs-image' src='images/fs_logo.png?v=" + version + "' onclick='window.open(\"" + url + "\");'>" +
+                "</div>" + 
+                "<img id='fsButton' class='box44' src='images/fs_logo.png?v=" + version + "' onclick='window.open(\"" + url + "\");'>" +
             "</div>" +
             "<div class='person'>" +
                 "<div class='label'>BIRTH</div>" +

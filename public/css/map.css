@@ -41,15 +41,15 @@ html, body {
     margin-bottom: 10px;
 }
 
-.person .profile-image {
-    max-width: 44px;
-    max-height: 44px;
+.person .box44 {
+    width: 44px;
+    height: 44px;
     display: inline-block;
 }
 
-.person .fs-image {
-    width: 44px;
-    height: 44px;
+.person .box44 .profile-image {
+    max-width: 44px;
+    max-height: 44px;
     display: inline-block;
 }
 
