@@ -808,10 +808,11 @@ function initialize() {
                     "<img id='portrait' class='profile-image' src='" + src + "'>" +
                 "</div>" +
                 "<div class='box'>" +
-                    "<a class='xlarge' id='fsButton' href='" + url + "' target='_blank'>" + HtmlEncode(p.display.name) + "</a>" +
+                    "div class='xlarg'>" +
+                        "<a id='fsButton' href='" + url + "' target='_blank'>" + HtmlEncode(p.display.name) + "</a>" + "</div>" +
                     "<div class='large'>" + 
                         p.id +
-                        "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
+                        "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + "</div>" +
                 "</div>" + 
             "</div>" +
             "<div class='person'>" +
