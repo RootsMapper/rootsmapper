@@ -805,12 +805,10 @@ function initialize() {
         "<div id='infow'>" +
             "<div class='person'>" +
                 "<div class='box44'>" +
-                  "<img id='portrait' class='profile-image' src='" + src + "'>" +
+                    "<img id='portrait' class='profile-image' src='" + src + "'>" +
                 "</div>" +
                 "<div class='box'>" +
-                    "<div class='xlarge'>" + 
-                        //"<a class='xlarge' id='fsButton' href='javascript:;' onclick=\"window.open('" + url + "');\">" + HtmlEncode(p.display.name) + "</a></div>" +
-                        "<a class='xlarge' id='fsButton' href='" + url + "' target='_blank'>" + HtmlEncode(p.display.name) + "</a></div>" +
+                    "<a class='xlarge' id='fsButton' href='" + url + "' target='_blank'>" + HtmlEncode(p.display.name) + "</a>" +
                     "<div class='large'>" + 
                         p.id +
                         "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
