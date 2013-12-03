@@ -20,6 +20,7 @@ var queue = 1;
 var grouping;
 var tooManyGens;
 var title;
+var fixColors;
 
 
 function discoveryResource() {
@@ -99,7 +100,8 @@ function initialize() {
         }
 
         google.maps.event.addListener(map, 'click', function () {
-            ib.close();
+        	ib.close();
+			//restoreColors();
         });
     }
 
@@ -768,7 +770,8 @@ function initialize() {
                 });
 
                 oms.addListener('spiderfy', function (mark) {
-                    ib.close();
+                	ib.close();
+					//restoreColors();
                 });
 
                 //google.maps.event.addListener(mark, 'mouseover', function () {
@@ -789,7 +792,7 @@ function initialize() {
         mark.node = p.node;
         mark.expandButton = "<div  style='height:38px;'>" +
                             "<div id='ebutton' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.isExpanded=true; expandAncestor(\"" + p.id +
-                            "\"," + p.generation + "," + p.node + ",1); ib.close();'>" +
+                            "\"," + p.generation + "," + p.node + ",1); ib.close(); restoreColors();'>" +
                                 "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
                                 "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
                                 "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
@@ -811,7 +814,7 @@ function initialize() {
                         "<a class='xlarge' id='fsButton' href='" + url + "' target='_blank'>" + HtmlEncode(p.display.name) + "</a>" +
                     "<div class='large'>" + 
                         p.id +
-                        "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + "</div>" +
+                        "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close(); restoreColors();'>" + "</div>" +
                 "</div>" + 
             "</div>" +
             "<div class='person'>" +
@@ -868,12 +871,13 @@ function initialize() {
 			setPhoto(mark.generation, mark.node, 0);
 		}
 
+		restoreColors();
 		getToRoot(mark.generation, mark.node, function (gen,node) {
 			if (familyTree.getNode(gen, node).polyline !== undefined) {
 				familyTree.getNode(gen, node).polyline.setOptions({ strokeColor : 'black', zIndex: '999'});
 			}
 		});
-
+		fixColors = true;
 	}
 
     function getToRoot(gen, node, run, callback) {
@@ -887,15 +891,42 @@ function initialize() {
 		} else {
 			typeof callback === 'function' && callback();
 		}
+    }
+
+    function restoreColors(callback) {
+    	if (fixColors == true) {
+			fixColors = false;
+			familyTree.IDDFS(function (leaf, cont) {
+				var node = leaf.node;
+				var gen = leaf.generation;
+				if (leaf.value.isPlotted == true) {
+            		if (leaf.value.isPaternal == true) {
+						if (leaf.value.polyline !== undefined) {
+							leaf.value.polyline.setOptions({ strokeColor: rgbToHex(74, 96, 255) });
+						}
+					} else { 
+						if (leaf.value.polyline !== undefined) {
+							leaf.value.polyline.setOptions({ strokeColor: rgbToHex(255, 96, 182) });
+						}
+					}
+				}
+				cont();
+			}, function () {
+				typeof callback === 'function' && callback();
+			});
+		} else {
+			typeof callback === 'function' && callback();
+		}
 	}
 
-    function deleteMarker(gen, node) {
-        familyTree.getNode(gen, node).marker.setVisible(false);
-        familyTree.getNode(gen, node).polyline.setVisible(false);
-        familyTree.getChild(gen, node).marker.isExpanded = false;
-        familyTree.getNode(gen,node).isPlotted = false;
-        familyTree.setNode(undefined, gen, node);
+	function deleteMarker(gen, node) {
+		familyTree.getNode(gen, node).marker.setVisible(false);
+		familyTree.getNode(gen, node).polyline.setVisible(false);
+		familyTree.getChild(gen, node).marker.isExpanded = false;
+		familyTree.getNode(gen, node).isPlotted = false;
+		familyTree.setNode(undefined, gen, node);
         ib.close();
+		restoreColors();
     }
 
     function getChildBirthPlace(gen, node, callback) {
