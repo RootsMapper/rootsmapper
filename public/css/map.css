@@ -223,11 +223,18 @@ html, body {
 
 #fsButton {
     vertical-align: top;
+    color: #0051C4;
     cursor: pointer;
+    text-decoration:none;
 }
 
     #fsButton:visited {
-        color: blue;
+        color: #0051C4;
+    }
+
+    #fsButton:hover {
+        color: #0051C4;
+        text-decoration:underline;
     }
 
 #ebutton {
