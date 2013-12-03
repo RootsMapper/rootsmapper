@@ -868,12 +868,31 @@ function initialize() {
 			setPhoto(mark.generation, mark.node, 0);
 		}
 
-    }
+		getToRoot(mark.generation, mark.node, function (gen,node) {
+			if (familyTree.getNode(gen, node).polyline !== undefined) {
+				familyTree.getNode(gen, node).polyline.setOptions({ strokeColor : 'black', zIndex: '999'});
+			}
+		});
+
+	}
+
+    function getToRoot(gen, node, run, callback) {
+		familyTree.generation = gen;
+		familyTree.node = node;
+		typeof run == 'function' && run(gen,node);
+		if (familyTree.child() !== undefined) {
+			gen = familyTree.generation;
+			node = familyTree.node;
+			getToRoot(gen, node, run, callback);
+		} else {
+			typeof callback === 'function' && callback();
+		}
+	}
 
     function deleteMarker(gen, node) {
-        familyTree.getNode(gen,node).marker.setVisible(false);
-        familyTree.getNode(gen,node).polyline.setVisible(false);
-        familyTree.getChild(gen,node).marker.isExpanded = false;
+        familyTree.getNode(gen, node).marker.setVisible(false);
+        familyTree.getNode(gen, node).polyline.setVisible(false);
+        familyTree.getChild(gen, node).marker.isExpanded = false;
         familyTree.getNode(gen,node).isPlotted = false;
         familyTree.setNode(undefined, gen, node);
         ib.close();
