@@ -808,7 +808,7 @@ function initialize() {
                     "<img id='portrait' class='profile-image' src='" + src + "'>" +
                 "</div>" +
                 "<div class='box'>" +
-                    "div class='xlarg'>" +
+                    "<div class='xlarge'>" +
                         "<a id='fsButton' href='" + url + "' target='_blank'>" + HtmlEncode(p.display.name) + "</a>" + "</div>" +
                     "<div class='large'>" + 
                         p.id +
