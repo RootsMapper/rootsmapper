@@ -809,7 +809,7 @@ function initialize() {
                 "</div>" +
                 "<div class='box'>" +
                     "<div class='xlarge'>" + 
-                        "<a class='xlarge' id='fsButton' href='' onclick=\"window.open('" + url + "');\">" + HtmlEncode(p.display.name) + "</a></div>" +
+                        "<a class='xlarge' id='fsButton' href='javascript:;' onclick=\"window.open('" + url + "');\">" + HtmlEncode(p.display.name) + "</a></div>" +
                     "<div class='large'>" + 
                         p.id +
                         "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + '</div>' +
