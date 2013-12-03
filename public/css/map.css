@@ -69,7 +69,6 @@ html, body {
 }
 
 .person .box .xlarge {
-    text-align: left;
     font: 22px arial;
     font-family: Rockwell, "Book Antiqua", Palatino, serif;
     margin-bottom: 2px;
@@ -223,16 +222,12 @@ html, body {
     }
 
 #fsButton {
-    margin-left: 5px;
-    width: 22px;
-    height: 22px;
-    opacity: 0.75;
     vertical-align: top;
     cursor: pointer;
 }
 
-    #fsButton:hover {
-        opacity: 1;
+    #fsButton:visited {
+        color: blue;
     }
 
 #ebutton {
