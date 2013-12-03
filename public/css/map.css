@@ -69,6 +69,7 @@ html, body {
 }
 
 .person .box .xlarge {
+    text-align: left;
     font: 22px arial;
     font-family: Rockwell, "Book Antiqua", Palatino, serif;
     margin-bottom: 2px;
