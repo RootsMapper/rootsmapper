@@ -1002,12 +1002,15 @@ function initialize() {
     function toggleUncolored(callback) {
         familyTree.IDDFS(function (leaf, cont) {
             if (leaf.value.offColored !== true) {
-                if (leaf.value.polyline !== undefined) {
-                    leaf.value.polyline.setVisible(isolate);
+                if (onlyPins == false) {
+                    if (leaf.value.polyline !== undefined) {
+                        leaf.value.polyline.setVisible(isolate);
+                    }
                 }
                 leaf.value.marker.setVisible(isolate);
             }
             cont();
+
         }, function () {
             if (isolate == false) {
                 isolate = true;
@@ -1025,7 +1028,13 @@ function initialize() {
     function toggleLines(callback) {
         familyTree.IDDFS(function (leaf, cont) {
             if (leaf.value.polyline !== undefined) {
-                leaf.value.polyline.setVisible(onlyPins);
+                if (isolate == true) {
+                    if (leaf.value.offColored == true) {
+                        leaf.value.polyline.setVisible(onlyPins);
+                    }
+                } else {
+                    leaf.value.polyline.setVisible(onlyPins);
+                }
             } 
             cont();
         }, function () {
