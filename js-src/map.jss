@@ -1017,7 +1017,7 @@ function initialize() {
                 document.getElementById('isolate').className = 'button yellow off';
             } else {
                 isolate = false;
-                document.getElementById('highlight').disabled = false;
+                document.getElementById('isolate').className = 'button yellow';
             }
             typeof callback === 'function' && callback();
         });
