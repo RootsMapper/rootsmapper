@@ -132,9 +132,7 @@ if (isset($access_token))
 						</select>
 						<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
 					</div>
-					<div class="hoverdiv">
-						<button id="optionsButton" class="button black" onclick="showOptions()">Options</button>
-					</div>
+					
 				<div id="optionDiv" style="visibility: hidden">
 					<div id="optionButtons">
 						<div class="hoverdiv">
@@ -160,6 +158,9 @@ if (isset($access_token))
 						</div>
 					</div>
 				</div>
+				<div class="hoverdiv">
+						<button id="optionsButton" class="button black" onclick="showOptions()">Options</button>
+					
 						
 <?php
 }
