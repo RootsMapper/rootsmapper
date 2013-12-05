@@ -131,6 +131,35 @@ if (isset($access_token))
 							<option value="8">8 generations</option>
 						</select>
 						<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
+					</div>
+					<div class="hoverdiv">
+						<button id="optionsButton" class="button black" onclick="showOptions()">Options</button>
+					</div>
+				<div id="optionDiv" style="visibility: hidden">
+					<div id="optionButtons">
+						<div class="hoverdiv">
+							<button id="showTree" class="button yellow" onclick="toggleTree()">Family Tree</button>
+						</div>
+						<div class="hoverdiv">
+							<button id="showStats" class="button yellow" onclick="toggleStats()">Country Statistics</button>
+						</div>
+						<div class="hoverdiv">
+							<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
+						</div>
+						<div class="hoverdiv">
+							<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Highlight</button>
+						</div>
+						<div class="hoverdiv">
+							<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
+						</div>
+					</div>
+					<div id="detailViewer">
+						<div id="countryStats"></div>
+						<div id="pedigreeWrapper">
+							<div id="pedigreeChart"></div>
+						</div>
+					</div>
+				</div>
 						
 <?php
 }
@@ -143,36 +172,9 @@ else
 }
 ?>
 					</div>
-					<div class="hoverdiv">
-						<button id="optionsButton" class="button black" onclick="showOptions()">Options</button>
-					</div>
 					<div id="loading" class="square"></div>
 				</div>
-				<div id="optionDiv" style="visibility: hidden">
-					<div id="optionButtons">
-						<div class="hoverdiv">
-							<button id="showTree" class="button yellow" onclick="toggleTree()">Family Tree</button>
-						</div>
-						<div class="hoverdiv">
-							<button id="showStats" class="button yellow" onclick="toggleStats()">Country Statistics</button>
-						</div>
-						<div class="hoverdiv">
-							<button id="showlines" class="button yellow" onclick="toggleLines()">Lines</button>
-						</div>
-						<div class="hoverdiv">
-							<button id="traceback" class="button yellow" onclick="toggleTrace()">Highlighting</button>
-						</div>
-						<div class="hoverdiv">
-							<button id="highlightBtn" class="button yellow" onclick="toggleUncolored()">Isolate</button>
-						</div>
-					</div>
-					<div id="detailViewer">
-						<div id="countryStats"></div>
-						<div id="pedigreeWrapper">
-							<div id="pedigreeChart"></div>
-						</div>
-					</div>
-				</div>
+				
 			    <div id="lowerbuttonframe">
 <?php
 if (!empty($PLEDGIE_CODE))

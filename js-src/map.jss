@@ -26,7 +26,7 @@ var isolate = false;
 var onlyPins = false;
 var treeVar = false;
 var statVar = false;
-var traceVar = true;
+var highlights = true;
 
 function discoveryResource() {
     fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
@@ -937,7 +937,7 @@ function initialize() {
 		}
 
 		restoreColors();
-		if (traceVar == true) {
+		if (highlights == true) {
 		    getToRoot(mark.generation, mark.node, function (gen, node) {
 		        familyTree.getNode(gen, node).offColored = true;
 		        if (familyTree.getNode(gen, node).polyline !== undefined) {
@@ -947,7 +947,7 @@ function initialize() {
 		        createMarker(familyTree.getNode(gen, node), true);
 		    });
 		    fixColors = true;
-		    var high = document.getElementById('highlightBtn');
+		    var high = document.getElementById('isolate');
             high.disabled = false;
 	        high.className = 'button yellow';
 		}
@@ -999,7 +999,7 @@ function initialize() {
 		}
 	}
 
-    function toggleUncolored(callback) {
+    function toggleIsolate(callback) {
         familyTree.IDDFS(function (leaf, cont) {
             if (leaf.value.offColored !== true) {
                 if (onlyPins == false) {
@@ -1014,12 +1014,10 @@ function initialize() {
         }, function () {
             if (isolate == false) {
                 isolate = true;
-                document.getElementById('highlightBtn').className = 'button yellow off';
-                //document.getElementById('highlightBtn').innerText = 'Undo Isolation';
+                document.getElementById('isolate').className = 'button yellow off';
             } else {
                 isolate = false;
-                document.getElementById('highlightBtn').className = 'button yellow';
-                //document.getElementById('highlightBtn').innerText = 'Isolate Line';
+                document.getElementById('highlight').disabled = false;
             }
             typeof callback === 'function' && callback();
         });
@@ -1040,11 +1038,11 @@ function initialize() {
         }, function () {
             if (onlyPins == false) {
                 onlyPins = true;
-                document.getElementById('showlines').className = 'button yellow off';
+                document.getElementById('showlines').className = 'button yellow';
                 //document.getElementById('showlines').innerText = 'Show Lines';
             } else {
                 onlyPins = false;
-                document.getElementById('showlines').className = 'button yellow';
+                document.getElementById('showlines').className = 'button yellow off';
                 //document.getElementById('showlines').innerText = 'Hide Lines';
             }
             typeof callback === 'function' && callback();
@@ -1079,18 +1077,21 @@ function initialize() {
         }
     }
 
-    function toggleTrace(callback) {
-        var high = document.getElementById('highlightBtn');
-        document.getElementById('traceback');
-        if (traceVar == false) {
-            document.getElementById('traceback').className = 'button yellow';
-            traceVar = true;
+    function toggleHighlight(callback) {
+        var high = document.getElementById('isolate');
+        document.getElementById('highlight');
+        if (highlights == false) {
+            document.getElementById('highlight').className = 'button yellow off';
+            highlights = true;
         } else {
+            if (isolate == true) {
+                toggleIsolate();
+            }
             restoreColors();
-            document.getElementById('traceback').className = 'button yellow off';
+            document.getElementById('highlight').className = 'button yellow';
             high.disabled = true;
             high.className = 'button yellow disabled';
-            traceVar = false;
+            highlights = false;
         }
     }
 
@@ -1428,9 +1429,11 @@ function initialize() {
     function showOptions() {
         if (optionvar == false) {
             document.getElementById('optionDiv').style.visibility = 'visible';
+            document.getElementById('optionsButton').className = 'button yellow off';
             optionvar = true;
         } else {
             document.getElementById('optionDiv').style.visibility = 'hidden';
+            document.getElementById('optionsButton').className = 'button black';
             optionvar = false;
         }
     }
