@@ -27,6 +27,24 @@ html, body {
     font: bold 14px arial;
 }
 
+#optionDiv {
+    position: fixed;
+    top: 40px;
+    left: 0;
+    width: auto;
+    max-height: 70%;
+    background-color: transparent;
+    z-index: 999;
+    /*padding: 10px;*/
+}
+
+#detailViewer {
+    float: left;
+    z-index: 1;
+    margin-left: 30px;
+    background-color: rgba(0,0,0,0.8);
+}
+
 #infow {
     white-space: nowrap;
     max-height: 500px;
@@ -264,7 +282,12 @@ html, body {
     border-radius: 2px;     
     color: white;
     margin: 0;
+    cursor: pointer;
 }
+
+    .button:focus {
+        outline: none;
+    }
 
     .button.blue {
         background-color: dodgerblue;
@@ -314,9 +337,53 @@ html, body {
     .button.disabled {
         background-color: gray;
         color: lightgray;
-        border-radius: 0px 2px 2px 0px; 
         border: 1px solid gray;
     }
+
+    .button.black {
+        background-color: black;
+        border: 1px solid black;
+    }
+
+        .button.black:hover {
+            background-color: rgba(25,25,25,1);
+        }
+
+        .button.black:active {
+            background-color: rgba(50,50,50,1);
+        }
+
+    .button.yellow {
+        /*margin-left: 10px;*/
+        color: black;
+        background-color: #F2B50F;
+        border: 1px solid #F2B50F;
+    }
+
+        .button.yellow:hover {
+            background-color: #F2B50F;
+            border: 1px solid #F2B50F;
+        }
+
+        .button.yellow:active {
+            background-color: #F2B50F;
+            border: 1px solid #F2B50F;
+        }
+
+        .button.yellow.off {
+            background-color: #A06000;
+            border: 1px solid #A06000;
+        }
+
+        .button.yellow.disabled {
+            background-color: gray;
+            color: lightgray;
+            border: 1px solid gray;
+        }
+
+#showTree {
+    margin-left: 0px;
+}
 
 #populateUser {
     border-radius: 2px 0px 0px 2px; 
@@ -383,12 +450,26 @@ html, body {
      font-weight: bold;
  }
 
+#countryStats {
+    padding: 10px;
+    padding-right: 20px;
+    /*background-color: rgba(20,20,20,0.8);*/
+    max-height: 400px;
+    overflow-y: auto;
+    color: white;
+    font-family: helvetica, arial, sans serif;
+    font-size: small;
+    display: none;
+}
+
+
 #pedigreeWrapper {
     padding: 10px;
     padding-right: 20px;
-    background-color: rgba(20,20,20,0.8);
+    /*background-color: rgba(20,20,20,0.8);*/
     max-height: 400px;
     overflow-y: auto;
+    display: none;
 }
 
 #pedigreeChart {

@@ -21,7 +21,12 @@ var grouping;
 var tooManyGens;
 var title;
 var fixColors;
-
+var optionvar = false;
+var isolate = false;
+var onlyPins = false;
+var treeVar = false;
+var statVar = false;
+var traceVar = true;
 
 function discoveryResource() {
     fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
@@ -71,7 +76,7 @@ function initialize() {
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
-
+    
         if (document.getElementById("personid")) {
             document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person","personid","",10); }
         }
@@ -234,6 +239,10 @@ function initialize() {
 			    var runButton = document.getElementById('runButton');
 			    runButton.disabled = false;
 			    runButton.className = 'button green';
+
+			    var optionsButton = document.getElementById('optionsButton');
+			    optionsButton.disabled = false;
+			    optionsButton.className = 'button black';
 			}
 		});  
     }
@@ -258,12 +267,13 @@ function initialize() {
     		                typeof callback === 'function' && callback();
     		            }
     		            completionEvents(rootGen, rootNode, function () {
+    		                addOMSListeners();
     		                if (where == 'done') {
     		                    typeof callback === 'function' && callback();
     		                }
     		                countryLoop(function (group) {
     		                    grouping = group;
-    		                    //listLoop();
+    		                    listLoop();
     				            //if (baseurl.indexOf('sandbox') == -1) {
     				            //    photoLoop();
     				            //}
@@ -272,6 +282,18 @@ function initialize() {
 					});
                 });
             //});
+        });
+    }
+
+    function addOMSListeners() {
+        oms.clearListeners('click');
+        oms.addListener('click', function (mark, event) {
+            infoBoxClick(mark);
+        });
+        oms.clearListeners('spiderfy');
+        oms.addListener('spiderfy', function (mark) {
+            ib.close();
+            //restoreColors();
         });
     }
 
@@ -362,25 +384,43 @@ function initialize() {
 	        if (n > max) { max = n; }
 	        cont();
 	    }, function () {
+	        var div = document.getElementById('countryStats');
+	        div.innerHTML = '';
+	        b = document.createElement('b');
+	        b.innerText = 'Country Statistics';
+	        div.appendChild(b);
+	        //div.innerText = 'Country Stats';
+	        div.appendChild(document.createElement('br'));
+	        for (var key in group) {
+	            if (group.hasOwnProperty(key)) {
+	                if (key !== 'undefined') {
+	                    var d = document.createElement('span');
+	                    d.innerText = key + ': ' + group[key];
+	                    var br = document.createElement('br');
+	                    div.appendChild(d);
+	                    div.appendChild(br);
+	                }
+	            }
+	        }
 	        typeof callback === 'function' && callback(group);
 	    });
 	}
 
 	function listLoop() {
-	    if (document.getElementById('pedigreeChart')) {
+	    //if (document.getElementById('pedigreeChart')) {
 	        document.getElementById('pedigreeChart').innerHTML = '';
-	    } else {
-	        var br = document.createElement('br');
-	        var div = document.createElement('div');
-	        div.className = 'hoverdiv';
-	        div.setAttribute('id', 'pedigreeWrapper');
+	    //} else {
+	    //    var br = document.createElement('br');
+	    //    var div = document.createElement('div');
+	    //    //div.className = 'hoverdiv';
+	    //    div.setAttribute('id', 'pedigreeWrapper');
 
-	        var div2 = document.createElement('div');
-	        div2.setAttribute('id', 'pedigreeChart');
-	        div.appendChild(div2);
-	        document.getElementById('inputFrame').appendChild(br);
-	        document.getElementById('inputFrame').appendChild(div);
-	    }
+	    //    var div2 = document.createElement('div');
+	    //    div2.setAttribute('id', 'pedigreeChart');
+	    //    div.appendChild(div2);
+	    //    //document.getElementById('optionDiv').appendChild(br);
+	    //    document.getElementById('optionDiv').appendChild(div);
+	    //}
 
 	    var rootElement = document.createElement("ul");
 	    rootElement.className = "collapsibleList";
@@ -527,6 +567,10 @@ function initialize() {
 					var runButton = document.getElementById('runButton');
 					runButton.disabled = false;
 					runButton.className = 'button green';
+
+					var optionsButton = document.getElementById('optionsButton');
+					optionsButton.disabled = false;
+					optionsButton.className = 'button black';
 				} else {
 				    typeof result === 'function' && result();
 					getChildBirthPlace(gen, node, function (result) {
@@ -556,6 +600,10 @@ function initialize() {
                                 var runButton = document.getElementById('runButton');
                                 runButton.disabled = false;
                                 runButton.className = 'button green';
+
+                                var optionsButton = document.getElementById('optionsButton');
+                                optionsButton.disabled = false;
+                                optionsButton.className = 'button black';
                             } else {
                                 getChildBirthPlace(gen, node, function (result) {
                                     familyTree.getNode(gen, node).display.birthLatLng = result;
@@ -739,7 +787,7 @@ function initialize() {
 
     }
 
-    function createMarker(p) {
+    function createMarker(p,yellow) {
         if (p) {
             if (p.display.birthLatLng) {
 
@@ -750,29 +798,46 @@ function initialize() {
                     var icon = 'images/female' + p.generation + '.png?v=' + version;
                     var src = 'images/woman.png?v=' + version;
                 }
+
                 var scaleFactor = .5;
                 var opts = {
                     map: map,
                     position: p.display.birthLatLng,
                     icon: {
                         url: icon,
-                        origin: new google.maps.Point(0,0),
-                        anchor: new google.maps.Point(36*scaleFactor*0.5,36*scaleFactor*0.5),
-                        scaledSize: new google.maps.Size(36*scaleFactor,36*scaleFactor)
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(36 * scaleFactor * 0.5, 36 * scaleFactor * 0.5),
+                        scaledSize: new google.maps.Size(36 * scaleFactor, 36 * scaleFactor)
                     }
                 }
+
+                if (yellow == true) {
+                    var opts = {
+                        map: map,
+                        position: p.display.birthLatLng,
+                        zIndex: 999,
+                        icon: {
+                            url: 'images/yellow' + p.generation + '.png?v=' + version,
+                            origin: new google.maps.Point(0, 0),
+                            anchor: new google.maps.Point(36 * scaleFactor * 0.5, 36 * scaleFactor * 0.5),
+                            scaledSize: new google.maps.Size(36 * scaleFactor, 36 * scaleFactor)
+                        }
+                    }
+                }
+
+                
 
                 var mark = new google.maps.Marker(opts);
                 createInfoBox(mark, p, icon, src);
                 
-                oms.addListener('click', function (mark, event) {
-                    infoBoxClick(mark);
-                });
+                //oms.addListener('click', function (mark, event) {
+                //    infoBoxClick(mark);
+                //});
 
-                oms.addListener('spiderfy', function (mark) {
-                	ib.close();
-					//restoreColors();
-                });
+                //oms.addListener('spiderfy', function (mark) {
+                //	ib.close();
+				//	//restoreColors();
+                //});
 
                 //google.maps.event.addListener(mark, 'mouseover', function () {
                 //    tooltip("This is a test", "map", 10);
@@ -792,7 +857,7 @@ function initialize() {
         mark.node = p.node;
         mark.expandButton = "<div  style='height:38px;'>" +
                             "<div id='ebutton' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.isExpanded=true; expandAncestor(\"" + p.id +
-                            "\"," + p.generation + "," + p.node + ",1); ib.close(); restoreColors();'>" +
+                            "\"," + p.generation + "," + p.node + ",1); ib.close();'>" +
                                 "<div style='height: 38px; display:inline-block; vertical-align:top;'>" + self + "</div>" +
                                 "<div style='height: 38px; display:inline-block; vertical-align:top; padding-top:7px; padding-left:3px; font-size: 16px; font-weight:bold;'>&#8594;</div>" +
                                 "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
@@ -814,7 +879,7 @@ function initialize() {
                         "<a class='xlarge' id='fsButton' href='" + url + "' target='_blank'>" + HtmlEncode(p.display.name) + "</a>" +
                     "<div class='large'>" + 
                         p.id +
-                        "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close(); restoreColors();'>" + "</div>" +
+                        "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + "</div>" +
                 "</div>" + 
             "</div>" +
             "<div class='person'>" +
@@ -872,12 +937,20 @@ function initialize() {
 		}
 
 		restoreColors();
-		getToRoot(mark.generation, mark.node, function (gen,node) {
-			if (familyTree.getNode(gen, node).polyline !== undefined) {
-				familyTree.getNode(gen, node).polyline.setOptions({ strokeColor : 'black', zIndex: '999'});
-			}
-		});
-		fixColors = true;
+		if (traceVar == true) {
+		    getToRoot(mark.generation, mark.node, function (gen, node) {
+		        familyTree.getNode(gen, node).offColored = true;
+		        if (familyTree.getNode(gen, node).polyline !== undefined) {
+		            familyTree.getNode(gen, node).polyline.setOptions({ strokeColor: '#F2B50F', zIndex: 999 });
+		        }
+		        familyTree.getNode(gen, node).marker.setMap(null);
+		        createMarker(familyTree.getNode(gen, node), true);
+		    });
+		    fixColors = true;
+		    var high = document.getElementById('highlightBtn');
+            high.disabled = false;
+	        high.className = 'button yellow';
+		}
 	}
 
     function getToRoot(gen, node, run, callback) {
@@ -900,15 +973,22 @@ function initialize() {
 				var node = leaf.node;
 				var gen = leaf.generation;
 				if (leaf.value.isPlotted == true) {
-            		if (leaf.value.isPaternal == true) {
-						if (leaf.value.polyline !== undefined) {
-							leaf.value.polyline.setOptions({ strokeColor: rgbToHex(74, 96, 255) });
-						}
-					} else { 
-						if (leaf.value.polyline !== undefined) {
-							leaf.value.polyline.setOptions({ strokeColor: rgbToHex(255, 96, 182) });
-						}
-					}
+				    if (leaf.value.offColored == true) {
+				        if (leaf.value.isPaternal == true) {
+				            if (leaf.value.polyline !== undefined) {
+				                leaf.value.polyline.setOptions({ strokeColor: rgbToHex(74, 96, 255), zIndex: 2 });
+				            }
+				            familyTree.getNode(gen, node).marker.setMap(null);
+				            createMarker(familyTree.getNode(gen, node));
+				        } else {
+				            if (leaf.value.polyline !== undefined) {
+				                leaf.value.polyline.setOptions({ strokeColor: rgbToHex(255, 96, 182), zIndex: 2 });
+				            }
+				            familyTree.getNode(gen, node).marker.setMap(null);
+				            createMarker(familyTree.getNode(gen, node));
+				        }
+				        leaf.value.offColored = false;
+				    }
 				}
 				cont();
 			}, function () {
@@ -919,6 +999,92 @@ function initialize() {
 		}
 	}
 
+    function toggleUncolored(callback) {
+        familyTree.IDDFS(function (leaf, cont) {
+            if (leaf.value.offColored !== true) {
+                if (leaf.value.polyline !== undefined) {
+                    leaf.value.polyline.setVisible(isolate);
+                }
+                leaf.value.marker.setVisible(isolate);
+            }
+            cont();
+        }, function () {
+            if (isolate == false) {
+                isolate = true;
+                document.getElementById('highlightBtn').className = 'button yellow off';
+                //document.getElementById('highlightBtn').innerText = 'Undo Isolation';
+            } else {
+                isolate = false;
+                document.getElementById('highlightBtn').className = 'button yellow';
+                //document.getElementById('highlightBtn').innerText = 'Isolate Line';
+            }
+            typeof callback === 'function' && callback();
+        });
+    }
+
+    function toggleLines(callback) {
+        familyTree.IDDFS(function (leaf, cont) {
+            if (leaf.value.polyline !== undefined) {
+                leaf.value.polyline.setVisible(onlyPins);
+            } 
+            cont();
+        }, function () {
+            if (onlyPins == false) {
+                onlyPins = true;
+                document.getElementById('showlines').className = 'button yellow off';
+                //document.getElementById('showlines').innerText = 'Show Lines';
+            } else {
+                onlyPins = false;
+                document.getElementById('showlines').className = 'button yellow';
+                //document.getElementById('showlines').innerText = 'Hide Lines';
+            }
+            typeof callback === 'function' && callback();
+        });
+    }
+
+    function toggleTree(callback) {
+        if (treeVar == false) {
+            document.getElementById('countryStats').style.display = 'none';
+            document.getElementById('showStats').className = 'button yellow';
+            document.getElementById('pedigreeWrapper').style.display = 'list-item';
+            document.getElementById('showTree').className = 'button yellow off';
+            treeVar = true;
+        } else {
+            document.getElementById('pedigreeWrapper').style.display = 'none';
+            document.getElementById('showTree').className = 'button yellow';
+            treeVar = false;
+        }
+    }
+
+    function toggleStats(callback) {
+        if (statVar == false) {
+            document.getElementById('pedigreeWrapper').style.display = 'none';
+            document.getElementById('showTree').className = 'button yellow';
+            document.getElementById('countryStats').style.display = 'block';
+            document.getElementById('showStats').className = 'button yellow off';
+            statVar = true;
+        } else {
+            document.getElementById('countryStats').style.display = 'none';
+            document.getElementById('showStats').className = 'button yellow';
+            statVar = false;
+        }
+    }
+
+    function toggleTrace(callback) {
+        var high = document.getElementById('highlightBtn');
+        document.getElementById('traceback');
+        if (traceVar == false) {
+            document.getElementById('traceback').className = 'button yellow';
+            traceVar = true;
+        } else {
+            restoreColors();
+            document.getElementById('traceback').className = 'button yellow off';
+            high.disabled = true;
+            high.className = 'button yellow disabled';
+            traceVar = false;
+        }
+    }
+
 	function deleteMarker(gen, node) {
 		familyTree.getNode(gen, node).marker.setVisible(false);
 		familyTree.getNode(gen, node).polyline.setVisible(false);
@@ -926,7 +1092,6 @@ function initialize() {
 		familyTree.getNode(gen, node).isPlotted = false;
 		familyTree.setNode(undefined, gen, node);
         ib.close();
-		restoreColors();
     }
 
     function getChildBirthPlace(gen, node, callback) {
@@ -965,6 +1130,9 @@ function initialize() {
     }
 
     function clearOverlays() {
+
+        oms.clearMarkers();
+        oms.clearListeners('click');
         if (familyTree) {
             familyTree.IDDFS(function (tree, cont) {
                 var node = tree.node;
@@ -990,7 +1158,6 @@ function initialize() {
             plot: true,
 		    box: true
 		};
-        oms.clearMarkers();
 
         google.maps.event.addListener(ib, 'domready', function () {
 
@@ -1054,9 +1221,17 @@ function initialize() {
         var runButton = document.getElementById('runButton');
         runButton.disabled = true;
         runButton.className = 'button disabled';
+
+        if (optionvar == true) {
+            showOptions();
+        }
+        var optionsButton = document.getElementById('optionsButton');
+        optionsButton.disabled = true;
+        optionsButton.className = 'button disabled';
     }
 
     function completionEvents(rootGen, rootNode, callback) {
+        
         markerCheckLoop(function () {
             if (genquery > 8) {
                 var origins = genquery;
@@ -1081,6 +1256,10 @@ function initialize() {
                     var runButton = document.getElementById('runButton');
                     runButton.disabled = false;
                     runButton.className = 'button green';
+
+                    var optionsButton = document.getElementById('optionsButton');
+                    optionsButton.disabled = false;
+                    optionsButton.className = 'button black';
                     if (firstTime.box == true) {
                         infoBoxClick(familyTree.root().marker);
                         firstTime.box = false;
@@ -1093,6 +1272,10 @@ function initialize() {
                     var runButton = document.getElementById('runButton');
                     runButton.disabled = false;
                     runButton.className = 'button green';
+
+                    var optionsButton = document.getElementById('optionsButton');
+                    optionsButton.disabled = false;
+                    optionsButton.className = 'button black';
                     if (firstTime.box == true) {
                         infoBoxClick(familyTree.root().marker);
                         firstTime.box = false;
@@ -1231,6 +1414,16 @@ function initialize() {
         var handler = setTimeout(function () {
             customAlert();
         }, 10 * 1000);
+    }
+
+    function showOptions() {
+        if (optionvar == false) {
+            document.getElementById('optionDiv').style.visibility = 'visible';
+            optionvar = true;
+        } else {
+            document.getElementById('optionDiv').style.visibility = 'hidden';
+            optionvar = false;
+        }
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);
