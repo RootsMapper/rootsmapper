@@ -100,6 +100,26 @@ function initialize() {
             document.getElementById("donatebutton").onmouseover = function () { tooltip("Help keep this site up and running", "donatebutton", "", -65, -65); }
         }
         
+        if (document.getElementById("showTree")) {
+            document.getElementById("showTree").onmouseover = function () { tooltip("Show (or hide) pedigree information", "showTree", "", 10); }
+        }
+        
+        if (document.getElementById("showStats")) {
+            document.getElementById("showStats").onmouseover = function () { tooltip("Show (or hide) country statistics", "showStats", "", 10); }
+        }
+
+        if (document.getElementById("showlines")) {
+            document.getElementById("showlines").onmouseover = function () { tooltip("Show (or hide) connecting lines", "showlines", "", 10); }
+        }
+
+        if (document.getElementById("highlight")) {
+            document.getElementById("highlight").onmouseover = function () { tooltip("Enable (or disable) highlighted lines and pins", "highlight", "", 10); }
+        }
+
+        if (document.getElementById("isolate")) {
+            document.getElementById("isolate").onmouseover = function () { tooltip("Show (or hide) all lines and pins except for highlighted ones", "isolate", "", 10); }
+        }
+
         if (accesstoken) {
             discoveryResource();
         }
