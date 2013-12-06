@@ -354,15 +354,14 @@ html, body {
         }
 
     .button.yellow {
-        /*margin-left: 10px;*/
         color: black;
-        background-color: #F2B50F;
-        border: 1px solid #F2B50F;
+        background-color: #C08500;
+        border: 1px solid #C08500;
     }
 
         .button.yellow:hover {
-            background-color: #F2B50F;
-            border: 1px solid #F2B50F;
+            background-color: #D19C08;
+            border: 1px solid #D19C08;
         }
 
         .button.yellow:active {
@@ -371,8 +370,13 @@ html, body {
         }
 
         .button.yellow.off {
-            background-color: #A06000;
-            border: 1px solid #A06000;
+            background-color: #F2B50F;
+            border: 1px solid #F2B50F;
+        }
+
+        .button.yellow.off:hover {
+            background-color: #D19C08;
+            border: 1px solid #D19C08;
         }
 
         .button.yellow.disabled {

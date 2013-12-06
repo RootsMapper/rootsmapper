@@ -242,7 +242,11 @@ function initialize() {
 
 			    var optionsButton = document.getElementById('optionsButton');
 			    optionsButton.disabled = false;
-			    optionsButton.className = 'button black';
+			    if (optionvar == true) {
+			        optionsButton.className = 'button yellow off';
+			    } else {
+			        optionsButton.className = 'button yellow';
+			    }
 			}
 		});  
     }
@@ -570,7 +574,11 @@ function initialize() {
 
 					var optionsButton = document.getElementById('optionsButton');
 					optionsButton.disabled = false;
-					optionsButton.className = 'button black';
+					if (optionvar == true) {
+					    optionsButton.className = 'button yellow off';
+					} else {
+					    optionsButton.className = 'button yellow';
+					}
 				} else {
 				    typeof result === 'function' && result();
 					getChildBirthPlace(gen, node, function (result) {
@@ -601,9 +609,11 @@ function initialize() {
                                 runButton.disabled = false;
                                 runButton.className = 'button green';
 
-                                var optionsButton = document.getElementById('optionsButton');
-                                optionsButton.disabled = false;
-                                optionsButton.className = 'button black';
+                                if (optionvar == true) {
+                                    optionsButton.className = 'button yellow off';
+                                } else {
+                                    optionsButton.className = 'button yellow';
+                                }
                             } else {
                                 getChildBirthPlace(gen, node, function (result) {
                                     familyTree.getNode(gen, node).display.birthLatLng = result;
@@ -764,6 +774,10 @@ function initialize() {
                 infoBoxClick(familyTree.getNode(this.gen, this.node).marker);
             });
 
+            if (onlyPins == true) {
+                geodesicPoly.setVisible(false);
+            }
+
 			var before = new Date();
             var step = 0;
             var numSteps = 100; //Change this to set animation resolution
@@ -771,7 +785,7 @@ function initialize() {
             var interval = setInterval(function () {
 				var now = new Date();
 				var elapsedTime = (now.getTime() - before.getTime())
-				if (elapsedTime > timePerStep * numSteps) {
+				if (elapsedTime > timePerStep * numSteps || onlyPins == true) {
                     clearInterval(interval);
 					geodesicPoly.setPath([c1, c2]);
 					callback();
@@ -1053,6 +1067,7 @@ function initialize() {
         if (treeVar == false) {
             document.getElementById('countryStats').style.display = 'none';
             document.getElementById('showStats').className = 'button yellow';
+            statVar = false;
             document.getElementById('pedigreeWrapper').style.display = 'list-item';
             document.getElementById('showTree').className = 'button yellow off';
             treeVar = true;
@@ -1067,6 +1082,7 @@ function initialize() {
         if (statVar == false) {
             document.getElementById('pedigreeWrapper').style.display = 'none';
             document.getElementById('showTree').className = 'button yellow';
+            treeVar = false;
             document.getElementById('countryStats').style.display = 'block';
             document.getElementById('showStats').className = 'button yellow off';
             statVar = true;
@@ -1269,7 +1285,11 @@ function initialize() {
 
                     var optionsButton = document.getElementById('optionsButton');
                     optionsButton.disabled = false;
-                    optionsButton.className = 'button black';
+                    if (optionvar == true) {
+                        optionsButton.className = 'button yellow off';
+                    } else {
+                        optionsButton.className = 'button yellow';
+                    }
                     if (firstTime.box == true) {
                         infoBoxClick(familyTree.root().marker);
                         firstTime.box = false;
@@ -1285,7 +1305,11 @@ function initialize() {
 
                     var optionsButton = document.getElementById('optionsButton');
                     optionsButton.disabled = false;
-                    optionsButton.className = 'button black';
+                    if (optionvar == true) {
+                        optionsButton.className = 'button yellow off';
+                    } else {
+                        optionsButton.className = 'button yellow';
+                    }
                     if (firstTime.box == true) {
                         infoBoxClick(familyTree.root().marker);
                         firstTime.box = false;
@@ -1433,7 +1457,7 @@ function initialize() {
             optionvar = true;
         } else {
             document.getElementById('optionDiv').style.visibility = 'hidden';
-            document.getElementById('optionsButton').className = 'button black';
+            document.getElementById('optionsButton').className = 'button yellow';
             optionvar = false;
         }
     }
