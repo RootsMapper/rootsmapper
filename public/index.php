@@ -121,9 +121,9 @@ if (isset($access_token))
 						<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
                     <script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 						<select id="genSelect" class="boxes">
-							<option selected="selected" value="1">1 generation</option>
+							<option value="1">1 generation</option>
 							<option value="2">2 generations</option>
-							<option value="3">3 generations</option>
+							<option selected="selected" value="3">3 generations</option>
 							<option value="4">4 generations</option>
 							<option value="5">5 generations</option>
 							<option value="6">6 generations</option>

@@ -9,6 +9,7 @@ var map;
 var oms;
 var accesstoken;
 var ib;
+var ib2;
 var genquery;
 var delay;
 var baseurl;
@@ -51,7 +52,7 @@ function currentUser() {
             populateIdField(userID);
             document.getElementById("username").innerHTML = f[0].textContent;
 
-            ancestorgens(1);
+            ancestorgens(3);
         }
     });
     
@@ -873,9 +874,23 @@ function initialize() {
 				//	//restoreColors();
                 //});
 
-                //google.maps.event.addListener(mark, 'mouseover', function () {
-                //    tooltip("This is a test", "map", 10);
-                //});
+                google.maps.event.addListener(mark, 'mouseover', function (e) {
+                    var content = this.name + ' (' + this.lifespan + ')';
+                    var lat = e.latLng.lat();
+                    var lng = e.latLng.lng();
+                    var div = document.createElement('div');
+                    div.setAttribute('id', 'tt');
+                    div.innerText = content;
+                    div.style.fontSize = 'small';
+                    ib2.setContent(div);
+                    var pos = new google.maps.LatLng(lat + 2, lng + 2);
+                    ib2.setPosition(pos);
+                    ib2.open(map);
+                });
+
+                google.maps.event.addListener(mark, 'mouseout', function () {
+                    ib2.close();
+                });
 
                 oms.addMarker(mark);
                 familyTree.getNode(p.generation, p.node).marker = mark;
@@ -889,6 +904,8 @@ function initialize() {
         var self = "<img style='width: 18px; height: 18px; margin-top: 10px;' src='" + icon + "'>";
         mark.generation = p.generation;
         mark.node = p.node;
+        mark.name = p.display.name;
+        mark.lifespan = p.display.lifespan;
         mark.expandButton = "<div  style='height:38px;'>" +
                             "<div id='ebutton' onclick='familyTree.getNode(" + p.generation + "," + p.node + ").marker.isExpanded=true; expandAncestor(\"" + p.id +
                             "\"," + p.generation + "," + p.node + ",1); ib.close();'>" +
@@ -977,8 +994,17 @@ function initialize() {
 		        if (familyTree.getNode(gen, node).polyline !== undefined) {
 		            familyTree.getNode(gen, node).polyline.setOptions({ strokeColor: '#F2B50F', zIndex: 999 });
 		        }
-		        familyTree.getNode(gen, node).marker.setMap(null);
-		        createMarker(familyTree.getNode(gen, node), true);
+		        var scaleFactor = 0.5;
+		        var opts = {
+		            icon: {
+		                url: 'images/yellow' + gen + '.png?v=' + version,
+		                origin: new google.maps.Point(0, 0),
+		                anchor: new google.maps.Point(36 * scaleFactor * 0.5, 36 * scaleFactor * 0.5),
+		                scaledSize: new google.maps.Size(36 * scaleFactor, 36 * scaleFactor)
+		            }
+		        };
+		        familyTree.getNode(gen, node).marker.setOptions(opts);
+		        //createMarker(familyTree.getNode(gen, node), true);
 		    });
 		    fixColors = true;
 		    var high = document.getElementById('isolate');
@@ -1199,6 +1225,7 @@ function initialize() {
 
     	familyTree = new BinaryTree();
     	ib = new InfoBox({ contents: "", maxWidth: 0 });
+    	ib2 = new InfoBox({ contents: "", maxWidth: 0, closeBoxURL: "" });
 
         firstTime = {
             plot: true,
