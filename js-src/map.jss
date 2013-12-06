@@ -883,7 +883,7 @@ function initialize() {
                     div.textContent = content;
                     div.style.fontSize = 'small';
                     ib2.setContent(div);
-                    var pos = new google.maps.LatLng(lat + 2, lng + 2);
+                    var pos = new google.maps.LatLng(lat, lng);
                     ib2.setPosition(pos);
                     ib2.open(map);
                 });
