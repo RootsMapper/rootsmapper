@@ -1038,15 +1038,27 @@ function initialize() {
 				            if (leaf.value.polyline !== undefined) {
 				                leaf.value.polyline.setOptions({ strokeColor: rgbToHex(74, 96, 255), zIndex: 2 });
 				            }
-				            familyTree.getNode(gen, node).marker.setMap(null);
-				            createMarker(familyTree.getNode(gen, node));
 				        } else {
 				            if (leaf.value.polyline !== undefined) {
 				                leaf.value.polyline.setOptions({ strokeColor: rgbToHex(255, 96, 182), zIndex: 2 });
 				            }
-				            familyTree.getNode(gen, node).marker.setMap(null);
-				            createMarker(familyTree.getNode(gen, node));
 				        }
+				        if (leaf.value.display.gender == "Male") {
+				            var icon = 'images/male' + gen + '.png?v=' + version;
+				        } else {
+				            var icon = 'images/female' + gen + '.png?v=' + version;
+				        }
+
+				        var scaleFactor = .5;
+				        var opts = {
+				            icon: {
+				                url: icon,
+				                origin: new google.maps.Point(0, 0),
+				                anchor: new google.maps.Point(36 * scaleFactor * 0.5, 36 * scaleFactor * 0.5),
+				                scaledSize: new google.maps.Size(36 * scaleFactor, 36 * scaleFactor)
+				            }
+				        }
+				        familyTree.getNode(gen, node).marker.setOptions(opts);
 				        leaf.value.offColored = false;
 				    }
 				}
