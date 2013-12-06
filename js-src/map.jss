@@ -412,7 +412,7 @@ function initialize() {
 	        var div = document.getElementById('countryStats');
 	        div.innerHTML = '';
 	        b = document.createElement('b');
-	        b.innerText = 'Country Statistics';
+	        b.textContent = 'Country Statistics';
 	        div.appendChild(b);
 	        //div.innerText = 'Country Stats';
 	        div.appendChild(document.createElement('br'));
@@ -420,7 +420,7 @@ function initialize() {
 	            if (group.hasOwnProperty(key)) {
 	                if (key !== 'undefined') {
 	                    var d = document.createElement('span');
-	                    d.innerText = key + ': ' + group[key];
+	                    d.textContent = key + ': ' + group[key];
 	                    var br = document.createElement('br');
 	                    div.appendChild(d);
 	                    div.appendChild(br);
@@ -880,7 +880,7 @@ function initialize() {
                     var lng = e.latLng.lng();
                     var div = document.createElement('div');
                     div.setAttribute('id', 'tt');
-                    div.innerText = content;
+                    div.textContent = content;
                     div.style.fontSize = 'small';
                     ib2.setContent(div);
                     var pos = new google.maps.LatLng(lat + 2, lng + 2);
