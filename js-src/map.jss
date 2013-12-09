@@ -1236,8 +1236,8 @@ function initialize() {
     	}
 
     	familyTree = new BinaryTree();
-    	ib = new InfoBox({ contents: "", maxWidth: 0 });
-    	ib2 = new InfoBox({ contents: "", maxWidth: 0, closeBoxURL: "" });
+    	ib = new InfoBox({ contents: "", maxWidth: 0, pixelOffset: new google.maps.Size(9, 9) });
+    	ib2 = new InfoBox({ contents: "", maxWidth: 0, closeBoxURL: "", pixelOffset: new google.maps.Size(9, -37) });
 
         firstTime = {
             plot: true,

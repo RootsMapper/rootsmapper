@@ -49,8 +49,10 @@ html, body {
     white-space: nowrap;
     max-height: 500px;
     background-color: white;
-    border: 1px solid darkgray;
+    /*border: 1px solid darkgray;*/
+    border-radius: 2px;
     padding: 15px;
+    /*box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);*/
 }
 
 .person {
