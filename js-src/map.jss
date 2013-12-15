@@ -992,7 +992,7 @@ function initialize() {
 		    getToRoot(mark.generation, mark.node, function (gen, node) {
 		        familyTree.getNode(gen, node).offColored = true;
 		        if (familyTree.getNode(gen, node).polyline !== undefined) {
-		            familyTree.getNode(gen, node).polyline.setOptions({ strokeColor: '#F2F20F', zIndex: 999 });
+		            familyTree.getNode(gen, node).polyline.setOptions({ strokeColor: '#FFFF6B', zIndex: 999 });
 		        }
 		        var scaleFactor = 0.5;
 		        var opts = {
