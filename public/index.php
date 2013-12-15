@@ -145,7 +145,7 @@ if (isset($access_token))
 							<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
 						</div>
 						<div class="hoverdiv">
-							<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Highlight</button>
+							<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
 						</div>
 						<div class="hoverdiv">
 							<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
