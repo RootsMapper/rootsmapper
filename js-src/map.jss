@@ -172,7 +172,7 @@ function initialize() {
         var xhttp;
         xhttp = new XMLHttpRequest();
         if (options.media == "img" ) {
-          xhttp.open("HEAD", options.url);
+          xhttp.open("GET", options.url);
           xhttp.setRequestHeader('Accept', '*/*');
         } else {
           xhttp.open("GET", options.url);
