@@ -28,3 +28,10 @@ config.php
 ###############
 js-src/*.js
 public/scripts/*.js
+
+# Visual Studio files #
+public/*.phpproj
+public/*.user
+public/*.sln
+public/*.suo
+public/*.config
