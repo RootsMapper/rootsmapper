@@ -108,10 +108,10 @@ html, body {
 	height: 30px;
 	float: left;
 	margin: 0px;
-    margin-left: 5px;
+    /*margin-left: 5px;*/
 	padding: 0px 0px;
-	color: #000;
-	background: #fff;
+	/*color: #000;*/
+	/*background: #fff;*/
 }
 
 #rootGrid {
@@ -157,9 +157,30 @@ html, body {
 
 #loading {
     float: left;
-    background-color: black;
-    opacity: 0.5;
+}
+
+#loadingMessage {
+    color: #ddd;
+    float: left;
+    font-family: helvetica, arial, sans serif;
+    font-size: small;
+    margin-top: 2px;
+    vertical-align: middle;
+    line-height: 2em;
+    text-indent: 5px;
+}
+
+#loadingDiv {
+    float: left;
+    background-color: rgba(0,0,0,0.75);
+    white-space: nowrap;
+    height: 30px;
     border-radius: 3px;
+    width: auto;
+	height: 30px;
+	margin: 0px;
+    margin-left: 5px;
+	padding: 0px 0px;
 }
 
 .boxes {

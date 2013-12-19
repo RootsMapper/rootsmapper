@@ -173,7 +173,10 @@ else
 }
 ?>
 					</div>
-					<div id="loading" class="square"></div>
+                    <div id="loadingDiv" style="visibility: hidden">
+                        <div id="loadingMessage"></div>
+					    <div id="loading" class="square"></div>
+                    </div>
 				</div>
 				
 			    <div id="lowerbuttonframe">

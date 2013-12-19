@@ -218,6 +218,7 @@ function initialize() {
     }
 
     function getPedigree(generations, id, rootGen, rootNode, callback) {
+        
         id = id ? id : document.getElementById('personid').value;
         if (generations > 8) {
             generations = generations - 8;
@@ -275,6 +276,8 @@ function initialize() {
     function mapper(generations, id, rootGen, rootNode, where, callback) {
         rootGen || (rootGen = 0);
         rootNode || (rootNode = 0);
+
+        document.getElementById('loadingMessage').textContent = 'Retrieving FamilySearch data...';
         getPedigree(generations, id, rootGen, rootNode, function () {
             if (where == 'pedigree') {
                 typeof callback === 'function' && callback();
@@ -287,7 +290,9 @@ function initialize() {
                     if (where == 'place') {
                         typeof callback === 'function' && callback();
                     }
-    		        plotterLoop(function () {
+
+                    document.getElementById('loadingMessage').textContent = 'Plotting...';
+                    plotterLoop(function () {
     		            if (where == 'plot') {
     		                typeof callback === 'function' && callback();
     		            }
@@ -1175,7 +1180,10 @@ function initialize() {
 		familyTree.getChild(gen, node).marker.isExpanded = false;
 		familyTree.getNode(gen, node).isPlotted = false;
 		familyTree.setNode(undefined, gen, node);
-        ib.close();
+		ib.close();
+		countryLoop(function (group) {
+		    listLoop();
+		});
     }
 
     function getChildBirthPlace(gen, node, callback) {
@@ -1195,6 +1203,7 @@ function initialize() {
 
     function loadingAnimationStart() {
         document.title = "*" + title;
+        document.getElementById('loadingDiv').style.visibility = 'visible';
         $(function () {
             $('#loading').show();
         });
@@ -1210,6 +1219,7 @@ function initialize() {
         });
         $(function () {
             $('#loading').hide();
+            document.getElementById('loadingDiv').style.visibility = 'hidden';
         });
     }
 
