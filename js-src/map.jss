@@ -536,17 +536,22 @@ function initialize() {
 
     function getPhoto(id, gen, node, callback) {
         var person = familyTree.getNode(gen, node);
-        if (!person.image && !person.imageIcon) {
-            var url = discovery.persons.href + '/' + id + '/portrait?access_token=' + accesstoken;
+        if (!person.image) {
+            var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
+                pid: id,
+                access_token: accesstoken,
+                default: person.imageIcon
+            });
+            //var url = discovery.persons.href + '/' + id + '/portrait?access_token=' + accesstoken;
             fsAPI({ url: url, media: 'img' }, function (result, status) {
                 if (status == "No Content") {
-                        familyTree.getNode(gen, node).imageIcon = url;
-                        familyTree.getNode(gen, node).image = url;
-                        typeof callback === 'function' && callback();
+                    //familyTree.getNode(gen, node).imageIcon = url;
+                    familyTree.getNode(gen, node).image = result;
+                    typeof callback === 'function' && callback(result);
                 } else {
-                    familyTree.getNode(gen, node).imageIcon = "none";
-                    familyTree.getNode(gen, node).image = "none";
-                    typeof callback === 'function' && callback();
+                    //familyTree.getNode(gen, node).imageIcon = "none";
+                    familyTree.getNode(gen, node).image = result;
+                    typeof callback === 'function' && callback(result);
                 }
             }, 3000);
         }
@@ -558,12 +563,12 @@ function initialize() {
             if (portrait) {
                 var person = familyTree.getNode(gen, node);
                 if (person.image && person.imageIcon) {
-                    if (person.image == "none" && person.imageIcon == "none") {
+                    if (person.image == person.imageIcon) {
                         portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", "", 10); }
                     } else {
                         var imageHTML = "<img style='max-height:300px;' src='" + person.image + "'>";
                         //var imageHTML = "<img src='" + person.image + "'>";
-                        portrait.setAttribute('src', person.imageIcon);
+                        portrait.setAttribute('src', person.image);
                         portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 600000, 10); }
                     }
                 } else {
@@ -866,7 +871,7 @@ function initialize() {
                 }
 
                 
-
+                p.imageIcon = src;
                 var mark = new google.maps.Marker(opts);
                 createInfoBox(mark, p, icon, src);
                 
@@ -956,7 +961,9 @@ function initialize() {
 
     function infoBoxClick(mark) {
 		if (baseurl.indexOf('sandbox') == -1) {
-		    getPhoto(mark.personID, mark.generation, mark.node);
+		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
+		        setPhoto(mark.generation, mark.node,0);
+		    });
 		}
 		var fatherPlotted = false;
 		var motherPlotted = false;
@@ -989,7 +996,7 @@ function initialize() {
         ib.open(map, mark);
 
 		if (baseurl.indexOf('sandbox') == -1) {
-			setPhoto(mark.generation, mark.node, 0);
+			//setPhoto(mark.generation, mark.node, 0);
 		}
 
 		restoreColors();
