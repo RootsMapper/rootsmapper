@@ -3,6 +3,9 @@
 // Site Title
 $TITLE = "New RootsMapper Site";
 
+// Site meta description
+$DESCRIPTION = "New RootsMapper Site";
+
 // Site version
 // Used for file cache invalidating
 // Use something like the following to invalidate with

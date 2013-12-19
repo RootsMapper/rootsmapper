@@ -65,7 +65,10 @@ else
 <html>
     <head>
         <title><?php echo isset($TITLE)? $TITLE : ""; ?></title>
+        <?php echo isset($DESCRIPTION)? "<meta name=\"description\" content=\"" . $DESCRIPTION . "\" />" : ""; ?>
+
         <link href="css/map.css?v=<?php echo isset($VERSION)? $VERSION : ""; ?>" rel="stylesheet" />
+
         <!-- Google Maps API reference -->
         <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry"></script>
 	<!-- map references -->
@@ -81,7 +84,7 @@ else
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/url-template.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
         <script type="text/javascript">
-             title=' <?php echo isset($TITLE)? $TITLE : ""; ?>';
+             title='<?php echo isset($TITLE)? $TITLE : ""; ?>';
              accesstoken='<?php echo isset($access_token) ? $access_token : ""; ?>';
              baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
              version='<?php echo isset($VERSION)? $VERSION : ""; ?>';
