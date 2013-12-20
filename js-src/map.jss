@@ -540,7 +540,7 @@ function initialize() {
             var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
                 pid: id,
                 access_token: accesstoken,
-                default: baseurl + person.imageIcon
+                default: person.imageIcon
             });
 
             familyTree.getNode(gen, node).image = url;
@@ -557,6 +557,8 @@ function initialize() {
             //        typeof callback === 'function' && callback(result);
             //    }
             //}, 3000);
+        } else {
+            typeof callback === 'function' && callback('');
         }
     }
 
