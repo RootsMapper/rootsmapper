@@ -540,20 +540,23 @@ function initialize() {
             var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
                 pid: id,
                 access_token: accesstoken,
-                default: person.imageIcon
+                default: baseurl + person.imageIcon
             });
+
+            familyTree.getNode(gen, node).image = url;
+            typeof callback === 'function' && callback(url);
             //var url = discovery.persons.href + '/' + id + '/portrait?access_token=' + accesstoken;
-            fsAPI({ url: url, media: 'img' }, function (result, status) {
-                if (status == "No Content") {
-                    //familyTree.getNode(gen, node).imageIcon = url;
-                    familyTree.getNode(gen, node).image = result;
-                    typeof callback === 'function' && callback(result);
-                } else {
-                    //familyTree.getNode(gen, node).imageIcon = "none";
-                    familyTree.getNode(gen, node).image = result;
-                    typeof callback === 'function' && callback(result);
-                }
-            }, 3000);
+            //fsAPI({ url: url, media: 'img' }, function (result, status) {
+            //    if (status == "No Content") {
+            //        //familyTree.getNode(gen, node).imageIcon = url;
+            //        familyTree.getNode(gen, node).image = url;
+            //        typeof callback === 'function' && callback(result);
+            //    } else {
+            //        //familyTree.getNode(gen, node).imageIcon = "none";
+            //        familyTree.getNode(gen, node).image = url;
+            //        typeof callback === 'function' && callback(result);
+            //    }
+            //}, 3000);
         }
     }
 
@@ -563,7 +566,7 @@ function initialize() {
             if (portrait) {
                 var person = familyTree.getNode(gen, node);
                 if (person.image && person.imageIcon) {
-                    if (person.image == person.imageIcon) {
+                    if (person.image.indexOf('rootsmapper') != -1) {
                         portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", "", 10); }
                     } else {
                         var imageHTML = "<img style='max-height:300px;' src='" + person.image + "'>";
