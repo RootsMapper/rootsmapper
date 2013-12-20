@@ -540,7 +540,7 @@ function initialize() {
             var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
                 pid: id,
                 access_token: accesstoken,
-                default: person.imageIcon
+                default: document.URL + '/' + person.imageIcon
             });
 
             familyTree.getNode(gen, node).image = url;
