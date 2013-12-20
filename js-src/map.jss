@@ -568,7 +568,7 @@ function initialize() {
             if (portrait) {
                 var person = familyTree.getNode(gen, node);
                 if (person.image && person.imageIcon) {
-                    if (person.image.indexOf('rootsmapper') != -1) {
+                    if (person.image == person.imageIcon) {
                         portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", "", 10); }
                     } else {
                         var imageHTML = "<img style='max-height:300px;' src='" + person.image + "'>";
