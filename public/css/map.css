@@ -657,4 +657,5 @@ and (max-height: 605px) {
 @media print {
     #inputFrame { display: none }
     #lowerbuttonframe { display: none }
+    #adDiv { display: none }
 }
