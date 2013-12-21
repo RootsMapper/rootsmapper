@@ -701,7 +701,7 @@ function initialize() {
                 if (!(gen == 0 && node == 0)) {
                     typeof cont === 'function' && cont();
                 }
-                var url = discovery.authorities.href + '/v1/place?place=' + place + "&filter=true&locale=en&sessionId=" + accesstoken;
+                var url = discovery.authorities.href + '/v1/place?place=' + encodeURIComponent(place) + "&filter=true&locale=en&sessionId=" + accesstoken;
                     fsAPI({ media: 'xml', url: url }, function (result, status) {
                         if (status == "OK") {
                             var form = $(result).find("form");
