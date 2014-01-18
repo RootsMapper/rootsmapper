@@ -172,8 +172,7 @@ if (isset($access_token))
 				</div>
 				<div class="hoverdiv">
 						<button id="optionsButton" class="button yellow" onclick="showOptions()">Options</button>
-					
-						
+				</div>
 <?php
 }
 ?>
