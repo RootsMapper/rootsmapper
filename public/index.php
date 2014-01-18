@@ -173,14 +173,14 @@ if (isset($access_token))
 				<div class="hoverdiv">
 						<button id="optionsButton" class="button yellow" onclick="showOptions()">Options</button>
 				</div>
-<?php
-}
-?>
                     <div id="loadingDiv" style="visibility: hidden">
                         <div id="loading" class="square"></div>
                         <div id="loadingMessage"></div>
                     </div>
 				</div>
+<?php
+}
+?>
 				
 			    <div id="lowerbuttonframe">
 <?php
