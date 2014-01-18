@@ -118,11 +118,11 @@ if (!isset($access_token))
 ?>
 
 				<div id="mapdisplay"></div>
-				<div id="inputFrame">
 <?php
 // If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
 { ?>
+				<div id="inputFrame">
 					<div class="hoverdiv">
 						<label id="username" class="labelbox" for"logoutbutton">User Name</label>
 						<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
