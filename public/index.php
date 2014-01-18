@@ -108,6 +108,15 @@ echo($SIDEAD_CODE);
 ?>
 			</div>
 			<div id="rootGrid">
+
+<?php
+if (!isset($access_token))
+{ ?>
+						<button id="loginbutton" onclick="window.location='?login'">Login to begin mapping</button>
+<?php
+}
+?>
+
 				<div id="mapdisplay"></div>
 				<div id="inputFrame">
 <?php
@@ -167,15 +176,7 @@ if (isset($access_token))
 						
 <?php
 }
-else
-{
 ?>
-					<div class="hoverdiv">
-						<button id="loginbutton" onclick="window.location='?login'">Login to FamilySearch</button>
-<?php
-}
-?>
-					</div>
                     <div id="loadingDiv" style="visibility: hidden">
                         <div id="loading" class="square"></div>
                         <div id="loadingMessage"></div>

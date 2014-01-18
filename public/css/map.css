@@ -445,12 +445,19 @@ html, body {
     color: white;
     border: 1px solid #003e97;
     border-radius: 2px; 
-    height: 50px;
-    width: 100px;
-    float: left;
-    margin: 0;
+    height: 40px;
+    width: 180px;
+    margin-top: -20px;
+    margin-left: -90px;
+    position: fixed;
     white-space: normal;
     cursor: pointer;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    border-radius: 3px; 
+    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
+    font-size: small;
 }
 
         #loginbutton:hover {
