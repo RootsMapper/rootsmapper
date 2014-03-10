@@ -83,6 +83,7 @@ else
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/url-template.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+		<script src="scripts/slidePanel.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
         <script type="text/javascript">
              title='<?php echo isset($TITLE)? $TITLE : ""; ?>';
              accesstoken='<?php echo isset($access_token) ? $access_token : ""; ?>';
@@ -122,62 +123,112 @@ if (!isset($access_token))
 // If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
 { ?>
+			<div id="loadHolder">
+				<div id="loadingDiv" style="visibility: hidden">
+                    <div id="loading" class="square"></div>
+                    <div id="loadingMessage"></div>
+                </div>
+            </div>
+				<button id="panelToggle2" onclick="panelOut();"></button>
+
+			<div id="sidePanel">
+					<button id="panelToggle" onclick="panelIn();"></button>
+				
+
 				<div id="inputFrame">
 					<div class="hoverdiv">
-						<label id="username" class="labelbox" for"logoutbutton">User Name</label>
-						<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
+						<div class="boxy"><b>Current User: </b>
+							<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
+							</br>
+							<label id="username" >User Name</label>
+							
+						</div>
 					</div>
+						
 					<div class="hoverdiv">
-                 <button id="populateUser" class="button blue" onclick="populateUser()">Me</button>
-						<label id="prompt" class="labelbox" for="personid">Root Person ID:</label>
-						<input id="personid" class="boxes" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-                    <script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-						<select id="genSelect" class="boxes">
-							<option value="1">1 generation</option>
-							<option value="2">2 generations</option>
-							<option selected="selected" value="3">3 generations</option>
-							<option value="4">4 generations</option>
-							<option value="5">5 generations</option>
-							<option value="6">6 generations</option>
-							<option value="7">7 generations</option>
-							<option value="8">8 generations</option>
-						</select>
-						<button id="runButton" class="button green" onclick="ancestorgens()">Run</button>
+						<div class="boxy"><b>Root Person: </b>
+							<!-- <button id="populateUser" class="button blue" onclick="populateUser()">Me</button> -->
+							<ul id="runList" class="runListClass">
+								<li id="runButton" onclick="expandList('runList');"><b>Run</b><img id="downTriangle" src="images/triangle-down.png"></li>
+								<li class="item" onclick="expandList('runList'); ancestorgens(1)">1 generation</li>
+								<li class="item" onclick="expandList('runList'); ancestorgens(2)">2 generations</li>
+								<li class="item" onclick="expandList('runList'); ancestorgens(3)">3 generations</li>
+								<li class="item" onclick="expandList('runList'); ancestorgens(4)">4 generations</li>
+								<li class="item" onclick="expandList('runList'); ancestorgens(5)">5 generations</li>
+								<li class="item" onclick="expandList('runList'); ancestorgens(6)">6 generations</li>
+								<li class="item" onclick="expandList('runList'); ancestorgens(7)">7 generations</li>
+								<li class="item" onclick="expandList('runList'); ancestorgens(8)">8 generations</li>
+							</ul>
+							</br>
+							<label id="personName" >Root Name</label></br>
+                 			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
+                    		<!-- <label id="prompt" class="labelbox" for="personid">Root Person ID:</label> -->
+							<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+						</div>
 					</div>
+
+						<!-- <div class="hoverdiv"> -->
+							
+						<!-- </div> -->
+
+					<!-- <div class="hoverdiv">
+							<button id="optionsButton" class="button yellow" onclick="showOptions()">Options</button>
+					</div> -->
+
+					<div class="hoverdiv">
+						<div class="boxy"><b>Options</b></br>
+								<!-- <button id="showTree" class="button yellow" onclick="toggleTree()">Family Tree</button> -->
+								<!-- <button id="showStats" class="button yellow" onclick="toggleStats()">Country Statistics</button> -->
+								<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
+								<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
+								<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
+						</div>
+					</div>
+
+					<!-- <div id="optionDiv" style="visibility: hidden"> -->
+						<!-- <div id="optionButtons">
+							<div class="hoverdiv">
+								<button id="showTree" class="button yellow" onclick="toggleTree()">Family Tree</button>
+							</div>
+							<div class="hoverdiv">
+								<button id="showStats" class="button yellow" onclick="toggleStats()">Country Statistics</button>
+							</div>
+							<div class="hoverdiv">
+								<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
+							</div>
+							<div class="hoverdiv">
+								<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
+							</div>
+							<div class="hoverdiv">
+								<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
+							</div>
+						</div> -->
+						<!-- <div id="detailViewer"> -->
+
+						<!-- </div> -->
+					<!-- </div> -->
+                	<div id="peopleDivHolder" class="hoverdiv">
+                		<div class="boxy"><b>Selected Person</b></br>
+                			<div id="peopleDiv"></div>
+                		</div>
+                	</div>
 					
-				<div id="optionDiv" style="visibility: hidden">
-					<div id="optionButtons">
-						<div class="hoverdiv">
-							<button id="showTree" class="button yellow" onclick="toggleTree()">Family Tree</button>
-						</div>
-						<div class="hoverdiv">
-							<button id="showStats" class="button yellow" onclick="toggleStats()">Country Statistics</button>
-						</div>
-						<div class="hoverdiv">
-							<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
-						</div>
-						<div class="hoverdiv">
-							<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
-						</div>
-						<div class="hoverdiv">
-							<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
-						</div>
-					</div>
-					<div id="detailViewer">
-						<div id="countryStats"></div>
-						<div id="pedigreeWrapper">
+					<div class="hoverdiv">
+						<div id="pedigreeWrapper" class="boxy">
+							<b>Family Tree</b></br>
 							<div id="pedigreeChart"></div>
 						</div>
 					</div>
+                    
+                    
+                	<div class="hoverdiv">
+						<div id="countryStats" class="boxy"><b>Country Totals</b></br></div>
+					</div>
+
 				</div>
-				<div class="hoverdiv">
-						<button id="optionsButton" class="button yellow" onclick="showOptions()">Options</button>
-				</div>
-                    <div id="loadingDiv" style="visibility: hidden">
-                        <div id="loading" class="square"></div>
-                        <div id="loadingMessage"></div>
-                    </div>
-				</div>
+				
+
+			</div>
 <?php
 }
 ?>

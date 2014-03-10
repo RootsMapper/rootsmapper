@@ -15,6 +15,7 @@ var delay;
 var baseurl;
 var version;
 var userID;
+var userName;
 var familyTree;
 var discovery;
 var queue = 1;
@@ -49,8 +50,9 @@ function currentUser() {
             var p = $(result).find("gx\\:person, person");
             var f = $(result).find("gx\\:fullText, fullText");
             userID = p[0].getAttribute("id");
-            populateIdField(userID);
-            document.getElementById("username").innerHTML = f[0].textContent;
+            userName = f[0].textContent;
+            document.getElementById("username").innerHTML = userName;
+            populateIdField(userID,userName);
 
             ancestorgens(3);
         }
@@ -71,8 +73,8 @@ function initialize() {
             panControl: false,
             zoomControl: true,
             zoomControlOptions: {
-                style: google.maps.ZoomControlStyle.DEFAULT,
-                position: google.maps.ControlPosition.LEFT_BOTTOM
+                style: google.maps.ZoomControlStyle.Default,
+                position: google.maps.ControlPosition.RIGHT_TOP
             }
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
@@ -258,17 +260,9 @@ function initialize() {
 				typeof callback === 'function' && callback();
 			} else {
 			    loadingAnimationEnd();
-			    var runButton = document.getElementById('runButton');
-			    runButton.disabled = false;
-			    runButton.className = 'button green';
+			    enableButtons();
 
-			    var optionsButton = document.getElementById('optionsButton');
-			    optionsButton.disabled = false;
-			    if (optionvar == true) {
-			        optionsButton.className = 'button yellow off';
-			    } else {
-			        optionsButton.className = 'button yellow';
-			    }
+			    
 			}
 		});  
     }
@@ -417,7 +411,7 @@ function initialize() {
 	        var div = document.getElementById('countryStats');
 	        div.innerHTML = '';
 	        b = document.createElement('b');
-	        b.textContent = 'Country Statistics';
+	        b.textContent = 'Country Totals';
 	        div.appendChild(b);
 	        //div.innerText = 'Country Stats';
 	        div.appendChild(document.createElement('br'));
@@ -432,6 +426,7 @@ function initialize() {
 	                }
 	            }
 	        }
+	        div.style.display = "block";
 	        typeof callback === 'function' && callback(group);
 	    });
 	}
@@ -459,7 +454,9 @@ function initialize() {
 	    familyTree.root();
 	    familyTree.DFS(function (person, cont) {
 	        var li = document.createElement("li");
-	        li.innerHTML = HtmlEncode(person.value.display.name) + ' (' + HtmlEncode(person.value.display.lifespan) + ')';
+	        var nspan = document.createElement("span");
+	        nspan.innerHTML = HtmlEncode(person.value.display.name) + ' (' + HtmlEncode(person.value.display.lifespan) + ')';
+	        
 	        if (familyTree.getFather(person.generation, person.node) || familyTree.getMother(person.generation, person.node)) {
 	            var lastGen = false;
 	            if (person.value.display.gender == "Female") {
@@ -480,6 +477,26 @@ function initialize() {
 	            li.className = li.className + ' Root';
 	        }
 
+	        nspan.onmouseover = function () {
+	        	var gen = this.gen;
+                var node = this.node;
+                var zindex = familyTree.getNode(person.generation, person.node).marker.getZIndex();
+                familyTree.getNode(person.generation, person.node).marker.setZIndex(9999);
+
+                nspan.onmouseout = function () {
+                	familyTree.getNode(person.generation, person.node).marker.setZIndex(zindex);
+                }
+                // setTimeout(function () {
+                //     familyTree.getNode(person.generation, person.node).marker.setZIndex(zindex);
+                // }, 300);
+	        }
+
+	        nspan.onclick = function (e) {
+	        	infoBoxClick(familyTree.getNode(person.generation, person.node).marker);
+	        	CollapsibleLists._afun(li,e);
+	        }
+
+	        li.appendChild(nspan);
 	        var ul = document.createElement("ul");
 	        ul.setAttribute("id", person.generation + ',' + person.node );
 
@@ -604,17 +621,9 @@ function initialize() {
 					alert("Root person has no location information in FamilySearch Family Tree. " +
 						  "Please update their information or enter a new root person.");
 					loadingAnimationEnd();
-					var runButton = document.getElementById('runButton');
-					runButton.disabled = false;
-					runButton.className = 'button green';
+					enableButtons();
 
-					var optionsButton = document.getElementById('optionsButton');
-					optionsButton.disabled = false;
-					if (optionvar == true) {
-					    optionsButton.className = 'button yellow off';
-					} else {
-					    optionsButton.className = 'button yellow';
-					}
+					
 				} else {
 				    typeof result === 'function' && result();
 					getChildBirthPlace(gen, node, function (result) {
@@ -641,15 +650,9 @@ function initialize() {
                                 alert("Root person's location information in FamilySearch Family Tree does not match any known locations. " +
                                       "Please update their information.");
                                 loadingAnimationEnd();
-                                var runButton = document.getElementById('runButton');
-                                runButton.disabled = false;
-                                runButton.className = 'button green';
+                                enableButtons();
 
-                                if (optionvar == true) {
-                                    optionsButton.className = 'button yellow off';
-                                } else {
-                                    optionsButton.className = 'button yellow';
-                                }
+                                
                             } else {
                                 getChildBirthPlace(gen, node, function (result) {
                                     familyTree.getNode(gen, node).display.birthLatLng = result;
@@ -929,14 +932,26 @@ function initialize() {
                                 "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
                             '</div>';
 
+        mark.expandButton = "<ul id='expandList' class='runListClass'>" +
+                                "<li id='ebutton' onclick='expandList(\"expandList\");'><b>Expand</b><img id='downTriangle' src='images/triangle-down.png'></li>" +
+                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 1 + ");'>1 generation</li>" +
+                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 2 + ");'>2 generations</li>" + 
+                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 3 + ");'>3 generations</li>" +
+                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 4 + ");'>4 generations</li>" +
+                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 5 + ");'>5 generations</li>" +
+                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 6 + ");'>6 generations</li>" +
+                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 7 + ");'>7 generations</li>" +
+                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 8 + ");'>8 generations</li>" +
+                            "</ul>";
         mark.deleteButton = "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version +
                           "' style='width:25px; height:26px; margin-top: 12px;' onclick='deleteMarker(" + p.generation + "," + p.node + ") ;'</div>";
+
+        mark.deleteButton = "<button id='trashcan' class='button red' onclick='deleteMarker(" + p.generation + "," + p.node + ") ;'>X</button>";
 
         mark.personID = p.id;
         var url = baseurl + '/tree/#view=ancestor&person=' + p.id;
 
         mark.infoBoxContent =
-        "<div id='infow'>" +
             "<div class='person'>" +
                 "<div class='box44'>" +
                     "<img id='portrait' class='profile-image' src='" + src + "'>" +
@@ -945,7 +960,7 @@ function initialize() {
                         "<a class='xlarge' id='fsButton' href='" + url + "' target='_blank'>" + HtmlEncode(p.display.name) + "</a>" +
                     "<div class='large'>" + 
                         p.id +
-                        "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\"); ib.close();'>" + "</div>" +
+                        "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\", \"" + HtmlEncode(p.display.name) + "\"); ib.close();'>" + "</div>" +
                 "</div>" + 
             "</div>" +
             "<div class='person'>" +
@@ -962,6 +977,14 @@ function initialize() {
                     "<div class='small'>" + (HtmlEncode(p.display.deathPlace || "")) + "</div>" +
                 "</div>" +
             "</div>";
+    }
+
+    function expandClick(gen, node, gens) {
+        var p = familyTree.getNode(gen,node);
+        p.marker.isExpanded=true;
+        expandAncestor(p.id,gen,node,gens);
+        // ib.close();
+        infoBoxClick(p.marker);
     }
 
     function infoBoxClick(mark) {
@@ -985,7 +1008,11 @@ function initialize() {
         }
 
         if (motherPlotted == false && fatherPlotted == false) { // neither parent is plotted, okay to show delete button
-            var buttons = mark.expandButton +mark.deleteButton + '</div>';
+            if (mark.generation == 0) {
+                var buttons = mark.expandButton + '</div>';
+            } else {
+                var buttons = mark.expandButton +mark.deleteButton + '</div>';
+            }
         } else if (motherPlotted == true && fatherPlotted == true) { 
             var buttons = "";
         } else {
@@ -993,12 +1020,27 @@ function initialize() {
         }
 
         if (mark.isExpanded) {
-            ib.setContent(mark.infoBoxContent + '</div>');
+            ib.setContent("<div id='infow'>" + mark.infoBoxContent + '</div>');
+            document.getElementById('peopleDiv').innerHTML = mark.infoBoxContent;
         } else {
-            ib.setContent(mark.infoBoxContent +buttons + '</div>');
+            ib.setContent("<div id='infow'>" + mark.infoBoxContent +buttons + '</div>');
+            document.getElementById('peopleDiv').innerHTML = mark.infoBoxContent +buttons;
+
+            if (document.getElementById("ebutton")) {
+                document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", "", 10); }
+            }
+            if (document.getElementById("trashcan")) { 
+                document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this person from the map", "trashcan", "", 10); }
+            }
+            document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", "", 10); }
+            document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", "", 10); }
+
         }
 
-        ib.open(map, mark);
+    	// document.getElementById('peopleDiv').style.display = 'block';
+    	if (panelSlide == false) {
+        	ib.open(map, mark);
+    	}
 
 		if (baseurl.indexOf('sandbox') == -1) {
 			//setPhoto(mark.generation, mark.node, 0);
@@ -1192,9 +1234,10 @@ function initialize() {
 		familyTree.getChild(gen, node).marker.isExpanded = false;
 		familyTree.getNode(gen, node).isPlotted = false;
 		familyTree.setNode(undefined, gen, node);
-		ib.close();
+		// ib.close();
 		countryLoop(function (group) {
 		    listLoop();
+            infoBoxClick(familyTree.getChild(gen,node).marker);
 		});
     }
 
@@ -1272,7 +1315,7 @@ function initialize() {
                 document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", "", 10); }
 			}
             if (document.getElementById("trashcan")) { 
-                document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this pin and connector line", "trashcan", "", 10); }
+                document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this person from the map", "trashcan", "", 10); }
             }
             document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", "", 10); }
             document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", "", 10); }
@@ -1280,22 +1323,27 @@ function initialize() {
         });
     }
 
-    function populateIdField(id) {
+    function populateIdField(id, name) {
         var personId = document.getElementById("personid");
         personId.value = id;
+
+        if (name) {
+        	var personName = document.getElementById("personName");
+        	personName.textContent = name;
+    	}
     }
 
     function populateUser() {
         if (!userID) {
             personRead("", function (currentUser) {
-                populateIdField(currentUser.id);
+                populateIdField(currentUser.id,currentUser.display.name);
                 userID = currentUser.id;
                 var username = document.getElementById("username");
                 username.innerHTML = currentUser.name;
                 ancestorgens();
             });
         } else {
-            populateIdField(userID);
+            populateIdField(userID,userName);
         }
     }
 
@@ -1325,16 +1373,40 @@ function initialize() {
     function startEvents() {
         delay = 1;
         loadingAnimationStart();
-        var runButton = document.getElementById('runButton');
-        runButton.disabled = true;
-        runButton.className = 'button disabled';
-
-        if (optionvar == true) {
-            showOptions();
+        var runList = document.getElementById('runList');
+        runList.style.pointerEvents = 'none';
+        var items = runList.getElementsByTagName("li");
+        items[0].className = 'disabled';
+        for (i = 1; i<items.length; i++) {
+        	items[i].className = 'item disabled';
         }
-        var optionsButton = document.getElementById('optionsButton');
-        optionsButton.disabled = true;
-        optionsButton.className = 'button disabled';
+        // runList.className = 'disabled';
+        // runButton.className = 'disabled';
+
+        // if (optionvar == true) {
+        //     showOptions();
+        // }
+        // var optionsButton = document.getElementById('optionsButton');
+        // optionsButton.disabled = true;
+        // optionsButton.className = 'button disabled';
+    }
+
+    function enableButtons() {
+    	var runList = document.getElementById('runList');
+        runList.style.pointerEvents = 'auto';
+        var items = runList.getElementsByTagName("li");
+        items[0].className = '';
+        for (i = 1; i<items.length; i++) {
+        	items[i].className = 'item';
+        }
+
+        // var optionsButton = document.getElementById('optionsButton');
+        // optionsButton.disabled = false;
+        // if (optionvar == true) {
+        //     optionsButton.className = 'button yellow off';
+        // } else {
+        //     optionsButton.className = 'button yellow';
+        // }
     }
 
     function completionEvents(rootGen, rootNode, callback) {
@@ -1360,17 +1432,9 @@ function initialize() {
                     }
                 }, function () {
                     loadingAnimationEnd();
-                    var runButton = document.getElementById('runButton');
-                    runButton.disabled = false;
-                    runButton.className = 'button green';
+                    enableButtons();
 
-                    var optionsButton = document.getElementById('optionsButton');
-                    optionsButton.disabled = false;
-                    if (optionvar == true) {
-                        optionsButton.className = 'button yellow off';
-                    } else {
-                        optionsButton.className = 'button yellow';
-                    }
+                    
                     if (firstTime.box == true) {
                         infoBoxClick(familyTree.root().marker);
                         firstTime.box = false;
@@ -1380,17 +1444,9 @@ function initialize() {
             } else {
                 if (tooManyGens == false) {
                     loadingAnimationEnd();
-                    var runButton = document.getElementById('runButton');
-                    runButton.disabled = false;
-                    runButton.className = 'button green';
+                    enableButtons();
 
-                    var optionsButton = document.getElementById('optionsButton');
-                    optionsButton.disabled = false;
-                    if (optionvar == true) {
-                        optionsButton.className = 'button yellow off';
-                    } else {
-                        optionsButton.className = 'button yellow';
-                    }
+                    
                     if (firstTime.box == true) {
                         infoBoxClick(familyTree.root().marker);
                         firstTime.box = false;
@@ -1541,6 +1597,21 @@ function initialize() {
             document.getElementById('optionsButton').className = 'button yellow';
             optionvar = false;
         }
+    }
+
+    function expandList(listName) {
+    	var list = document.getElementById(listName);
+    	var tri = list.getElementsByTagName("img");
+    	var items = list.getElementsByTagName("li");
+    	for (i=1;i<9;i++) {
+    		if (items[i].style.display == "block") {
+    			items[i].style.display = "none";
+    			tri[0].src = "images/triangle-down.png";
+    		} else {
+    			items[i].style.display = "block";
+    			tri[0].src = "images/triangle-up.png";
+    		}
+    	}
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);

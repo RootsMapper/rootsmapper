@@ -5,6 +5,228 @@ html, body {
     padding: 0;
 }
 
+
+
+#optionButtons {
+}
+
+#userInfo {
+}
+
+#rootInfo {
+}
+
+#peopleDivHolder {
+}
+
+#peopleDiv {
+    white-space: nowrap;
+    padding-top: 15px;
+    padding-left: 15px;
+    padding-right: 0;
+    z-index: 1;
+}
+
+#downTriangle {
+    height: 9px;
+    padding-top: 3px;
+    padding-right: 6px;
+    float: right;
+}
+
+#runList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    right: 40px;
+    top: 60px;
+    z-index: 30;
+}
+
+.runListClass li {
+    border-radius: 0;
+    height: 22px;
+    width: 90px;
+    padding: 0;
+    padding-top: 5px;
+    padding-left: 6px;
+    background-color: green;
+    border: 1px solid green;
+    white-space: nowrap;    
+    color: white;
+    margin: 0;
+    cursor: pointer;
+    font-family: helvetica, arial, sans-serif;
+    font-size: small;
+    z-index: 30;
+}
+
+#runList .disabled {
+    background-color: gray;
+    color: lightgray;
+    border: 1px solid gray;
+}
+
+#runList .disabled:hover {
+    background-color: gray;
+    color: lightgray;
+    border: 1px solid gray;
+    cursor: wait;
+}
+        #runList li:hover {
+            background-color: rgba(0,140,0,1);
+            border: 1px solid rgba(0,140,0,1);
+        }
+
+        #runList li:active {
+            background-color: rgba(0,116,0,1);
+            border: 1px solid rgba(0,116,0,1);
+        }
+
+
+#runList li.item {
+    display: none;
+}
+
+#peopleDiv #expandList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    z-index: 20;
+    right: 40px;
+    top: 195px;
+}
+
+#infow #expandList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    float: right;
+    z-index: 40;
+    /*right: 40px;
+    top: 100px;*/
+}
+
+#expandList .disabled {
+    background-color: gray;
+    color: lightgray;
+    border: 1px solid gray;
+}
+
+#expandList .disabled:hover {
+    background-color: gray;
+    color: lightgray;
+    border: 1px solid gray;
+    cursor: wait;
+}
+        #expandList li:hover {
+            background-color: rgba(0,140,0,1);
+            border: 1px solid rgba(0,140,0,1);
+        }
+
+        #expandList li:active {
+            background-color: rgba(0,116,0,1);
+            border: 1px solid rgba(0,116,0,1);
+        }
+
+
+#expandList li.item {
+    display: none;
+}
+
+#sidePanel {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 400px;
+    height: 100%;
+    z-index: 5;
+    background-color: transparent;
+}
+
+#sidePanel .hoverdiv {
+    float: left;
+    width: 360px;
+    z-index: 1;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    background-color: transparent;
+    border-radius: 3px; 
+    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
+}
+
+#sidePanel .boxy {
+    background-color: rgba(255,255,255,0.75);
+    padding: 5px;
+    font-family: helvetica, arial, sans-serif;
+    font-size: small;
+}
+
+#sidePanel:hover {
+    background-color: rgba(0,0,0,0.1);
+}
+
+#sidePanel:hover .boxy {
+    background-color: white;
+}
+
+#panelToggle {
+    float: right;
+    width: 30px;
+    height: 100%;
+    background-color: transparent;
+    border: none;
+    font-weight: bolder;
+    font-size: larger;
+    color: transparent;
+}
+
+#panelToggle:hover {
+    background: rgba(255,255,255,0.1) url(../images/triangle-left.png) no-repeat center;
+    cursor: pointer;
+}
+
+#panelToggle:active {
+    outline: none;
+    background-color: rgba(255,255,255,0.5);
+}
+
+#panelToggle:focus {
+    outline: none;
+}
+
+
+#panelToggle2 {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 30px;
+    height: 100%;
+    display: none;
+    background-color: transparent;
+    border: none;
+    font-weight: bold;
+    color: transparent;
+}
+
+#panelToggle2:hover {
+    cursor: pointer;
+    background: rgba(0,0,0,0.1) url(../images/triangle-right.png) no-repeat center;
+}
+
+#panelToggle2:active {
+    outline: none;
+}
+
+#panelToggle2:focus {
+    outline: none;
+    background-color: rgba(255,255,255,0.5);
+}
+
 #alertDiv {
     position: absolute;
     top: 0;
@@ -28,9 +250,6 @@ html, body {
 }
 
 #optionDiv {
-    position: fixed;
-    top: 40px;
-    left: 0;
     width: auto;
     max-height: 70%;
     background-color: transparent;
@@ -54,6 +273,7 @@ html, body {
     padding: 15px;
     /*box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);*/
 }
+
 
 .person {
     white-space: nowrap;
@@ -145,9 +365,9 @@ html, body {
 
 
 #inputFrame {
-    position: fixed;
+    /*position: fixed;
     top: 5px;
-    left: 0px;
+    left: 0px;*/
     margin: 0 auto;
     white-space: nowrap;
     z-index: 1;
@@ -162,7 +382,7 @@ html, body {
 #loadingMessage {
     color: #ddd;
     float: left;
-    font-family: helvetica, arial, sans serif;
+    font-family: helvetica, arial, sans-serif;
     font-size: small;
     margin-top: 2px;
     vertical-align: middle;
@@ -171,16 +391,24 @@ html, body {
     margin-right: 10px;
 }
 
+#loadHolder {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    height: 0px;
+    width: 100%;
+    z-index: 50;
+    text-align: center;
+}
+
 #loadingDiv {
-    float: left;
     background-color: rgba(0,0,0,0.75);
     white-space: nowrap;
     height: 30px;
     border-radius: 3px;
     width: auto;
-	height: 30px;
-	margin: 0px;
-    margin-left: 5px;
+	margin-top: 5px;
+    display: inline-block;
 	padding: 0px 0px;
 }
 
@@ -196,9 +424,14 @@ html, body {
 }
 
 #personid {
-    height: 28px;
     width: 80px;
     border: 1px solid white;
+    margin: 0;
+    background-color: transparent;
+}
+
+#personName {
+
 }
 
 #prompt {
@@ -239,13 +472,16 @@ html, body {
 }
 
 #username {
+    width: 310px;
 }
 
 .hoverdiv {
     float: left;
+    width: 350px;
     z-index: 1;
     margin-left: 5px;
-    margin-bottom:5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     background-color: transparent;
     border-radius: 3px; 
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
@@ -280,24 +516,18 @@ html, body {
     }
 
 #ebutton {
-    height:38px;
-    width:55px;
-    float:right;
-    opacity:0.5;
     cursor: pointer;
 }
 
-    #ebutton:hover {
-        opacity: 1;
-    }
 
 #trashcan {
-    opacity: 0.5;
+    width: 30px;
     cursor: pointer;
+    text-align: center;
 }
 
     #trashcan:hover {
-        opacity:1;
+        /*opacity:1;*/
     }
 
 .button {
@@ -415,7 +645,7 @@ html, body {
 
 #populateUser {
     border-radius: 2px 0px 0px 2px; 
-    float: left;
+    float: right;
     cursor: pointer;
 }
 
@@ -423,12 +653,18 @@ html, body {
 #logoutbutton {
     border-radius: 0px 2px 2px 0px; 
     cursor: pointer;
+    /*position: absolute;
+    right: 50px;
+    top: 5px;*/
+    float: right;
 }
 
 #runButton {
-    border-radius: 0px 2px 2px 0px; 
     cursor: pointer;
+    /*text-align: center;*/
 }
+
+
 
 #expandButton {
     float:right;
@@ -478,40 +714,34 @@ html, body {
      z-index: 99;
      background-color: rgba(0,0,0,0.7);
      border-radius: 3px;
+     border: 1px solid white;
      padding: 6px 8px 6px 8px;
      color: #eeeeee;
-     font-family: helvetica, arial, sans serif;
+     font-family: helvetica, arial, sans-serif;
      font-size: smaller;
      font-weight: bold;
  }
 
+
+
 #countryStats {
-    padding: 10px;
-    padding-right: 20px;
     /*background-color: rgba(20,20,20,0.8);*/
     max-height: 400px;
     overflow-y: auto;
-    color: white;
-    font-family: helvetica, arial, sans serif;
-    font-size: small;
     display: none;
 }
 
 
 #pedigreeWrapper {
-    padding: 10px;
     padding-right: 20px;
-    /*background-color: rgba(20,20,20,0.8);*/
-    max-height: 400px;
-    overflow-y: auto;
-    display: none;
+    /*display: none;*/
 }
 
 #pedigreeChart {
     padding-right: 25px;
-    color: white;
-    font-family: helvetica, arial, sans serif;
-    /*font-size: small;*/
+    font-size: medium;
+    max-height: 200px;
+    overflow-y: auto;
     /*font-weight: bold;*/
     line-height : 1.5;
 }
@@ -532,7 +762,12 @@ html, body {
         margin:0;
         padding:0;
         background: url('../images/list-item-root.png') no-repeat top left;
-        cursor:auto;        
+        cursor: auto;        
+    }
+
+    #pedigreeChart span:hover {
+        color: gray;
+        cursor: pointer;
     }
 
 

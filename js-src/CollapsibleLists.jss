@@ -62,7 +62,41 @@ _b(_c);
 }
 };
 };
+
+this._afun = function(_c,e){
+// return function(e){
+if(!e){
+e=window.event;
+}
+var _d=(e.target?e.target:e.srcElement);
+while(_d.nodeName!="LI"){
+_d=_d.parentNode;
+}
+if(_d==_c){
+_b(_c);
+}
+// };
+};
+
 function _b(_e){
+var _f=_e.className.match(/(^| )collapsibleListClosed( |$)/);
+var uls=_e.getElementsByTagName("ul");
+for(var _10=0;_10<uls.length;_10++){
+var li=uls[_10];
+while(li.nodeName!="LI"){
+li=li.parentNode;
+}
+if(li==_e){
+uls[_10].style.display=(_f?"block":"none");
+}
+}
+_e.className=_e.className.replace(/(^| )collapsibleList(Open|Closed)( |$)/,"");
+if(uls.length>0){
+_e.className+=" collapsibleList"+(_f?"Open":"Closed");
+}
+};
+
+this._bfun=function(_e){
 var _f=_e.className.match(/(^| )collapsibleListClosed( |$)/);
 var uls=_e.getElementsByTagName("ul");
 for(var _10=0;_10<uls.length;_10++){
