@@ -71,7 +71,7 @@ else
 
         <!-- Google Maps API reference -->
         <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry"></script>
-        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:Condensed" />
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:Condensed" />
 	<!-- map references -->
 
 	<!-- loading animation references -->
