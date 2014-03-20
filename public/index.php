@@ -71,6 +71,7 @@ else
 
         <!-- Google Maps API reference -->
         <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry"></script>
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:Condensed" />
 	<!-- map references -->
 
 	<!-- loading animation references -->
@@ -123,106 +124,105 @@ if (!isset($access_token))
 // If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
 { ?>
-			<div id="loadHolder">
-				<div id="loadingDiv" style="visibility: hidden">
-                    <div id="loading" class="square"></div>
+			
+
+            <div id="loadingDiv" style="visibility: hidden">
+            	<div id="loadHolder">
+                    <div id="loading"></div>
                     <div id="loadingMessage"></div>
-                </div>
+            	</div>
             </div>
-				<button id="panelToggle2" onclick="panelOut();"></button>
+				<button id="panelToggle2"></button>
+
+			<div id="zoomControl">
+				<div id="zoomUp" class="zoom">+</div>
+				<div id="zoomDown" class="zoom">&ndash;</div>
+			</div>
+
+			<div id="rootDiv">
+				<ul id="runList" class="runListClass">
+					<li id="runButton" onclick="expandList('runList');"><b>Run</b><img id="downTriangle" src="images/triangle-down.png"></li>
+					<li class="item" onclick="expandList('runList'); ancestorgens(1)">1 generation</li>
+					<li class="item" onclick="expandList('runList'); ancestorgens(2)">2 generations</li>
+					<li class="item" onclick="expandList('runList'); ancestorgens(3)">3 generations</li>
+					<li class="item" onclick="expandList('runList'); ancestorgens(4)">4 generations</li>
+					<li class="item" onclick="expandList('runList'); ancestorgens(5)">5 generations</li>
+					<li class="item" onclick="expandList('runList'); ancestorgens(6)">6 generations</li>
+					<li class="item" onclick="expandList('runList'); ancestorgens(7)">7 generations</li>
+					<li class="item" onclick="expandList('runList'); ancestorgens(8)">8 generations</li>
+				</ul>
+				<div id="personName">Root Name</div>
+     			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
+				<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+				<!-- <div id="infoDiv">
+					<div>
+		                <div style="font-size: small">BIRTH</div>
+		                <div>
+		                    <div style="font-size: small; text-indent: 10px">Date</div>
+		                    <div style="font-size: small; text-indent: 10px">Location</div>
+		                </div>
+	        		</div>
+	        		<div>
+	            		<div style="font-size: small">DEATH</div>
+	            		<div>
+		                    <div style="font-size: small; text-indent: 10px">Date</div>
+		                    <div style="font-size: small; text-indent: 10px">Location</div>
+	            		</div>
+	        		</div>
+				</div> -->
+			</div>
+
+			
+
+			<div id="countryStats" class="boxy"><b>Country Totals</b></br></div>
+
+			<div style="position: absolute; top: 0px; left: 0px; height: 0px; width: 100%; text-align: center">
+				<div id="newTree">
+					<div id="tree1" class="trees"></div>
+					<div id="tree3" class="trees"></div></br>
+					<div id="tree2" class="trees"></div>
+				</div>
+			</div>
+
+			<div id="optionButtons">
+
+				<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
+				<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
+				<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
+				<button id="reset" class="button yellow off" onclick="clearOverlays()">Reset</button>
+				<!-- <div id="panelToggle">More<img id="downTriangle" src="images/triangle-down.png"></div> -->
+				</br>
+				<!-- <div style="text-align: center">
+					
+					<div id="peopleDivHolder" class="hoverdiv">
+	            		<div ><b>Selected Person</b></br>
+	            			<div id="peopleDiv"></div>
+	            		</div>
+	            	</div>
+            	</div> -->
+			</div>
+
 
 			<div id="sidePanel">
-					<button id="panelToggle" onclick="panelIn();"></button>
 				
 
 				<div id="inputFrame">
-					<div class="hoverdiv">
-						<div class="boxy"><b>Current User: </b>
-							<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
-							</br>
-							<label id="username" >User Name</label>
-							
-						</div>
-					</div>
-						
-					<div class="hoverdiv">
-						<div class="boxy"><b>Root Person: </b>
-							<!-- <button id="populateUser" class="button blue" onclick="populateUser()">Me</button> -->
-							<ul id="runList" class="runListClass">
-								<li id="runButton" onclick="expandList('runList');"><b>Run</b><img id="downTriangle" src="images/triangle-down.png"></li>
-								<li class="item" onclick="expandList('runList'); ancestorgens(1)">1 generation</li>
-								<li class="item" onclick="expandList('runList'); ancestorgens(2)">2 generations</li>
-								<li class="item" onclick="expandList('runList'); ancestorgens(3)">3 generations</li>
-								<li class="item" onclick="expandList('runList'); ancestorgens(4)">4 generations</li>
-								<li class="item" onclick="expandList('runList'); ancestorgens(5)">5 generations</li>
-								<li class="item" onclick="expandList('runList'); ancestorgens(6)">6 generations</li>
-								<li class="item" onclick="expandList('runList'); ancestorgens(7)">7 generations</li>
-								<li class="item" onclick="expandList('runList'); ancestorgens(8)">8 generations</li>
-							</ul>
-							</br>
-							<label id="personName" >Root Name</label></br>
-                 			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) ancestorgens()"/>
-                    		<!-- <label id="prompt" class="labelbox" for="personid">Root Person ID:</label> -->
-							<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-						</div>
-					</div>
-
-						<!-- <div class="hoverdiv"> -->
-							
-						<!-- </div> -->
-
-					<!-- <div class="hoverdiv">
-							<button id="optionsButton" class="button yellow" onclick="showOptions()">Options</button>
-					</div> -->
-
-					<div class="hoverdiv">
-						<div class="boxy"><b>Options</b></br>
-								<!-- <button id="showTree" class="button yellow" onclick="toggleTree()">Family Tree</button> -->
-								<!-- <button id="showStats" class="button yellow" onclick="toggleStats()">Country Statistics</button> -->
-								<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
-								<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
-								<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
-						</div>
-					</div>
-
-					<!-- <div id="optionDiv" style="visibility: hidden"> -->
-						<!-- <div id="optionButtons">
-							<div class="hoverdiv">
-								<button id="showTree" class="button yellow" onclick="toggleTree()">Family Tree</button>
-							</div>
-							<div class="hoverdiv">
-								<button id="showStats" class="button yellow" onclick="toggleStats()">Country Statistics</button>
-							</div>
-							<div class="hoverdiv">
-								<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
-							</div>
-							<div class="hoverdiv">
-								<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
-							</div>
-							<div class="hoverdiv">
-								<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
-							</div>
-						</div> -->
-						<!-- <div id="detailViewer"> -->
-
-						<!-- </div> -->
-					<!-- </div> -->
-                	<div id="peopleDivHolder" class="hoverdiv">
-                		<div class="boxy"><b>Selected Person</b></br>
-                			<div id="peopleDiv"></div>
-                		</div>
-                	</div>
 					
-					<div class="hoverdiv">
+					
+                	
+					
+					<!-- <div class="hoverdiv">
 						<div id="pedigreeWrapper" class="boxy">
 							<b>Family Tree</b></br>
 							<div id="pedigreeChart"></div>
 						</div>
-					</div>
+					</div> -->
                     
                     
-                	<div class="hoverdiv">
-						<div id="countryStats" class="boxy"><b>Country Totals</b></br></div>
+                	
+
+					<div class="hoverdiv">
+						
 					</div>
 
 				</div>
@@ -234,6 +234,7 @@ if (isset($access_token))
 ?>
 				
 			    <div id="lowerbuttonframe">
+
 <?php
 if (!empty($PLEDGIE_CODE))
 {
@@ -244,19 +245,19 @@ if (!empty($PLEDGIE_CODE))
 if (!empty($FAQ_URL))
 {
 ?>
-            		<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">FAQ</button>
+            		<button id="faqbutton" class="button red" onclick="window.open('<?php echo($FAQ_URL); ?>', '_blank')">?</button>
 <?php
 }
 if (!empty($FEEDBACK_URL))
 {
 ?>
-            		<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">Feedback</button>
+            		<button id="feedbackbutton" class="button blue" onclick="window.open('<?php echo($FEEDBACK_URL); ?>', '_blank')">!</button>
 <?php
 }
 if (!empty($DONATE_URL))
 {
 ?>
-            		<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">Donate</button>
+            		<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">$</button>
 <?php
 } 
 if (!empty($BLOG_URL))
@@ -266,6 +267,14 @@ if (!empty($BLOG_URL))
 <?php
 }
 ?>
+					
+					<div id="userDiv">
+						<div id="userbuttons" style="display: none">
+						</div>
+						<button id="populateUser" class="button blue" onclick="populateUser()">Set as root</button>
+						<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
+						<div id="username"></div>
+					</div>
 				</div>
 			</div>
 		</div>

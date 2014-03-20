@@ -71,24 +71,29 @@ function initialize() {
             center: place,
             streetViewControl: false,
             panControl: false,
-            zoomControl: true,
-            zoomControlOptions: {
-                style: google.maps.ZoomControlStyle.Default,
-                position: google.maps.ControlPosition.RIGHT_TOP
-            }
+            zoomControl: false,
+            // zoomControlOptions: {
+            //     style: google.maps.ZoomControlStyle.SMALL,
+            //     position: google.maps.ControlPosition.RIGHT_TOP
+            // },
+            mapTypeControl: true,
+    		mapTypeControlOptions: {
+      			// style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+      			position: google.maps.ControlPosition.TOP_RIGHT
+    		},
         }
         map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
         oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
     
         if (document.getElementById("personid")) {
-            document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person","personid","",10); }
+            // document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person","personid","",10); }
         }
         if (document.getElementById("populateUser")) {
             document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person", "populateUser","", 10); }
         }
 
         if (document.getElementById("genSelect")) {
-            document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot","genSelect","",10); }
+            // document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot","genSelect","",10); }
         }
 
         if (document.getElementById("runButton")) {
@@ -123,6 +128,83 @@ function initialize() {
             document.getElementById("isolate").onmouseover = function () { tooltip("Toggle isolation of trace", "isolate", "", 10); }
         }
 
+        if (document.getElementById("panelToggle")) {
+            document.getElementById("panelToggle").onclick = function () { 
+
+            	var r = document.getElementById("runList");
+            	var b = document.getElementById("runButton");
+
+            	// r.style.display = "block";
+            	// r.style.zIndex = 30;
+            	// r.style.top = "50px";
+            	// if (panelSlide == true) {
+            	// 	panelOut();
+            	// } else {
+            	// 	panelIn();
+            	// }
+            }
+        }
+
+        var rootDiv = document.getElementById("rootDiv");
+        if (rootDiv) {
+            rootDiv.onmouseover = function (event) {
+            	var e = event.fromElement || event.relatedTarget;
+			    // check for all children levels (checking from bottom up)
+			    while (e && e.parentNode && e.parentNode != window) {
+			        if (e.parentNode == this||  e == this) {
+			            if(e.preventDefault) {
+			                e.preventDefault();
+			            }
+			            return false;
+			        }
+			        e = e.parentNode;
+			    }
+            	mouseTimer("rootDiv","runList",false,"runButton",function(a,b){
+            		var obj = {
+            			position: 'top',
+            			startPosition: 40,
+            			endPosition: 50,
+            			dimension: 'height',
+            			startDimension: 0,
+            			endDimension: 22,
+            			hideHTML: true
+            		}
+            		topAnimation(a,b,obj);
+            	});
+            }
+        }
+
+        var userDiv = document.getElementById("userDiv");
+        if (userDiv) {
+            userDiv.onmouseover = function () {
+            	mouseTimer("userDiv","logoutbutton",false,"logoutbutton",function(a,b){
+            		var obj = {
+            			position: 'bottom',
+            			startPosition: -10,
+            			endPosition: 0,
+            			dimension: 'height',
+            			startDimension: 0,
+            			endDimension: 30,
+            			hideHTML: false
+            		}
+            		topAnimation(a,b,obj);
+            	});
+
+            	// mouseTimer("userDiv","populateUser",true,"populateUser",function(a,b){
+            	// 	var obj = {
+            	// 		position: 'bottom',
+            	// 		startPosition: 25,
+            	// 		endPosition: 35,
+            	// 		dimension: 'height',
+            	// 		startDimension: 0,
+            	// 		endDimension: 30,
+            	// 		hideHTML: false
+            	// 	}
+            	// 	topAnimation(a,b,obj);
+            	// });
+            }
+        }
+
         if (accesstoken) {
             discoveryResource();
         }
@@ -131,6 +213,142 @@ function initialize() {
         	ib.close();
 			//restoreColors();
         });
+
+        var zm = document.getElementById("zoomControl");
+        var zmi = document.getElementById("zoomUp");
+        var zmo = document.getElementById("zoomDown");
+
+        google.maps.event.addDomListener(zmi, 'click', function() {
+        	var z = map.getZoom();
+    		map.setZoom(z+1)
+  		});
+
+  		google.maps.event.addDomListener(zmo, 'click', function() {
+    		var z = map.getZoom();
+    		map.setZoom(z-1)
+  		});
+
+  		// zm.index = 1;
+  		// map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zm);
+
+    }
+
+    function mouseTimer(trigger,target,c,what,how) {
+    	var tar = document.getElementById(target);
+    	var disp = tar.style.display;
+    	if (disp != "block") {
+    		if (typeof how === 'function') {
+    			how(tar,what);
+    		} else {
+    			tar.style.display = "block";
+    		}
+    	} else {
+    		return false;
+    	}
+
+        document.getElementById(trigger).onmouseout = function (event) {
+        	// this is the original element the event handler was assigned to
+		    var e = event.toElement || event.relatedTarget;
+
+		    // check for all children levels (checking from bottom up)
+		    while (e && e.parentNode && e.parentNode != window) {
+		        if (e.parentNode == this||  e == this) {
+		            if(e.preventDefault) {
+		                e.preventDefault();
+		            }
+		            return false;
+		        }
+		        e = e.parentNode;
+		    }
+
+        	var timer = setTimeout(function () {
+        		if (typeof how === 'function') {
+    				how(tar,what);
+    			} else {
+    				tar.style.display = "none";
+    			}
+        		// document.getElementById(target).style.display = "none";
+        		if (c == true) {
+        			document.getElementById(trigger).onmouseover = null;
+        			document.getElementById(trigger).onmouseout = null;
+        		}
+            }, 1000);
+
+            document.getElementById(trigger).onmouseover = function (event) {
+            	var e = event.fromElement || event.relatedTarget;
+			    // check for all children levels (checking from bottom up)
+			    while (e && e.parentNode && e.parentNode != window) {
+			        if (e.parentNode == this||  e == this) {
+			            if(e.preventDefault) {
+			                e.preventDefault();
+			            }
+			            return false;
+			        }
+			        e = e.parentNode;
+			    }
+            	clearTimeout(timer);
+            	mouseTimer(trigger, target,c,what,how);
+            }
+        }
+    }
+
+    function topAnimation(target,animated,obj) {
+    	var animatedDiv = document.getElementById(animated);
+    	var position = obj.position;
+    	var dimension = obj.dimension;
+
+    	var startPosition = obj.startPosition;
+    	var startDimension = obj.startDimension;
+
+    	var endPosition = obj.endPosition;
+    	var endDimension = obj.endDimension;
+
+    	var positionChange = endPosition - startPosition;
+    	var dimensionChange = endDimension - startDimension;
+
+    	var step = 0;
+    	var numSteps = 11; //Change this to set animation resolution
+    	var timePerStep = 1; //Change this to alter animation speed
+    	var positionChangePerStep = positionChange / numSteps;
+    	var dimensionChangePerStep = dimensionChange / numSteps;
+
+    	var storeHTML = animatedDiv.innerHTML;
+    	if (obj.hideHTML == true) {
+    		animatedDiv.innerHTML = '';
+    	}
+    	
+    	if (target.style.display != "block") {
+	    	var interval = setInterval(function () {
+				if (step > numSteps) {
+		            clearInterval(interval);
+					animatedDiv.style[dimension] = endDimension + "px";
+					animatedDiv.style[position] = endPosition + "px";
+					animatedDiv.innerHTML = storeHTML;
+				} else {
+					var incrementDimension = step * dimensionChangePerStep;
+					var incrementPosition = step * positionChangePerStep;
+		            animatedDiv.style[dimension] = Math.round(incrementDimension.toString(),1) + "px";
+		            target.style[position] = startPosition + Math.round(incrementPosition.toString(),1) + "px";
+		            step++;
+		            target.style.display = "block";
+				}
+	    	}, timePerStep);
+    	} else {
+	    	var interval = setInterval(function () {
+				if (step > numSteps) {
+		            clearInterval(interval);
+		            target.style.display = "none";
+					animatedDiv.innerHTML = storeHTML;
+				} else {
+					var incrementDimension = endDimension - step * dimensionChangePerStep;
+					var incrementPosition = endPosition - step * positionChangePerStep;
+		            animatedDiv.style[dimension] = Math.round(incrementDimension.toString(),1) + "px";
+		            target.style[position] = Math.round(incrementPosition.toString(),1) + "px";
+		            step++;
+				}
+	    	}, timePerStep);
+
+    	}
     }
 
     function ancestorgens(gens) {
@@ -219,6 +437,22 @@ function initialize() {
         xhttp.send();
     }
 
+    function checkID() {
+    	id = document.getElementById('personid').value;
+    	var url = urltemplate.parse(discovery['person-template'].template).expand({
+            pid: id,
+            access_token: accesstoken
+        });
+
+        personRead(url,function(result,status) {
+        	if (status == "OK") {
+        		document.getElementById("personName").textContent = result.display.name;
+        	} else {
+        		alert('No person found with ID: ' + id);
+        	}
+        })
+    }
+
     function getPedigree(generations, id, rootGen, rootNode, callback) {
         
         id = id ? id : document.getElementById('personid').value;
@@ -297,7 +531,8 @@ function initialize() {
     		                }
     		                countryLoop(function (group) {
     		                    grouping = group;
-    		                    listLoop();
+    		                    // listLoop();
+    		                    startTheTree(0,0);
     				            //if (baseurl.indexOf('sandbox') == -1) {
     				            //    photoLoop();
     				            //}
@@ -431,6 +666,55 @@ function initialize() {
 	    });
 	}
 
+	function startTheTree(gen, node) {
+		var daddy = document.getElementById('tree1');
+		var child = document.getElementById('tree2');
+		var mommy = document.getElementById('tree3');
+
+		daddy.innerHTML = '';
+		mommy.innerHTML = '';
+		child.innerHTML = '';
+
+		daddy.onclick = null;
+		mommy.onclick = null;
+		child.onclick = null;
+
+		var person = familyTree.getNode(gen, node);
+		var father = familyTree.getFather(gen, node);
+		var mother = familyTree.getMother(gen, node);
+
+		child.innerHTML = HtmlEncode(person.display.name) + ' (' + HtmlEncode(person.display.lifespan) + ')';
+
+		if (person.display.gender == "Male") {
+	            child.style.backgroundColor = 'dodgerblue';
+	        } else {
+	            child.style.backgroundColor = 'pink';
+	        }
+
+		if (father) {
+			daddy.innerHTML = HtmlEncode(father.display.name) + ' (' + HtmlEncode(father.display.lifespan) + ')';
+			daddy.onclick = function () {
+				startTheTree(gen + 1, node * 2);
+				infoBoxClick(familyTree.getNode(gen + 1, node * 2).marker);
+			}
+		}
+
+		if (mother) {
+			mommy.innerHTML = HtmlEncode(mother.display.name) + ' (' + HtmlEncode(mother.display.lifespan) + ')';
+			mommy.onclick = function () {
+				startTheTree(gen + 1, node * 2 + 1);
+				infoBoxClick(familyTree.getNode(gen + 1, node * 2 + 1).marker);
+			}
+		}
+
+		if (gen > 0) {
+			child.onclick = function() {
+				startTheTree(gen - 1, (node >> 1));
+				infoBoxClick(familyTree.getNode(gen - 1, (node >> 1)).marker);
+			}
+		}
+	};
+
 	function listLoop() {
 	    //if (document.getElementById('pedigreeChart')) {
 	        document.getElementById('pedigreeChart').innerHTML = '';
@@ -546,7 +830,11 @@ function initialize() {
                         place: placestring
                     }
 				    // Send reply
-                    callback(object);
+
+            		typeof callback === 'function' && callback(object,status);
+                    // callback(object);
+                } else {
+                	typeof callback === 'function' && callback(undefined,status);
                 }
         });
     }
@@ -1021,26 +1309,26 @@ function initialize() {
 
         if (mark.isExpanded) {
             ib.setContent("<div id='infow'>" + mark.infoBoxContent + '</div>');
-            document.getElementById('peopleDiv').innerHTML = mark.infoBoxContent;
+            // document.getElementById('peopleDiv').innerHTML = mark.infoBoxContent;
         } else {
             ib.setContent("<div id='infow'>" + mark.infoBoxContent +buttons + '</div>');
-            document.getElementById('peopleDiv').innerHTML = mark.infoBoxContent +buttons;
+            // document.getElementById('peopleDiv').innerHTML = mark.infoBoxContent +buttons;
 
-            if (document.getElementById("ebutton")) {
-                document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", "", 10); }
-            }
-            if (document.getElementById("trashcan")) { 
-                document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this person from the map", "trashcan", "", 10); }
-            }
-            document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", "", 10); }
-            document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", "", 10); }
+            // if (document.getElementById("ebutton")) {
+            //     document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", "", 10); }
+            // }
+            // if (document.getElementById("trashcan")) { 
+            //     document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this person from the map", "trashcan", "", 10); }
+            // }
+            // document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", "", 10); }
+            // document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", "", 10); }
 
         }
 
     	// document.getElementById('peopleDiv').style.display = 'block';
-    	if (panelSlide == false) {
+    	// if (panelSlide == false) {
         	ib.open(map, mark);
-    	}
+    	// }
 
 		if (baseurl.indexOf('sandbox') == -1) {
 			//setPhoto(mark.generation, mark.node, 0);
@@ -1236,7 +1524,7 @@ function initialize() {
 		familyTree.setNode(undefined, gen, node);
 		// ib.close();
 		countryLoop(function (group) {
-		    listLoop();
+		    // listLoop();
             infoBoxClick(familyTree.getChild(gen,node).marker);
 		});
     }
@@ -1263,7 +1551,7 @@ function initialize() {
             $('#loading').show();
         });
         $(function () {
-            $('#loading').activity({ segments: 10, width: 2, space: 1, length: 5, color: '#FFFFFF', speed: 1.5 });
+            $('#loading').activity({ segments: 10, width: 10, space: 1, length: 10, color: '#000000', speed: 1.5 });
         });
     }
 
