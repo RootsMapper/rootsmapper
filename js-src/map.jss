@@ -18,7 +18,6 @@ var userID;
 var userName;
 var familyTree;
 var discovery;
-var queue = 1;
 var grouping;
 var tooManyGens;
 var title;
@@ -30,148 +29,53 @@ var treeVar = false;
 var statVar = false;
 var highlights = true;
 
-function discoveryResource() {
-    fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
-        if (status == "OK") {
-            discovery = result.links;
-            currentUser();
-        }
-    });
-}
+function initialize() {
+ 	
+ 	// Load the map (whether user is logged in or not)
+ 	startGoogleMaps();
 
-function currentUser() {
-    var options = {
-        media: 'xml',
-        url: discovery["current-user-person"].href + '?&access_token=' + accesstoken
+ 	// If user is logged in
+    if (accesstoken) {
+
+    	// Set up page elements
+    	pageSetup();
+
+    	// Get discovery resource
+        discoveryResource(function () {
+
+        	// Load user information
+            currentUser(function () {
+
+            	// Run 3 generations by default
+            	ancestorgens(3);
+
+            });
+
+        });
+
     }
 
-    fsAPI(options, function (result, status) {
-        if (status == "OK") {
-            var p = $(result).find("gx\\:person, person");
-            var f = $(result).find("gx\\:fullText, fullText");
-            userID = p[0].getAttribute("id");
-            userName = f[0].textContent;
-            document.getElementById("username").innerHTML = userName;
-            populateIdField(userID,userName);
-
-            ancestorgens(3);
-        }
-    });
-    
-}
-
-
-function initialize() {
- 
-        var lat = 30.0;
-        var lng = -30.0;
-        var place = new google.maps.LatLng(lat, lng);
-        var mapOptions = {
-            zoom: 3,
-            center: place,
-            streetViewControl: false,
-            panControl: false,
-            zoomControl: false,
-            // zoomControlOptions: {
-            //     style: google.maps.ZoomControlStyle.SMALL,
-            //     position: google.maps.ControlPosition.RIGHT_TOP
-            // },
-            mapTypeControl: true,
-    		mapTypeControlOptions: {
-      			// style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-      			position: google.maps.ControlPosition.TOP_RIGHT
-    		},
-        }
-        map = new google.maps.Map(document.getElementById('mapdisplay'), mapOptions);
-        oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
-    
-        if (document.getElementById("personid")) {
-            // document.getElementById("personid").onmouseover = function () { tooltip("Enter the ID for the root person","personid","",10); }
-        }
-        if (document.getElementById("populateUser")) {
-            document.getElementById("populateUser").onmouseover = function () { tooltip("Set yourself as the root person", "populateUser","", 10); }
-        }
-
-        if (document.getElementById("genSelect")) {
-            // document.getElementById("genSelect").onmouseover = function () { tooltip("Select the number of generations to plot","genSelect","",10); }
-        }
-
-        if (document.getElementById("runButton")) {
-            document.getElementById("runButton").onmouseover = function () { tooltip("Begin the plotting process", "runButton", "", 10); }
-        }
-
-        if (document.getElementById("feedbackbutton")) {
-            document.getElementById("feedbackbutton").onmouseover = function () { tooltip("Leave some comments about your experience", "feedbackbutton", "", -75, -100); }
-        }
-
-        if (document.getElementById("donatebutton")) {
-            document.getElementById("donatebutton").onmouseover = function () { tooltip("Help keep this site up and running", "donatebutton", "", -65, -65); }
-        }
-        
-        if (document.getElementById("showTree")) {
-            document.getElementById("showTree").onmouseover = function () { tooltip("Toggle pedigree information", "showTree", "", 10); }
-        }
-        
-        if (document.getElementById("showStats")) {
-            document.getElementById("showStats").onmouseover = function () { tooltip("Toggle country statistics", "showStats", "", 10); }
-        }
-
-        if (document.getElementById("showlines")) {
-            document.getElementById("showlines").onmouseover = function () { tooltip("Toggle connecting lines", "showlines", "", 10); }
-        }
-
-        if (document.getElementById("highlight")) {
-            document.getElementById("highlight").onmouseover = function () { tooltip("Toggle trace back to root person", "highlight", "", 10); }
-        }
-
-        if (document.getElementById("isolate")) {
-            document.getElementById("isolate").onmouseover = function () { tooltip("Toggle isolation of trace", "isolate", "", 10); }
-        }
-
-        if (document.getElementById("panelToggle")) {
-            document.getElementById("panelToggle").onclick = function () { 
-
-            	var r = document.getElementById("runList");
-            	var b = document.getElementById("runButton");
-
-            	// r.style.display = "block";
-            	// r.style.zIndex = 30;
-            	// r.style.top = "50px";
-            	// if (panelSlide == true) {
-            	// 	panelOut();
-            	// } else {
-            	// 	panelIn();
-            	// }
-            }
-        }
 
         var rootDiv = document.getElementById("rootDiv");
         if (rootDiv) {
-            rootDiv.onmouseover = function (event) {
-            	var e = event.fromElement || event.relatedTarget;
-			    // check for all children levels (checking from bottom up)
-			    while (e && e.parentNode && e.parentNode != window) {
-			        if (e.parentNode == this||  e == this) {
-			            if(e.preventDefault) {
-			                e.preventDefault();
-			            }
-			            return false;
-			        }
-			        e = e.parentNode;
-			    }
-            	mouseTimer("rootDiv","runList",false,"runButton",function(a,b){
-            		var obj = {
-            			position: 'top',
-            			startPosition: 40,
-            			endPosition: 50,
-            			dimension: 'height',
-            			startDimension: 0,
-            			endDimension: 22,
-            			hideHTML: true
-            		}
-            		topAnimation(a,b,obj);
-            	});
-            }
+       //      rootDiv.onmouseover = function (event) {
+
+			    // if (isEventFromChild(event,this) == false) {
+			    // 	mouseTimer("rootDiv","runList",false,"runButton",function(a,b){
+	      //       		var obj = {
+	      //       			position: 'top',
+	      //       			startPosition: 40,
+	      //       			endPosition: 50,
+	      //       			dimension: 'height',
+	      //       			startDimension: 0,
+	      //       			endDimension: 22,
+	      //       			hideHTML: true
+	      //       		}
+	      //       		topAnimation(a,b,obj);
+       //      		});
+			    // }
+            	
+       //      }
         }
 
         var userDiv = document.getElementById("userDiv");
@@ -189,108 +93,173 @@ function initialize() {
             		}
             		topAnimation(a,b,obj);
             	});
-
-            	// mouseTimer("userDiv","populateUser",true,"populateUser",function(a,b){
-            	// 	var obj = {
-            	// 		position: 'bottom',
-            	// 		startPosition: 25,
-            	// 		endPosition: 35,
-            	// 		dimension: 'height',
-            	// 		startDimension: 0,
-            	// 		endDimension: 30,
-            	// 		hideHTML: false
-            	// 	}
-            	// 	topAnimation(a,b,obj);
-            	// });
             }
         }
 
-        if (accesstoken) {
-            discoveryResource();
-        }
-
-        google.maps.event.addListener(map, 'click', function () {
-        	ib.close();
-			//restoreColors();
-        });
-
-        var zm = document.getElementById("zoomControl");
-        var zmi = document.getElementById("zoomUp");
-        var zmo = document.getElementById("zoomDown");
-
-        google.maps.event.addDomListener(zmi, 'click', function() {
-        	var z = map.getZoom();
-    		map.setZoom(z+1)
-  		});
-
-  		google.maps.event.addDomListener(zmo, 'click', function() {
-    		var z = map.getZoom();
-    		map.setZoom(z-1)
-  		});
-
-  		// zm.index = 1;
-  		// map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zm);
-
     }
 
-    function mouseTimer(trigger,target,c,what,how) {
-    	var tar = document.getElementById(target);
-    	var disp = tar.style.display;
-    	if (disp != "block") {
-    		if (typeof how === 'function') {
-    			how(tar,what);
-    		} else {
-    			tar.style.display = "block";
-    		}
-    	} else {
-    		return false;
+function startGoogleMaps() {
+
+	// Google Maps constructor options
+    var lat = 30.0;
+    var lng = -30.0;
+    var place = new google.maps.LatLng(lat, lng);
+    var mapOptions = {
+        zoom: 3,
+        center: place,
+        streetViewControl: false,
+        panControl: false,
+        zoomControl: false,
+        mapTypeControl: true,
+		mapTypeControlOptions: {
+  			position: google.maps.ControlPosition.TOP_RIGHT
+		},
+    }
+
+    // Construct map
+    var mapDisplay = document.getElementById('mapDisplay');
+    map = new google.maps.Map(mapDisplay, mapOptions);
+
+    // Set up custom zoom buttons
+    var zmi = document.getElementById("zoomIn");
+    var zmo = document.getElementById("zoomOut");
+
+	google.maps.event.addDomListener(zmi, 'click', function() {
+		var z = map.getZoom();
+		map.setZoom(z+1)
+	});
+
+	google.maps.event.addDomListener(zmo, 'click', function() {
+		var z = map.getZoom();
+		map.setZoom(z-1)
+	});
+
+	// Close infoBox when user clicks anywhere on the map
+	google.maps.event.addListener(map, 'click', function () {
+		ib.close();
+		expandList("runList", true);
+	});
+
+}
+
+function pageSetup() {
+
+	// Create tooltips for buttons
+	tooltip.set({id: "populateUser", tip: "Set yourself as the root person"});
+	tooltip.set({id: "runButton", tip: "Begin the plotting process"});
+	tooltip.set({id: "feedbackbutton", tip: "Leave some comments about your experience"});
+	tooltip.set({id: "donatebutton", tip: "Help keep this site up and running"});
+	tooltip.set({id: "showlines", tip: "Hide connecting lines"});
+	tooltip.set({id: "highlight", tip: "Toggle trace back to root person"});
+	tooltip.set({id: "isolate", tip: "Show only selected ancestral line"});
+	tooltip.set({id: "zoomIn", tip: "Zoom in"});
+	tooltip.set({id: "zoomOut", tip: "Zoom out"});
+
+    // Construct spiderfier for overlapping markers
+	oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
+}
+
+function discoveryResource(callback) {
+    fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
+        if (status == "OK") {
+            discovery = result.links;
+            typeof callback === 'function' && callback();
+        }
+    });
+}
+
+function currentUser(callback) {
+    var options = {
+        media: 'xml',
+        url: discovery["current-user-person"].href + '?&access_token=' + accesstoken
+    }
+
+    fsAPI(options, function (result, status) {
+        if (status == "OK") {
+            var p = $(result).find("gx\\:person, person");
+            var f = $(result).find("gx\\:fullText, fullText");
+            userID = p[0].getAttribute("id");
+            userName = f[0].textContent;
+            document.getElementById("username").innerHTML = userName;
+            populateIdField(userID,userName);
+
+            typeof callback === 'function' && callback();
+        }
+    });
+    
+}
+
+function isEventFromChild(event,element) {
+	// Make sure event doesn't fire when moving from a child element to this element
+	var e = event.fromElement || event.relatedTarget;
+    while (e && e.parentNode && e.parentNode != window) {
+        if (e.parentNode == element||  e == element) {
+            if(e.preventDefault) {
+                e.preventDefault();
+            }
+            return true;
+        }
+        e = e.parentNode;
+    }
+    return false;
+}
+
+function isEventToChild(event,element) {
+	// Make sure event doesn't fire when moving from this element onto a child element 
+    var e = event.toElement || event.relatedTarget;
+    while (e && e.parentNode && e.parentNode != window) {
+        if (e.parentNode == element||  e == element) {
+            if(e.preventDefault) {
+                e.preventDefault();
+            }
+            return true;
+        }
+        e = e.parentNode;
+    }
+    return false;
+}
+
+function mouseTimer(trigger,target,c,what,how) {
+	var tar = document.getElementById(target);
+	var disp = tar.style.display;
+	if (disp != "block") {
+		if (typeof how === 'function') {
+			how(tar,what);
+		} else {
+			tar.style.display = "block";
+		}
+	} else {
+		return false;
+	}
+
+    document.getElementById(trigger).onmouseout = function (event) {
+
+    	if (isEventToChild(event,this) == false) {
+    		var timer = setTimeout(function () {
+	    		if (typeof how === 'function') {
+					how(tar,what);
+				} else {
+					tar.style.display = "none";
+				}
+	    		// document.getElementById(target).style.display = "none";
+	    		if (c == true) {
+	    			document.getElementById(trigger).onmouseover = null;
+	    			document.getElementById(trigger).onmouseout = null;
+	    		}
+        	}, 1000);
+
+	        document.getElementById(trigger).onmouseover = function (event) {
+	        	
+	        	if (isEventFromChild(event,this) == false) {
+	        		clearTimeout(timer);
+	        		mouseTimer(trigger, target,c,what,how);
+	        	}
+	        	
+	        }
     	}
-
-        document.getElementById(trigger).onmouseout = function (event) {
-        	// this is the original element the event handler was assigned to
-		    var e = event.toElement || event.relatedTarget;
-
-		    // check for all children levels (checking from bottom up)
-		    while (e && e.parentNode && e.parentNode != window) {
-		        if (e.parentNode == this||  e == this) {
-		            if(e.preventDefault) {
-		                e.preventDefault();
-		            }
-		            return false;
-		        }
-		        e = e.parentNode;
-		    }
-
-        	var timer = setTimeout(function () {
-        		if (typeof how === 'function') {
-    				how(tar,what);
-    			} else {
-    				tar.style.display = "none";
-    			}
-        		// document.getElementById(target).style.display = "none";
-        		if (c == true) {
-        			document.getElementById(trigger).onmouseover = null;
-        			document.getElementById(trigger).onmouseout = null;
-        		}
-            }, 1000);
-
-            document.getElementById(trigger).onmouseover = function (event) {
-            	var e = event.fromElement || event.relatedTarget;
-			    // check for all children levels (checking from bottom up)
-			    while (e && e.parentNode && e.parentNode != window) {
-			        if (e.parentNode == this||  e == this) {
-			            if(e.preventDefault) {
-			                e.preventDefault();
-			            }
-			            return false;
-			        }
-			        e = e.parentNode;
-			    }
-            	clearTimeout(timer);
-            	mouseTimer(trigger, target,c,what,how);
-            }
-        }
+    	
     }
+}
 
     function topAnimation(target,animated,obj) {
     	var animatedDiv = document.getElementById(animated);
@@ -355,13 +324,27 @@ function initialize() {
 
         clearOverlays();
         startEvents();
-	    var select = document.getElementById('genSelect');
-	    genquery = (gens || parseFloat(select.value));
+        
+	    genquery = gens;
 	    tooManyGens = false;
 	    if (genquery > 8) {
 	        tooManyGens = true;
+	        gens = gens - 8;
+	        var expandGen = gens;
+	        mapper(gens,'','','','done',function(){
+                familyTree.IDDFS(function (leaf, cont) {
+                    if (leaf.generation < expandGen) {
+                        cont();
+                    } else if (leaf.generation == expandGen) {
+                        ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'done', function () {
+                            cont();
+                        });
+                    }
+            	});
+            });
+	    } else {
+	    	mapper(gens);
 	    }
-	    mapper(genquery);
 
     }
 
@@ -383,58 +366,6 @@ function initialize() {
         genquery = (gens || parseFloat(select.value));
         mapper(genquery, id, rootGen, rootNode,where,callback);
 
-    }
-    
-    function fsAPI(options, callback, timeout) {
-        // Generic function for FamilySearch API requests
-        // options.url = API url (Required)
-        // options.media = "xml" for xml, else JSON
-        var xhttp;
-        xhttp = new XMLHttpRequest();
-        if (options.media == "img" ) {
-          xhttp.open("HEAD", options.url);
-          xhttp.setRequestHeader('Accept', '*/*');
-        } else {
-          xhttp.open("GET", options.url);
-          xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
-        }
-        if (timeout) {
-            xhttp.timeout = timeout;
-            xhttp.ontimeout = function () {
-                typeof callback === 'function' && callback(undefined, "Operation Timed Out");
-            }
-        }
-        xhttp.onload = function (e) {
-            if (this.readyState === 4) {
-                if (this.status === 204 && options.media == "img") {
-                  queue = 1;
-                  var status = this.statusText;
-                  var result = '';
-                  typeof callback === 'function' && callback(result, status);
-                } else if (this.status === 200) { // works
-                    queue = 1;
-                    var status = this.statusText;
-                    if (options.media == "xml") {
-                        var result = this.responseXML.documentElement;
-                    } else {
-                        var result = JSON.parse(this.response);
-                    }
-                    typeof callback === 'function' && callback(result, status);
-                } else if (this.status === 429) { // throttled
-                    queue++;
-                    setTimeout(function () {
-                        fsAPI(options, callback);
-                    }, 5 * 1000);
-                } else if (this.status === 401) { // session expired
-                    alert("Your session has expired. Please log in again.");
-                    window.location = 'index.php?login=true';
-                } else { // some other error
-                    var status = this.statusText;
-                    typeof callback === 'function' && callback(undefined, status);
-                }
-            }
-        }
-        xhttp.send();
     }
 
     function checkID() {
@@ -502,45 +433,49 @@ function initialize() {
     }
 
     function mapper(generations, id, rootGen, rootNode, where, callback) {
+    	// If not expanding an ancestor, then expand root 
         rootGen || (rootGen = 0);
         rootNode || (rootNode = 0);
 
+        // Update loading message
         document.getElementById('loadingMessage').textContent = 'Retrieving FamilySearch data...';
+
+        // Get FamilySearch pedigree 
         getPedigree(generations, id, rootGen, rootNode, function () {
             if (where == 'pedigree') {
                 typeof callback === 'function' && callback();
             }
-            //personReadLoop(function () {
-            //    if (where == 'person') {
-            //        typeof callback === 'function' && callback();
-            //    }
-                placeReadLoop(function () {
-                    if (where == 'place') {
-                        typeof callback === 'function' && callback();
-                    }
 
-                    document.getElementById('loadingMessage').textContent = 'Plotting...';
-                    plotterLoop(function () {
-    		            if (where == 'plot') {
-    		                typeof callback === 'function' && callback();
-    		            }
-    		            completionEvents(rootGen, rootNode, function () {
-    		                addOMSListeners();
-    		                if (where == 'done') {
-    		                    typeof callback === 'function' && callback();
-    		                }
-    		                countryLoop(function (group) {
-    		                    grouping = group;
-    		                    // listLoop();
-    		                    startTheTree(0,0);
-    				            //if (baseurl.indexOf('sandbox') == -1) {
-    				            //    photoLoop();
-    				            //}
-    				        });
-    				    });
-					});
-                });
-            //});
+            // Geocode birth locations
+            placeReadLoop(function () {
+                if (where == 'place') {
+                    typeof callback === 'function' && callback();
+                }
+
+                // Update loading message
+                document.getElementById('loadingMessage').textContent = 'Plotting...';
+
+                // Plot birth locations
+                plotterLoop(function () {
+		            if (where == 'plot') {
+		                typeof callback === 'function' && callback();
+		            }
+
+		            // Check for completion
+		            completionEvents(rootGen, rootNode, function () {
+		                if (where == 'done') {
+		                    typeof callback === 'function' && callback();
+		                }
+
+		                addOMSListeners();
+		                // Generate country statistics
+		                countryLoop(function (group) {
+		                    grouping = group;
+		                    startTheTree(0,0);
+				        });
+				    });
+				});
+            });
         });
     }
 
@@ -874,12 +809,12 @@ function initialize() {
                 var person = familyTree.getNode(gen, node);
                 if (person.image && person.imageIcon) {
                     if (person.image == person.imageIcon) {
-                        portrait.onmouseover = function () { tooltip("Image unavailable", "portrait", "", 10); }
+                    	tooltip.set({id: "portrait", tip: "Image unavailable"});
                     } else {
                         var imageHTML = "<img style='max-height:300px;' src='" + person.image + "'>";
                         //var imageHTML = "<img src='" + person.image + "'>";
                         portrait.setAttribute('src', person.image);
-                        portrait.onmouseover = function () { tooltip(imageHTML, "portrait", 600000, 10); }
+                        tooltip.set({id: "portrait", tip: imageHTML, duration: 30000});
                     }
                 } else {
                     setPhoto(gen, node, 50)
@@ -1309,19 +1244,8 @@ function initialize() {
 
         if (mark.isExpanded) {
             ib.setContent("<div id='infow'>" + mark.infoBoxContent + '</div>');
-            // document.getElementById('peopleDiv').innerHTML = mark.infoBoxContent;
         } else {
             ib.setContent("<div id='infow'>" + mark.infoBoxContent +buttons + '</div>');
-            // document.getElementById('peopleDiv').innerHTML = mark.infoBoxContent +buttons;
-
-            // if (document.getElementById("ebutton")) {
-            //     document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", "", 10); }
-            // }
-            // if (document.getElementById("trashcan")) { 
-            //     document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this person from the map", "trashcan", "", 10); }
-            // }
-            // document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", "", 10); }
-            // document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", "", 10); }
 
         }
 
@@ -1600,13 +1524,13 @@ function initialize() {
         google.maps.event.addListener(ib, 'domready', function () {
 
             if (document.getElementById("ebutton")) {
-                document.getElementById("ebutton").onmouseover = function () { tooltip("Plot the parents of this person", "ebutton", "", 10); }
+            	tooltip.set({id: "ebutton", tip: "Plot the parents of this person"});
 			}
             if (document.getElementById("trashcan")) { 
-                document.getElementById("trashcan").onmouseover = function () { tooltip("Remove this person from the map", "trashcan", "", 10); }
+            	tooltip.set({id: "trashcan", tip: "Remove this person from the map"});
             }
-            document.getElementById("copyButton").onmouseover = function () { tooltip("Copy this ID to Root Person ID", "copyButton", "", 10); }
-            document.getElementById("fsButton").onmouseover = function () { tooltip("View this person on FamilySearch.org", "fsButton", "", 10); }
+            tooltip.set({id: "copyButton", tip:"Copy this ID to the Root Person ID"});
+            tooltip.set({id: "fsButton", tip: "View this person on FamilySearch.org"});
 
         });
     }
@@ -1700,25 +1624,37 @@ function initialize() {
     function completionEvents(rootGen, rootNode, callback) {
         
         markerCheckLoop(function () {
-            if (genquery > 8) {
-                var origins = genquery;
-                familyTree.IDDFS(function (leaf, cont) {
-                    var expandGen = origins + rootGen - 8;
+            // if (genquery > 8) {
+            //     var origins = genquery;
+            //     familyTree.IDDFS(function (leaf, cont) {
+            //         var expandGen = origins + rootGen - 8;
 
-                    if (leaf.generation == expandGen && leaf.node > rootNode * Math.pow(2, origins-8) - 1 && leaf.node < rootNode * Math.pow(2, origins-8) + Math.pow(2, origins-8)) {
-                        //if (leaf.node == rootNode * Math.pow(2, origins - 8) + Math.pow(2, origins - 8) - 1) {
-                            ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'done', function () {
-                                cont();
-                            });
-                        //} else {
-                        //    ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'plot', function () {
-                        //        cont();
-                        //    });
-                        //}
-                    } else {
-                        cont();
-                    }
-                }, function () {
+            //         if (leaf.generation == expandGen && leaf.node > rootNode * Math.pow(2, origins-8) - 1 && leaf.node < rootNode * Math.pow(2, origins-8) + Math.pow(2, origins-8)) {
+            //             //if (leaf.node == rootNode * Math.pow(2, origins - 8) + Math.pow(2, origins - 8) - 1) {
+            //                 ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'done', function () {
+            //                     cont();
+            //                 });
+            //             //} else {
+            //             //    ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'plot', function () {
+            //             //        cont();
+            //             //    });
+            //             //}
+            //         } else {
+            //             cont();
+            //         }
+            //     }, function () {
+            //         loadingAnimationEnd();
+            //         enableButtons();
+
+                    
+            //         if (firstTime.box == true) {
+            //             infoBoxClick(familyTree.root().marker);
+            //             firstTime.box = false;
+            //         }
+            //         typeof callback === 'function' && callback();
+            //     });
+            // } else {
+                // if (tooManyGens == false) {
                     loadingAnimationEnd();
                     enableButtons();
 
@@ -1727,21 +1663,9 @@ function initialize() {
                         infoBoxClick(familyTree.root().marker);
                         firstTime.box = false;
                     }
-                    typeof callback === 'function' && callback();
-                });
-            } else {
-                if (tooManyGens == false) {
-                    loadingAnimationEnd();
-                    enableButtons();
-
-                    
-                    if (firstTime.box == true) {
-                        infoBoxClick(familyTree.root().marker);
-                        firstTime.box = false;
-                    }
-                }
+                // }
                 typeof callback === 'function' && callback();
-            }
+            // }
         });
 
     }
@@ -1799,50 +1723,6 @@ function initialize() {
 
     }
 
-    function tooltip(tip, el, stay, v, h) {
-        var vert;
-        var horiz;
-        stay || (stay = 4000);
-        if (v) { vert = v } else { vert = 0 }
-        if (h) { horiz = h } else { horiz = 0 }
-        var tt;
-        var that = document.getElementById(el);
-
-        var timeoutId = setTimeout(function () {
-            tt = document.createElement('div');
-            tt.setAttribute('id', 'tt');
-            tt.innerHTML = tip;
-            var rect = that.getBoundingClientRect();
-            tt.style.top = (rect.bottom + vert) + 'px';
-            tt.style.left = (rect.left + horiz) + 'px';
-
-            document.body.appendChild(tt);
-
-            var timer = setTimeout(function () {
-                if (document.getElementById('tt')) {
-                    var m = document.getElementById('tt');
-                    document.body.removeChild(m);
-                }
-            }, stay);
-
-            that.onmouseout = function () {
-                clearTimeout(timer);
-                if (document.getElementById('tt')) {
-                    var m = document.getElementById('tt');
-                    document.body.removeChild(tt);
-                }
-            };
-        }, 500);
-
-        that.onmouseout = function () {
-            clearTimeout(timeoutId);
-            if (document.getElementById('tt')) {
-                var m = document.getElementById('tt');
-                document.body.removeChild(m);
-            }
-        };
-
-    }
 
 
     function emptyQuery() {
@@ -1887,17 +1767,20 @@ function initialize() {
         }
     }
 
-    function expandList(listName) {
+    function expandList(listName,test) {
+    	test || (test = false);
     	var list = document.getElementById(listName);
     	var tri = list.getElementsByTagName("img");
     	var items = list.getElementsByTagName("li");
-    	for (i=1;i<9;i++) {
+    	for (i=1;i<items.length;i++) {
     		if (items[i].style.display == "block") {
     			items[i].style.display = "none";
     			tri[0].src = "images/triangle-down.png";
     		} else {
-    			items[i].style.display = "block";
-    			tri[0].src = "images/triangle-up.png";
+    			if (test == false) {
+    				items[i].style.display = "block";
+    				tri[0].src = "images/triangle-up.png";
+    			}
     		}
     	}
     }

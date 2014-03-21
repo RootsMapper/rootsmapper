@@ -80,6 +80,8 @@ else
 	<!-- loading animation references -->
 		<script src="scripts/binarytree.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/CollapsibleLists.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+		<script src="scripts/fsAPI.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+		<script src="scripts/tooltip.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
         <script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
@@ -114,12 +116,12 @@ echo($SIDEAD_CODE);
 <?php
 if (!isset($access_token))
 { ?>
-						<button id="loginbutton" onclick="window.location='?login'">Login to begin mapping</button>
+				<button id="loginbutton" onclick="window.location='?login'">Login to begin mapping</button>
 <?php
 }
 ?>
 
-				<div id="mapdisplay"></div>
+				<div id="mapDisplay"></div>
 <?php
 // If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
@@ -132,16 +134,15 @@ if (isset($access_token))
                     <div id="loadingMessage"></div>
             	</div>
             </div>
-				<button id="panelToggle2"></button>
 
 			<div id="zoomControl">
-				<div id="zoomUp" class="zoom">+</div>
-				<div id="zoomDown" class="zoom">&ndash;</div>
+				<div id="zoomIn" class="zoom">+</div>
+				<div id="zoomOut" class="zoom">&ndash;</div>
 			</div>
 
 			<div id="rootDiv">
 				<ul id="runList" class="runListClass">
-					<li id="runButton" onclick="expandList('runList');"><b>Run</b><img id="downTriangle" src="images/triangle-down.png"></li>
+					<li id="runButton" onclick="expandList('runList');"><b>Start</b><img id="downTriangle" src="images/triangle-down.png"></li>
 					<li class="item" onclick="expandList('runList'); ancestorgens(1)">1 generation</li>
 					<li class="item" onclick="expandList('runList'); ancestorgens(2)">2 generations</li>
 					<li class="item" onclick="expandList('runList'); ancestorgens(3)">3 generations</li>
@@ -150,29 +151,12 @@ if (isset($access_token))
 					<li class="item" onclick="expandList('runList'); ancestorgens(6)">6 generations</li>
 					<li class="item" onclick="expandList('runList'); ancestorgens(7)">7 generations</li>
 					<li class="item" onclick="expandList('runList'); ancestorgens(8)">8 generations</li>
+					<li class="item" onclick="expandList('runList'); ancestorgens(9)">9 generations</li>
 				</ul>
 				<div id="personName">Root Name</div>
      			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
 				<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-				<!-- <div id="infoDiv">
-					<div>
-		                <div style="font-size: small">BIRTH</div>
-		                <div>
-		                    <div style="font-size: small; text-indent: 10px">Date</div>
-		                    <div style="font-size: small; text-indent: 10px">Location</div>
-		                </div>
-	        		</div>
-	        		<div>
-	            		<div style="font-size: small">DEATH</div>
-	            		<div>
-		                    <div style="font-size: small; text-indent: 10px">Date</div>
-		                    <div style="font-size: small; text-indent: 10px">Location</div>
-	            		</div>
-	        		</div>
-				</div> -->
 			</div>
-
-			
 
 			<div id="countryStats" class="boxy"><b>Country Totals</b></br></div>
 
@@ -185,50 +169,12 @@ if (isset($access_token))
 			</div>
 
 			<div id="optionButtons">
-
 				<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
 				<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
 				<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
 				<button id="reset" class="button yellow off" onclick="clearOverlays()">Reset</button>
-				<!-- <div id="panelToggle">More<img id="downTriangle" src="images/triangle-down.png"></div> -->
-				</br>
-				<!-- <div style="text-align: center">
-					
-					<div id="peopleDivHolder" class="hoverdiv">
-	            		<div ><b>Selected Person</b></br>
-	            			<div id="peopleDiv"></div>
-	            		</div>
-	            	</div>
-            	</div> -->
 			</div>
 
-
-			<div id="sidePanel">
-				
-
-				<div id="inputFrame">
-					
-					
-                	
-					
-					<!-- <div class="hoverdiv">
-						<div id="pedigreeWrapper" class="boxy">
-							<b>Family Tree</b></br>
-							<div id="pedigreeChart"></div>
-						</div>
-					</div> -->
-                    
-                    
-                	
-
-					<div class="hoverdiv">
-						
-					</div>
-
-				</div>
-				
-
-			</div>
 <?php
 }
 ?>
@@ -269,8 +215,6 @@ if (!empty($BLOG_URL))
 ?>
 					
 					<div id="userDiv">
-						<div id="userbuttons" style="display: none">
-						</div>
 						<button id="populateUser" class="button blue" onclick="populateUser()">Set as root</button>
 						<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
 						<div id="username"></div>
