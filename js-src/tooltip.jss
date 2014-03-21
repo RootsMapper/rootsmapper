@@ -7,7 +7,7 @@
 
 var tooltip = new function(){
 	this.set = function(options) {
-		if (options.id != undefined) {
+		if (document.getElementById(options.id) != null) {
 			document.getElementById(options.id).onmouseover = function(event) {
 				constructor(event,options);
 			}
