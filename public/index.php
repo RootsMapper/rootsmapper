@@ -86,7 +86,6 @@ else
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/url-template.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-		<script src="scripts/slidePanel.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
         <script type="text/javascript">
              title='<?php echo isset($TITLE)? $TITLE : ""; ?>';
              accesstoken='<?php echo isset($access_token) ? $access_token : ""; ?>';
