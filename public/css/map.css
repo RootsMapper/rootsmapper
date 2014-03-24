@@ -73,7 +73,7 @@ html, body {
 .runListClass li {
     border-radius: 0;
     height: 22px;
-    width: 90px;
+    width: 95px;
     padding: 0;
     padding-top: 5px;
     padding-left: 6px;
@@ -115,19 +115,91 @@ html, body {
     display: none;
 }
 
+#countryList {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    /*position: absolute;
+    left: 10px;
+    bottom: 100px;*/
+    z-index: 30px;
+    display: block;
+/*    z-index: -100;
+
+    -webkit-transition:     top 0.8s ease;
+    -moz-transition:        top 0.8s ease;
+    -o-transition:          top 0.8s ease;
+    -ms-transition:         top 0.8s ease;
+    transition:             top 0.8s ease;*/
+}
+
+.countryListClass li {
+    border-radius: 0;
+    height: 22px;
+    width: 120px;
+    padding: 0;
+    padding-top: 5px;
+    padding-left: 6px;
+
+    background-color: #003e97;
+    /*background-color: green;*/
+    border: 1px solid #003e97;
+    /*border: 1px solid green;*/
+    white-space: nowrap;    
+    color: white;
+    margin: 0;
+    cursor: pointer;
+    font-family: helvetica, arial, sans-serif;
+    font-size: small;
+    z-index: 30;
+}
+
+#countryList .disabled {
+    background-color: gray;
+    color: lightgray;
+    border: 1px solid gray;
+}
+
+/*#countryList .disabled:hover {
+    background-color: gray;
+    color: lightgray;
+    border: 1px solid gray;
+    cursor: wait;
+}*/
+
+        #countryList li:hover {
+            background-color: rgba(0,62,169,1);
+            border: 1px solid rgba(0,62,169,1);
+        }
+
+/*        #countryList li:active {
+            background-color: rgba(0,116,0,1);
+            border: 1px solid rgba(0,116,0,1);
+        }*/
+
+
+#countryList li.item {
+    display: none;
+}
+
 #userDiv {
-    float: right;
+    /*float: right;*/
+    position: absolute;
+    right: 60px;
+    bottom: 0px;
     font-weight: bold;
     font-family:'Open Sans';
     padding: 5px 10px;
 }
 
-#userDiv:hover {
-   /* color: rgba(0,0,0,0.5);
-    cursor: pointer;*/
-}
 
 #username { 
+    float: left;
+}
+
+#username:hover {
+    color: rgba(0,0,0,0.7);
+    cursor: pointer;
 }
 
 #populateUser {
@@ -140,13 +212,26 @@ html, body {
 }
 
 #logoutbutton {
-    border-radius: 2px 2px 2px 2px; 
+    background-color: rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.1);
     cursor: pointer;
-    position: absolute;
-    bottom: -10px;
-    right: 85px;
-    display: none;
+
+    white-space: nowrap;
+    height: 30px;
+    border-radius: 2px;     
+    color: white;
+    margin: 0;
+    font-weight: bold;
+    /*position: absolute;
+    bottom: 30px;
+    right: 5px;*/
+    /*display: none;*/
 }
+
+    #logoutbutton:hover {
+        background-color: rgba(157,0,0,1);
+        border: 1px solid rgba(157,0,0,1);
+    }
 
 #optionButtons {
     position: absolute;
@@ -160,21 +245,26 @@ html, body {
 #countryStats {
     /*background-color: rgba(20,20,20,0.8);*/
     font-family:'Open Sans';
-    position: absolute;
-    left: 5px;
-    bottom: 30px;
-    max-height: 400px;
+    
+    /*max-height: 400px;*/
     overflow-y: auto;
     display: none;
     /*border-top: 1px solid black;*/
-    border-bottom: 1px solid lightgray;
-    padding-bottom: 5px;
-    padding-left: 5px;
+
 }
 
 #countryStats span {
     font-size: small;
     font-weight: bold;
+}
+
+#countryBox {
+    position: absolute;
+    left: 5px;
+    bottom: 30px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    border-bottom: 1px solid lightgray;
 }
 
 #zoomControl {
@@ -274,7 +364,7 @@ html, body {
     z-index: 1;
 }
 
-#downTriangle {
+.triangle {
     height: 9px;
     padding-top: 3px;
     padding-right: 6px;
@@ -581,7 +671,7 @@ html, body {
 }
 
 #loadingMessage {
-    color: black;
+    color: white;
     /*float: left;*/
     font-family: 'Open Sans';
     font-weight: bold;
@@ -597,7 +687,7 @@ html, body {
 }
 
 #loadingDiv {
-    background-color: rgba(0,0,0,0.100);
+    background-color: rgba(0,0,0,0.5);
     position: fixed;
     left: 0px;
     top: 0px;
@@ -792,7 +882,8 @@ html, body {
 
     .button.yellow {
         color: black;
-        background-color: #C08500;
+        /*background-color: #C08500;*/
+        background-color: rgba(192,133,0,0.5);
         border: 1px solid #C08500;
     }
 
@@ -807,7 +898,8 @@ html, body {
         }
 
         .button.yellow.off {
-            background-color: #F2B50F;
+            background-color: rgba(233,176,15,0.5);
+            /*background-color: #F2B50F;*/
             border: 1px solid #F2B50F;
         }
 
@@ -835,7 +927,12 @@ html, body {
     /*text-align: center;*/
 }
 
-
+#countryButton {
+    cursor: pointer;
+    background-color: rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.1);
+    /*text-align: center;*/
+}
 
 #expandButton {
     float:right;
@@ -1007,8 +1104,18 @@ html, body {
 }
 
 #lowerbuttonframe {
-    position: relative;
-    bottom: 50px;
+    position: absolute;
+    bottom: 60px;
+    right: 5px;
+    margin: 0 auto;
+    white-space: nowrap;
+    z-index: 1;
+    background-color: transparent;
+}
+
+#lowerbuttonbox {
+    position: absolute;
+    bottom: 19px;
     right: 5px;
     margin: 0 auto;
     white-space: nowrap;

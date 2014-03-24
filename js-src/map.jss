@@ -34,11 +34,11 @@ function initialize() {
  	// Load the map (whether user is logged in or not)
  	startGoogleMaps();
 
+	// Set up page elements
+	pageSetup();
+
  	// If user is logged in
     if (accesstoken) {
-
-    	// Set up page elements
-    	pageSetup();
 
     	// Get discovery resource
         discoveryResource(function () {
@@ -55,48 +55,7 @@ function initialize() {
 
     }
 
-
-        var rootDiv = document.getElementById("rootDiv");
-        if (rootDiv) {
-       //      rootDiv.onmouseover = function (event) {
-
-			    // if (isEventFromChild(event,this) == false) {
-			    // 	mouseTimer("rootDiv","runList",false,"runButton",function(a,b){
-	      //       		var obj = {
-	      //       			position: 'top',
-	      //       			startPosition: 40,
-	      //       			endPosition: 50,
-	      //       			dimension: 'height',
-	      //       			startDimension: 0,
-	      //       			endDimension: 22,
-	      //       			hideHTML: true
-	      //       		}
-	      //       		topAnimation(a,b,obj);
-       //      		});
-			    // }
-            	
-       //      }
-        }
-
-        var userDiv = document.getElementById("userDiv");
-        if (userDiv) {
-            userDiv.onmouseover = function () {
-            	mouseTimer("userDiv","logoutbutton",false,"logoutbutton",function(a,b){
-            		var obj = {
-            			position: 'bottom',
-            			startPosition: -10,
-            			endPosition: 0,
-            			dimension: 'height',
-            			startDimension: 0,
-            			endDimension: 30,
-            			hideHTML: false
-            		}
-            		topAnimation(a,b,obj);
-            	});
-            }
-        }
-
-    }
+}
 
 function startGoogleMaps() {
 
@@ -126,7 +85,7 @@ function startGoogleMaps() {
 
 	google.maps.event.addDomListener(zmi, 'click', function() {
 		var z = map.getZoom();
-		map.setZoom(z+1)
+		map.setZoom(z+1);
 	});
 
 	google.maps.event.addDomListener(zmo, 'click', function() {
@@ -137,7 +96,8 @@ function startGoogleMaps() {
 	// Close infoBox when user clicks anywhere on the map
 	google.maps.event.addListener(map, 'click', function () {
 		ib.close();
-		expandList("runList", true);
+		expandList({listName:"runList",noExpanding:true});
+		expandList({listName:"countryList",noExpanding:true,buttonIndex:11,arrowUp:true});
 	});
 
 }
@@ -145,9 +105,12 @@ function startGoogleMaps() {
 function pageSetup() {
 
 	// Create tooltips for buttons
+	tooltip.set({id: "username", tip: "Current user. Click to set as root person"});
+	tooltip.set({id: "countryButton", tip: "Choose a generation to get totals from this map"});
 	tooltip.set({id: "populateUser", tip: "Set yourself as the root person"});
 	tooltip.set({id: "runButton", tip: "Begin the plotting process"});
 	tooltip.set({id: "feedbackbutton", tip: "Leave some comments about your experience"});
+	tooltip.set({id: "faqbutton", tip: "Frequently asked questions"});
 	tooltip.set({id: "donatebutton", tip: "Help keep this site up and running"});
 	tooltip.set({id: "showlines", tip: "Hide connecting lines"});
 	tooltip.set({id: "highlight", tip: "Toggle trace back to root person"});
@@ -160,6 +123,7 @@ function pageSetup() {
 }
 
 function discoveryResource(callback) {
+	loadingAnimationStart();
     fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
         if (status == "OK") {
             discovery = result.links;
@@ -169,6 +133,10 @@ function discoveryResource(callback) {
 }
 
 function currentUser(callback) {
+
+	loadingAnimationStart();
+    document.getElementById('loadingMessage').textContent = 'Retrieving user data from FamilySearch...';
+
     var options = {
         media: 'xml',
         url: discovery["current-user-person"].href + '?&access_token=' + accesstoken
@@ -187,36 +155,6 @@ function currentUser(callback) {
         }
     });
     
-}
-
-function isEventFromChild(event,element) {
-	// Make sure event doesn't fire when moving from a child element to this element
-	var e = event.fromElement || event.relatedTarget;
-    while (e && e.parentNode && e.parentNode != window) {
-        if (e.parentNode == element||  e == element) {
-            if(e.preventDefault) {
-                e.preventDefault();
-            }
-            return true;
-        }
-        e = e.parentNode;
-    }
-    return false;
-}
-
-function isEventToChild(event,element) {
-	// Make sure event doesn't fire when moving from this element onto a child element 
-    var e = event.toElement || event.relatedTarget;
-    while (e && e.parentNode && e.parentNode != window) {
-        if (e.parentNode == element||  e == element) {
-            if(e.preventDefault) {
-                e.preventDefault();
-            }
-            return true;
-        }
-        e = e.parentNode;
-    }
-    return false;
 }
 
 function mouseTimer(trigger,target,c,what,how) {
@@ -320,6 +258,42 @@ function mouseTimer(trigger,target,c,what,how) {
     	}
     }
 
+    function mapMoreThanEightGenerations(gens) {
+    	// Map as few generations as possible, then expand by 8 gens on each member of the last generation plotted at the start
+        tooManyGens = true;
+        gens = gens - 8;
+        var expandGen = gens;
+
+        mapper(gens,'','','','done',function () {
+
+        	// When finished mapping minimum set, loop through last generation and expand each by 8 generations
+            familyTree.IDDFS(function (leaf, cont) {
+
+            	// Ignore generations less than the last one
+                if (leaf.generation < expandGen) {
+                    cont();
+
+                // Expand these ones
+                } else if (leaf.generation == expandGen) {
+                    ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'done', function () {
+                        cont();
+                    });
+
+                // Since these generations are now populated (and there are TONS of people), stop the loop and run a subset of completion events
+                } else {
+	        		loadingAnimationEnd();
+	            	enableButtons();
+
+		            if (firstTime.box == true) {
+		                infoBoxClick(familyTree.root().marker);
+		                firstTime.box = false;
+		            }
+                }
+
+        	});
+        });
+    }
+
     function ancestorgens(gens) {
 
         clearOverlays();
@@ -327,21 +301,9 @@ function mouseTimer(trigger,target,c,what,how) {
         
 	    genquery = gens;
 	    tooManyGens = false;
+
 	    if (genquery > 8) {
-	        tooManyGens = true;
-	        gens = gens - 8;
-	        var expandGen = gens;
-	        mapper(gens,'','','','done',function(){
-                familyTree.IDDFS(function (leaf, cont) {
-                    if (leaf.generation < expandGen) {
-                        cont();
-                    } else if (leaf.generation == expandGen) {
-                        ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'done', function () {
-                            cont();
-                        });
-                    }
-            	});
-            });
+	    	mapMoreThanEightGenerations(gens);
 	    } else {
 	    	mapper(gens);
 	    }
@@ -438,7 +400,7 @@ function mouseTimer(trigger,target,c,what,how) {
         rootNode || (rootNode = 0);
 
         // Update loading message
-        document.getElementById('loadingMessage').textContent = 'Retrieving FamilySearch data...';
+        document.getElementById('loadingMessage').textContent = 'Retrieving FamilySearch ancestry data...';
 
         // Get FamilySearch pedigree 
         getPedigree(generations, id, rootGen, rootNode, function () {
@@ -567,38 +529,57 @@ function mouseTimer(trigger,target,c,what,how) {
 		});
 	}
 
-	function countryLoop(callback) {
+	function countryLoop(callback, all, generation) {
 	    var max = 0;
 	    var group = {};
+
+	    if (all == undefined) {
+	    	all = true;
+	    }
+
 	    familyTree.IDDFS(function (tree, cont) {
 	        var node = tree.node;
 	        var gen = tree.generation;
-	        var value = familyTree.getNode(gen, node).display.birthCountry;
-	        var n = group[value] = 1 - -(group[value] | 0);
-	        if (n > max) { max = n; }
+	        if (all == true) {
+		        var value = familyTree.getNode(gen, node).display.birthCountry;
+		        var n = group[value] = 1 - -(group[value] | 0);
+		        if (n > max) { max = n; }
+	        } else if (gen == generation) {
+		        var value = familyTree.getNode(gen, node).display.birthCountry;
+		        var n = group[value] = 1 - -(group[value] | 0);
+		        if (n > max) { max = n; }
+	        }
 	        cont();
 	    }, function () {
-	        var div = document.getElementById('countryStats');
-	        div.innerHTML = '';
-	        b = document.createElement('b');
-	        b.textContent = 'Country Totals';
-	        div.appendChild(b);
-	        //div.innerText = 'Country Stats';
-	        div.appendChild(document.createElement('br'));
-	        for (var key in group) {
-	            if (group.hasOwnProperty(key)) {
-	                if (key !== 'undefined') {
-	                    var d = document.createElement('span');
-	                    d.textContent = key + ': ' + group[key];
-	                    var br = document.createElement('br');
-	                    div.appendChild(d);
-	                    div.appendChild(br);
-	                }
-	            }
-	        }
-	        div.style.display = "block";
+	        displayCountryStats(group);
 	        typeof callback === 'function' && callback(group);
 	    });
+	}
+
+	function displayCountryStats(group) {
+		var div = document.getElementById('countryStats');
+        div.innerHTML = '';
+
+        // div.onclick	= function () {
+
+        // }
+
+        // b = document.createElement('b');
+        // b.textContent = 'Country Totals';
+        // div.appendChild(b);
+        // div.appendChild(document.createElement('br'));
+        for (var key in group) {
+            if (group.hasOwnProperty(key)) {
+                if (key !== 'undefined') {
+                    var d = document.createElement('span');
+                    d.textContent = key + ': ' + group[key];
+                    var br = document.createElement('br');
+                    div.appendChild(d);
+                    div.appendChild(br);
+                }
+            }
+        }
+        div.style.display = "block";
 	}
 
 	function startTheTree(gen, node) {
@@ -1392,36 +1373,6 @@ function mouseTimer(trigger,target,c,what,how) {
         });
     }
 
-    function toggleTree(callback) {
-        if (treeVar == false) {
-            document.getElementById('countryStats').style.display = 'none';
-            document.getElementById('showStats').className = 'button yellow';
-            statVar = false;
-            document.getElementById('pedigreeWrapper').style.display = 'list-item';
-            document.getElementById('showTree').className = 'button yellow off';
-            treeVar = true;
-        } else {
-            document.getElementById('pedigreeWrapper').style.display = 'none';
-            document.getElementById('showTree').className = 'button yellow';
-            treeVar = false;
-        }
-    }
-
-    function toggleStats(callback) {
-        if (statVar == false) {
-            document.getElementById('pedigreeWrapper').style.display = 'none';
-            document.getElementById('showTree').className = 'button yellow';
-            treeVar = false;
-            document.getElementById('countryStats').style.display = 'block';
-            document.getElementById('showStats').className = 'button yellow off';
-            statVar = true;
-        } else {
-            document.getElementById('countryStats').style.display = 'none';
-            document.getElementById('showStats').className = 'button yellow';
-            statVar = false;
-        }
-    }
-
     function toggleHighlight(callback) {
         var high = document.getElementById('isolate');
         document.getElementById('highlight');
@@ -1475,7 +1426,7 @@ function mouseTimer(trigger,target,c,what,how) {
             $('#loading').show();
         });
         $(function () {
-            $('#loading').activity({ segments: 10, width: 10, space: 1, length: 10, color: '#000000', speed: 1.5 });
+            $('#loading').activity({ segments: 10, width: 10, space: 1, length: 10, color: '#eeeeee', speed: 1.5 });
         });
     }
 
@@ -1559,28 +1510,6 @@ function mouseTimer(trigger,target,c,what,how) {
         }
     }
 
-    function isEven(num) {
-        // Returns true for even numbers and false for odd
-        if (num / 2 == Math.round(num / 2)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    function componentToHex(c) {
-        var hex = c.toString(16);
-        return hex.length == 1 ? "0" + hex : hex;
-    }
-
-    function rgbToHex(r, g, b) {
-        return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-    }
-
-    function log2(num) {
-        // Base 2 logarithm of number
-        return Math.log(num) / Math.log(2);
-    }
 
     function startEvents() {
         delay = 1;
@@ -1592,15 +1521,6 @@ function mouseTimer(trigger,target,c,what,how) {
         for (i = 1; i<items.length; i++) {
         	items[i].className = 'item disabled';
         }
-        // runList.className = 'disabled';
-        // runButton.className = 'disabled';
-
-        // if (optionvar == true) {
-        //     showOptions();
-        // }
-        // var optionsButton = document.getElementById('optionsButton');
-        // optionsButton.disabled = true;
-        // optionsButton.className = 'button disabled';
     }
 
     function enableButtons() {
@@ -1611,71 +1531,36 @@ function mouseTimer(trigger,target,c,what,how) {
         for (i = 1; i<items.length; i++) {
         	items[i].className = 'item';
         }
-
-        // var optionsButton = document.getElementById('optionsButton');
-        // optionsButton.disabled = false;
-        // if (optionvar == true) {
-        //     optionsButton.className = 'button yellow off';
-        // } else {
-        //     optionsButton.className = 'button yellow';
-        // }
     }
 
     function completionEvents(rootGen, rootNode, callback) {
         
         markerCheckLoop(function () {
-            // if (genquery > 8) {
-            //     var origins = genquery;
-            //     familyTree.IDDFS(function (leaf, cont) {
-            //         var expandGen = origins + rootGen - 8;
 
-            //         if (leaf.generation == expandGen && leaf.node > rootNode * Math.pow(2, origins-8) - 1 && leaf.node < rootNode * Math.pow(2, origins-8) + Math.pow(2, origins-8)) {
-            //             //if (leaf.node == rootNode * Math.pow(2, origins - 8) + Math.pow(2, origins - 8) - 1) {
-            //                 ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'done', function () {
-            //                     cont();
-            //                 });
-            //             //} else {
-            //             //    ancestorExpand(leaf.value.id, leaf.generation, leaf.node, 8, 'plot', function () {
-            //             //        cont();
-            //             //    });
-            //             //}
-            //         } else {
-            //             cont();
-            //         }
-            //     }, function () {
-            //         loadingAnimationEnd();
-            //         enableButtons();
+        	if (tooManyGens == true) {
 
-                    
-            //         if (firstTime.box == true) {
-            //             infoBoxClick(familyTree.root().marker);
-            //             firstTime.box = false;
-            //         }
-            //         typeof callback === 'function' && callback();
-            //     });
-            // } else {
-                // if (tooManyGens == false) {
-                    loadingAnimationEnd();
-                    enableButtons();
+        	} else {
+        		loadingAnimationEnd();
+            	enableButtons();
 
-                    
-                    if (firstTime.box == true) {
-                        infoBoxClick(familyTree.root().marker);
-                        firstTime.box = false;
-                    }
-                // }
-                typeof callback === 'function' && callback();
-            // }
+	            if (firstTime.box == true) {
+	                infoBoxClick(familyTree.root().marker);
+	                firstTime.box = false;
+	            }
+        	}
+            
+
+        	typeof callback === 'function' && callback();
         });
 
     }
 
     function markerCheckLoop(callback) {
+    	// Makes sure every person is plotted before proceeding
         familyTree.IDDFS(function (leaf, cont) {
             if (!leaf.value.marker) {
                 setTimeout(function () {
                     markerCheckLoop(callback);
-                  //  console.log("Test");
                 }, 1000);
             } else {
                 cont();
@@ -1767,22 +1652,49 @@ function mouseTimer(trigger,target,c,what,how) {
         }
     }
 
-    function expandList(listName,test) {
-    	test || (test = false);
-    	var list = document.getElementById(listName);
-    	var tri = list.getElementsByTagName("img");
-    	var items = list.getElementsByTagName("li");
-    	for (i=1;i<items.length;i++) {
-    		if (items[i].style.display == "block") {
-    			items[i].style.display = "none";
-    			tri[0].src = "images/triangle-down.png";
-    		} else {
-    			if (test == false) {
-    				items[i].style.display = "block";
-    				tri[0].src = "images/triangle-up.png";
-    			}
-    		}
+    function expandList(options) {
+
+    	if (document.getElementById(options.listName)) {
+
+	    	var listName = document.getElementById(options.listName);
+
+	    	// By default, arrow should point down (a descending list)
+	    	options.arrowUp || (options.arrowUp = false);
+
+	    	if (options.arrowUp == false) {
+	    		arrowStart = 'down';
+	    		arrowEnd = 'up';
+	    	} else {
+	    		arrowStart = 'up';
+	    		arrowEnd = 'down';
+	    	}
+
+	    	// If true, list will collapse but not expand
+	    	options.noExpanding || (options.noExpanding = false);
+
+	    	// By default, assume first li item is the main button
+	    	(options.buttonIndex != undefined) || (options.buttonIndex = 0);
+
+	    	var triangle = listName.getElementsByTagName("img");
+
+	    	var items = listName.getElementsByTagName("li");
+
+	    	for (i=0;i<items.length;i++) {
+	    		if (i!=options.buttonIndex) {
+		    		if (items[i].style.display == "block") {
+		    			items[i].style.display = "none";
+		    			triangle[0].src = "images/triangle-"+ arrowStart +".png";
+		    		} else {
+		    			if (options.noExpanding == false) {
+		    				items[i].style.display = "block";
+		    				triangle[0].src = "images/triangle-"+ arrowEnd+".png";
+		    			}
+		    		}
+	    		}
+	    	}
     	}
+
+
     }
 
     google.maps.event.addDomListener(window, 'load', initialize);

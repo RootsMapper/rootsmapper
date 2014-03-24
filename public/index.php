@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 require_once('includes/config.php');
 require_once('includes/fs-auth-lib.php');
@@ -82,6 +82,7 @@ else
 		<script src="scripts/CollapsibleLists.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/fsAPI.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/tooltip.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+		<script src="scripts/utilities.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
         <script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
@@ -121,6 +122,10 @@ if (!isset($access_token))
 ?>
 
 				<div id="mapDisplay"></div>
+					<div id="zoomControl">
+						<div id="zoomIn" class="zoom">+</div>
+						<div id="zoomOut" class="zoom">&ndash;</div>
+					</div>
 <?php
 // If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
@@ -134,30 +139,42 @@ if (isset($access_token))
             	</div>
             </div>
 
-			<div id="zoomControl">
-				<div id="zoomIn" class="zoom">+</div>
-				<div id="zoomOut" class="zoom">&ndash;</div>
-			</div>
-
 			<div id="rootDiv">
 				<ul id="runList" class="runListClass">
-					<li id="runButton" onclick="expandList('runList');"><b>Start</b><img id="downTriangle" src="images/triangle-down.png"></li>
-					<li class="item" onclick="expandList('runList'); ancestorgens(1)">1 generation</li>
-					<li class="item" onclick="expandList('runList'); ancestorgens(2)">2 generations</li>
-					<li class="item" onclick="expandList('runList'); ancestorgens(3)">3 generations</li>
-					<li class="item" onclick="expandList('runList'); ancestorgens(4)">4 generations</li>
-					<li class="item" onclick="expandList('runList'); ancestorgens(5)">5 generations</li>
-					<li class="item" onclick="expandList('runList'); ancestorgens(6)">6 generations</li>
-					<li class="item" onclick="expandList('runList'); ancestorgens(7)">7 generations</li>
-					<li class="item" onclick="expandList('runList'); ancestorgens(8)">8 generations</li>
-					<li class="item" onclick="expandList('runList'); ancestorgens(9)">9 generations</li>
+					<li id="runButton" onclick="expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(1)">1 generation</li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(2)">2 generations</li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(3)">3 generations</li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(4)">4 generations</li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(5)">5 generations</li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(6)">6 generations</li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(7)">7 generations</li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(8)">8 generations</li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(9)">9 generations</li>
+					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(10)">10 generations</li>
 				</ul>
 				<div id="personName">Root Name</div>
      			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
 				<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 			</div>
 
-			<div id="countryStats" class="boxy"><b>Country Totals</b></br></div>
+			<div id="countryBox">
+				<ul id="countryList" class="countryListClass">
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,10)">10<sup>th</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,9)">9<sup>th</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,8)">8<sup>th</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,7)">7<sup>th</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,6)">6<sup>th</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,5)">5<sup>th</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,4)">4<sup>th</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,3)">3<sup>rd</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,2)">2<sup>nd</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
+					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop()">All generations</li>
+					<li id="countryButton" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11});"><b>Country Totals</b><img class="triangle" src="images/triangle-up.png"></li>
+				</ul>
+				<div id="countryStats"></div>
+			</div>
 
 			<div style="position: absolute; top: 0px; left: 0px; height: 0px; width: 100%; text-align: center">
 				<div id="newTree">
@@ -174,11 +191,22 @@ if (isset($access_token))
 				<button id="reset" class="button yellow off" onclick="clearOverlays()">Reset</button>
 			</div>
 
+
+			<div id="lowerbuttonbox">
+				<button id="logoutbutton" onclick="window.location='logout.php'">Logout</button>
+		    	<div id="userDiv">
+		    	<button id="populateUser" class="button blue" onclick="populateUser()">Set as root</button>
+					<div id="username" onclick="populateUser()"></div>
+				</div>
+			</div>
+
 <?php
 }
 ?>
 				
 			    <div id="lowerbuttonframe">
+						
+
 
 <?php
 if (!empty($PLEDGIE_CODE))
@@ -213,11 +241,7 @@ if (!empty($BLOG_URL))
 }
 ?>
 					
-					<div id="userDiv">
-						<button id="populateUser" class="button blue" onclick="populateUser()">Set as root</button>
-						<button id="logoutbutton" class="button red" onclick="window.location='logout.php'">Logout</button>
-						<div id="username"></div>
-					</div>
+						
 				</div>
 			</div>
 		</div>
