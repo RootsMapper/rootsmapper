@@ -5,22 +5,38 @@ html, body {
     padding: 0;
 }
 
-#infoDiv {
-    position: absolute;
-    left: 0px;
-    top: 90px;
-    font-family:'Open Sans';
-    opacity: 0;
-    z-index: 5;
-
-    -webkit-transition:     opacity .8s;
-    -moz-transition:        opacity .8s;
-    -o-transition:          opacity .8s;
-    -ms-transition:         opacity .8s;
-    transition:             opacity .8s;
-
+/* Holds #rootGrid and #adDiv */
+#bigDiv {
+    width: 100%;
+    height: 100%;
+    background-color: #e5e3df;
 }
 
+/* Root grid holds the map and user interface */
+#rootGrid {
+    height: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 0;
+    position: relative;
+}
+
+/* Ad div just holds the ads */
+#adDiv {
+    height: 100%;
+    white-space: nowrap;
+    float: right;
+}
+
+/* Google map goes here*/
+#mapDisplay {
+    margin: 0;
+    padding: 0;
+    height: inherit;
+    width: inherit;
+}
+
+/* Styles for root person box */
 #rootDiv {
     position: absolute;
     left: 10px;
@@ -30,28 +46,49 @@ html, body {
     padding-bottom: 10px;
 }
 
-/*#rootDiv:hover #infoDiv {
-    opacity: 1.0;
-}
-*/
-#personName {
-
-}
-
 #personid {
     width: 80px;
     border: none;
-    font-family:'Open Sans';
-    font-weight: bold;
+    font-family: inherit;
+    font-weight: inherit;
     margin: 0;
     background-color: transparent;
 }
 
-#personid:focus {
-    border: 1px solid dodgerblue;
-    outline: none;
+    #personid:focus {
+        border: 1px solid dodgerblue;
+        outline: none;
+    }
+
+/* General styles for dropdown menus */
+.listClass li {
+    border-radius: 0;
+    padding: 0;
+    padding-top: 5px;
+    padding-left: 6px;
+    white-space: nowrap;    
+    color: white;
+    margin: 0;
+    cursor: pointer;
+    font-family: helvetica, arial, sans-serif;
+    font-size: small;
+    z-index: 30;
 }
 
+.triangle {
+    height: 9px;
+    padding-top: 3px;
+    padding-right: 6px;
+    float: right;
+}
+
+.clear {
+    cursor: pointer;
+    background-color: rgba(0,0,0,0.2);
+    border: 1px solid rgba(0,0,0,0.2);
+}
+
+/* Run button menu styles */
 #runList {
     list-style-type: none;
     margin: 0;
@@ -61,129 +98,92 @@ html, body {
     top: 50px;
     z-index: 30px;
     display: block;
-/*    z-index: -100;
-
-    -webkit-transition:     top 0.8s ease;
-    -moz-transition:        top 0.8s ease;
-    -o-transition:          top 0.8s ease;
-    -ms-transition:         top 0.8s ease;
-    transition:             top 0.8s ease;*/
 }
 
-.runListClass li {
-    border-radius: 0;
+#runList li {
     height: 22px;
-    width: 95px;
-    padding: 0;
-    padding-top: 5px;
-    padding-left: 6px;
-    background-color: green;
-    border: 1px solid green;
-    white-space: nowrap;    
-    color: white;
-    margin: 0;
-    cursor: pointer;
-    font-family: helvetica, arial, sans-serif;
-    font-size: small;
-    z-index: 30;
+    width: 100px;
 }
 
-#runList .disabled {
-    background-color: gray;
-    color: lightgray;
-    border: 1px solid gray;
-}
+    #runList li.item {
+        display: none;
+        background-color: green;
+        border: 1px solid green;
+    }
 
-#runList .disabled:hover {
-    background-color: gray;
-    color: lightgray;
-    border: 1px solid gray;
-    cursor: wait;
-}
-        #runList li:hover {
-            background-color: rgba(0,140,0,1);
-            border: 1px solid rgba(0,140,0,1);
-        }
+    #runList li:hover {
+        background-color: rgba(0,140,0,1);
+        border: 1px solid rgba(0,140,0,1);
+    }
 
-        #runList li:active {
-            background-color: rgba(0,116,0,1);
-            border: 1px solid rgba(0,116,0,1);
-        }
+    #runList li:active {
+        background-color: rgba(0,116,0,1);
+        border: 1px solid rgba(0,116,0,1);
+    }
 
-
-#runList li.item {
-    display: none;
-}
-
+/* Country Totals button menu styles */
 #countryList {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    /*position: absolute;
-    left: 10px;
-    bottom: 100px;*/
     z-index: 30px;
     display: block;
-/*    z-index: -100;
-
-    -webkit-transition:     top 0.8s ease;
-    -moz-transition:        top 0.8s ease;
-    -o-transition:          top 0.8s ease;
-    -ms-transition:         top 0.8s ease;
-    transition:             top 0.8s ease;*/
 }
 
-.countryListClass li {
-    border-radius: 0;
+#countryList li {
     height: 22px;
     width: 120px;
-    padding: 0;
-    padding-top: 5px;
-    padding-left: 6px;
-
-    background-color: #003e97;
-    /*background-color: green;*/
-    border: 1px solid #003e97;
-    /*border: 1px solid green;*/
-    white-space: nowrap;    
-    color: white;
-    margin: 0;
-    cursor: pointer;
-    font-family: helvetica, arial, sans-serif;
-    font-size: small;
-    z-index: 30;
 }
-
-#countryList .disabled {
-    background-color: gray;
-    color: lightgray;
-    border: 1px solid gray;
-}
-
-/*#countryList .disabled:hover {
-    background-color: gray;
-    color: lightgray;
-    border: 1px solid gray;
-    cursor: wait;
-}*/
-
-        #countryList li:hover {
-            background-color: rgba(0,62,169,1);
-            border: 1px solid rgba(0,62,169,1);
-        }
-
-/*        #countryList li:active {
-            background-color: rgba(0,116,0,1);
-            border: 1px solid rgba(0,116,0,1);
-        }*/
-
 
 #countryList li.item {
     display: none;
+    background-color: #003e97;
+    border: 1px solid #003e97;
 }
 
+    #countryList li:hover {
+        background-color: rgba(0,62,169,1);
+        border: 1px solid rgba(0,62,169,1);
+    }
+
+    #countryList li:active {
+        background-color: rgba(0,62,133,1);
+        border: 1px solid rgba(0,62,133,1);
+    }
+
+/* Styles for display of country totals*/
+#countryDiv {
+    position: absolute;
+    left: 5px;
+    bottom: 30px;
+    padding-bottom: 5px;
+    padding-left: 5px;
+    border-bottom: 1px solid lightgray;
+}
+
+#countryStats {
+    font-family:'Open Sans';
+    overflow-y: auto;
+    display: none;
+}
+
+#countryStats span {
+    font-size: small;
+    font-weight: bold;
+}
+
+/* Styles for display of user information */
 #userDiv {
-    /*float: right;*/
+    position: absolute;
+    bottom: 19px;
+    right: 5px;
+    margin: 0 auto;
+    white-space: nowrap;
+    z-index: 1;
+    background-color: transparent;
+}
+
+#username { 
     position: absolute;
     right: 60px;
     bottom: 0px;
@@ -192,40 +192,18 @@ html, body {
     padding: 5px 10px;
 }
 
-
-#username { 
-    float: left;
-}
-
-#username:hover {
-    color: rgba(0,0,0,0.7);
-    cursor: pointer;
-}
-
-#populateUser {
-    border-radius: 2px 2px 2px 2px; 
-    cursor: pointer;
-    position: absolute;
-    bottom: 25px;
-    right: 85px;
-    display: none;
-}
+    #username:hover {
+        color: rgba(0,0,0,0.7);
+        cursor: pointer;
+    }
 
 #logoutbutton {
-    background-color: rgba(0,0,0,0.1);
-    border: 1px solid rgba(0,0,0,0.1);
-    cursor: pointer;
-
     white-space: nowrap;
-    height: 30px;
+    height: 28px;
     border-radius: 2px;     
     color: white;
     margin: 0;
     font-weight: bold;
-    /*position: absolute;
-    bottom: 30px;
-    right: 5px;*/
-    /*display: none;*/
 }
 
     #logoutbutton:hover {
@@ -233,6 +211,7 @@ html, body {
         border: 1px solid rgba(157,0,0,1);
     }
 
+/* Styles for yellow option buttons at bottom of screen */
 #optionButtons {
     position: absolute;
     left: 0px;
@@ -242,31 +221,7 @@ html, body {
     text-align: center;
 }
 
-#countryStats {
-    /*background-color: rgba(20,20,20,0.8);*/
-    font-family:'Open Sans';
-    
-    /*max-height: 400px;*/
-    overflow-y: auto;
-    display: none;
-    /*border-top: 1px solid black;*/
-
-}
-
-#countryStats span {
-    font-size: small;
-    font-weight: bold;
-}
-
-#countryBox {
-    position: absolute;
-    left: 5px;
-    bottom: 30px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    border-bottom: 1px solid lightgray;
-}
-
+/* Styles for zoom control elements */
 #zoomControl {
     position: absolute;
     right: 5px;
@@ -302,16 +257,22 @@ html, body {
     border-bottom: 1px solid lightgray;
 }
 
-#newTree {
-    /*width: 600px;*/
+/* Styles for pedigree display menu */
+#pedigreeDiv {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    height: 0px;
+    width: 100%;
+    text-align: center;
+}
+
+#pedigree {
     margin-left: auto;
     margin-right: auto;
-    /*background-color: rgba(0,0,0,0.05);*/
-    /*padding: 5px;*/
     text-align: center;
     display: inline-block;
     margin-top: 5px;
-    /*box-shadow: 0 0 5px 5px rgba(0,0,0,0.05);*/
 }
 
 .trees {
@@ -319,7 +280,6 @@ html, body {
     font-size: small;
     background-color: gray;
     border-radius: 5px;
-    /*width: 200px;*/
     cursor: pointer;
     padding: 5px;
     display: inline-block;
@@ -327,241 +287,60 @@ html, body {
 }
 
 #tree1 {
-    /*position: relative;
-    left: 50px;*/
     background-color: dodgerblue;
 }
 
 #tree2 {
-    /*margin-top: 5px;*/
     margin-bottom: 5px;
 }
 
 #tree3 {
-    /*position: relative;
-    left: 50px;*/
     background-color: pink;
 }
 
-
-#userInfo {
-}
-
-#rootInfo {
-}
-
-#peopleDivHolder {
-    width: 300px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#peopleDiv {
-    white-space: nowrap;
-    padding-top: 15px;
-    padding-left: 15px;
-    padding-right: 0;
-    z-index: 1;
-}
-
-.triangle {
-    height: 9px;
-    padding-top: 3px;
-    padding-right: 6px;
-    float: right;
-}
-
-
-
-#peopleDiv #expandList {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    position: absolute;
-    z-index: 20;
-    right: 40px;
-    top: 195px;
-}
-
-#infow #expandList {
+/* Styles for infoBox expand button */
+#expandList {
     list-style-type: none;
     margin: 0;
     padding: 0;
     position: relative;
     float: right;
     z-index: 40;
-    /*right: 40px;
-    top: 100px;*/
 }
 
-#expandList .disabled {
-    background-color: gray;
-    color: lightgray;
-    border: 1px solid gray;
-}
-
-#expandList .disabled:hover {
-    background-color: gray;
-    color: lightgray;
-    border: 1px solid gray;
-    cursor: wait;
-}
-        #expandList li:hover {
-            background-color: rgba(0,140,0,1);
-            border: 1px solid rgba(0,140,0,1);
-        }
-
-        #expandList li:active {
-            background-color: rgba(0,116,0,1);
-            border: 1px solid rgba(0,116,0,1);
-        }
-
-
-#expandList li.item {
-    display: none;
-}
-
-#sidePanel {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 400px;
-    height: 100%;
-    z-index: 5;
-    background-color: transparent;
-    display: none;
-}
-
-#sidePanel .hoverdiv {
-    float: left;
-    width: 360px;
-    z-index: 1;
-    margin-left: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    background-color: transparent;
-    border-radius: 3px; 
-    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
-}
-
-#sidePanel .boxy {
-    background-color: rgba(255,255,255,0.75);
-    padding: 5px;
-    font-family: helvetica, arial, sans-serif;
-    font-size: small;
-}
-
-#sidePanel:hover {
-    background-color: rgba(0,0,0,0.1);
-}
-
-#sidePanel:hover .boxy {
-    background-color: white;
-}
-
-#reset {
-}
-
-/*#panelToggle {
-    float: right;
-    width: 30px;
-    height: 100%;
-    background-color: transparent;
-    border: none;
-    font-weight: bolder;
-    font-size: larger;
-    color: transparent;
-}
-
-#panelToggle:hover {
-    background: rgba(255,255,255,0.1) url(../images/triangle-left.png) no-repeat center;
+#ebutton {
     cursor: pointer;
 }
 
-#panelToggle:active {
-    outline: none;
-    background-color: rgba(255,255,255,0.5);
-}
+    #expandList li {    
+        height: 22px;
+        width: 100px;
+    }
 
-#panelToggle:focus {
-    outline: none;
-}*/
+    #expandList li.item {
+        display: none;
+        background-color: green;
+        border: 1px solid green;
+    }
 
+    #expandList li:hover {
+        background-color: rgba(0,140,0,1);
+        border: 1px solid rgba(0,140,0,1);
+    }
 
-#panelToggle2 {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 30px;
-    height: 100%;
-    display: none;
-    background-color: transparent;
-    border: none;
-    font-weight: bold;
-    color: transparent;
-}
+    #expandList li:active {
+        background-color: rgba(0,116,0,1);
+        border: 1px solid rgba(0,116,0,1);
+    }
 
-#panelToggle2:hover {
-    cursor: pointer;
-    background: rgba(0,0,0,0.1) url(../images/triangle-right.png) no-repeat center;
-}
-
-#panelToggle2:active {
-    outline: none;
-}
-
-#panelToggle2:focus {
-    outline: none;
-    background-color: rgba(255,255,255,0.5);
-}
-
-#alertDiv {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height:100%;
-    background-color:rgba(0,0,0,0.5);
-    z-index: 9999;
-}
-
-#alertText {
-    position:absolute;
-    top: 40%;
-    left: 40%;
-    width: 20%;
-    background-color: white;
-    padding: 5px;
-    border-radius: 4px;
-    color: black;
-    font: bold 14px arial;
-}
-
-#optionDiv {
-    width: auto;
-    max-height: 70%;
-    background-color: transparent;
-    z-index: 999;
-    /*padding: 10px;*/
-}
-
-#detailViewer {
-    float: left;
-    z-index: 1;
-    margin-left: 30px;
-    background-color: rgba(0,0,0,0.8);
-}
-
+/* Style for the infoBox */
 #infow {
     white-space: nowrap;
     max-height: 500px;
     background-color: white;
-    /*border: 1px solid darkgray;*/
     border-radius: 2px;
     padding: 15px;
-    /*box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);*/
 }
-
 
 .person {
     white-space: nowrap;
@@ -569,196 +348,49 @@ html, body {
     margin-bottom: 10px;
 }
 
-.person .box44 {
-    width: 44px;
-    height: 44px;
-    display: inline-block;
-}
-
-.person .box44 .profile-image {
-    max-width: 44px;
-    max-height: 44px;
-    display: inline-block;
-}
-
-.person .label {
-    display: inline-block;
-    width: 44px;
-    font: 13px arial;
-    font-weight: lighter;
-    text-align: right;
-}
-
-.person .box {
-    display: inline-block;
-    vertical-align: top;
-    margin-left: 15px;
-    font: 14px arial;
-}
-
-.person .box .xlarge {
-    font: 22px arial;
-    font-family: Rockwell, "Book Antiqua", Palatino, serif;
-    margin-bottom: 2px;
-}
-
-.person .box .large {
-    font: 14px arial;
-}
-
-.person .box .small {
-    font: 12px arial;
-    color: #666666;
-}
-
-.square {
-	width: 40px;
-	height: 30px;
-	float: left;
-	margin: 0px;
-    /*margin-left: 5px;*/
-	padding: 0px 0px;
-	/*color: #000;*/
-	/*background: #fff;*/
-}
-
-#rootGrid {
-    height: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    padding: 0;
-    position: relative;
-}
-
-#adDiv {
-    height: 100%;
-    white-space: nowrap;
-    float: right;
-    /*padding-left: 20px;*/
-    /*box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8) inset;*/
-}
-
-#bigDiv {
-    width: 100%;
-    height: 100%;
-    background-color: #e5e3df;
-}
-
-#mapDisplay {
-    margin: 0;
-    padding: 0;
-    height: inherit;
-    width: inherit;
-}
-
-
-#inputFrame {
-    /*position: fixed;
-    top: 5px;
-    left: 0px;*/
-    margin: 0 auto;
-    white-space: nowrap;
-    z-index: 1;
-    background-color: transparent;
-    /*max-width: 610px;*/
-}
-
-#loading {
-    /*float: left;*/
-    /*display: inline-block;*/
-    margin-left: auto;
-    margin-right: auto;
-}
-
-#loadingMessage {
-    color: white;
-    /*float: left;*/
-    font-family: 'Open Sans';
-    font-weight: bold;
-    font-size: small;
-    margin-top: 40px;
-    line-height: 2em;
-}
-
-#loadHolder {
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
-}
-
-#loadingDiv {
-    background-color: rgba(0,0,0,0.5);
-    position: fixed;
-    left: 0px;
-    top: 0px;
-    display: table;
-    z-index: 100;
-    height: 100%;
-    width: 100%;
-	padding: 0px 0px;
-}
-
-.boxes {
-    margin: 0;
-    padding: 0;
-    line-height: 2em;
-    height: 30px;
-    /*width:150px;*/
-    float: left;
-    text-indent: 5px;
-    font: arial;
-}
-
-
-
-#prompt {
-    padding-right:0;
-    color: dodgerblue;
-}
-
-
-
-#genSelect {
-    border: 1px solid white;
-    border-radius: 0px 0px 0px 0px;
-    text-indent: 0;
-    padding-right: 5px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-    #genSelect:focus {
-        border: 1px solid green;
-        outline: none;
+    .person .box44 {
+        width: 44px;
+        height: 44px;
+        display: inline-block;
     }
 
-.labelbox {
-    height: 18px;
-    white-space: nowrap;
-    float:left;
-    background-color: white;
-    border: 1px solid white;
-    border-radius: 0px 0px 0px 0px; 
-    padding: 5px;
-    font-family: helvetica, arial, sans serif;
-    font-weight: bold;
-    font-size: small;
-}
+    .person .box44 .profile-image {
+        max-width: 44px;
+        max-height: 44px;
+        display: inline-block;
+    }
 
+    .person .label {
+        display: inline-block;
+        width: 44px;
+        font: 13px arial;
+        font-weight: lighter;
+        text-align: right;
+    }
 
+    .person .box {
+        display: inline-block;
+        vertical-align: top;
+        margin-left: 15px;
+        font: 14px arial;
+    }
 
-.hoverdiv {
-    float: left;
-    width: 350px;
-    z-index: 1;
-    margin-left: 5px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    background-color: transparent;
-    border-radius: 3px; 
-    box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
-}
+    .person .box .xlarge {
+        font: 22px arial;
+        font-family: Rockwell, "Book Antiqua", Palatino, serif;
+        margin-bottom: 2px;
+    }
 
+    .person .box .large {
+        font: 14px arial;
+    }
+
+    .person .box .small {
+        font: 12px arial;
+        color: #666666;
+    }
+
+/* Styles for infoBox buttons */
 #copyButton {
     margin-left: 5px;
     width: 15px;
@@ -787,11 +419,6 @@ html, body {
         text-decoration:underline;
     }
 
-#ebutton {
-    cursor: pointer;
-}
-
-
 #trashcan {
     width: 30px;
     cursor: pointer;
@@ -802,6 +429,40 @@ html, body {
         /*opacity:1;*/
     }
 
+/* Loading animation styles */
+#loadingDiv {
+    background-color: rgba(0,0,0,0.5);
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    display: table;
+    z-index: 100;
+    height: 100%;
+    width: 100%;
+    padding: 0px 0px;
+}
+
+#loadHolder {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+#loading {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#loadingMessage {
+    color: white;
+    font-family: 'Open Sans';
+    font-weight: bold;
+    font-size: small;
+    margin-top: 40px;
+    line-height: 2em;
+}
+
+/* Old button styles that are occasionally still used */
 .button {
     white-space: nowrap;
     height: 30px;
@@ -914,36 +575,7 @@ html, body {
             border: 1px solid gray;
         }
 
-#showTree {
-    margin-left: 0px;
-}
-
-
-
-#runButton {
-    cursor: pointer;
-    background-color: rgba(0,0,0,0.1);
-    border: 1px solid rgba(0,0,0,0.1);
-    /*text-align: center;*/
-}
-
-#countryButton {
-    cursor: pointer;
-    background-color: rgba(0,0,0,0.1);
-    border: 1px solid rgba(0,0,0,0.1);
-    /*text-align: center;*/
-}
-
-#expandButton {
-    float:right;
-    cursor: pointer;
-}
-
-#idButton {
-    float:left;
-    cursor: pointer;
-}
-
+/* Styles for login button */
 #loginbutton {
     background-color: #003e97;
     color: white;
@@ -975,7 +607,7 @@ html, body {
             border: 1px solid #358ee6;
         }
 
-
+/* Tooltip styles */
 #tt {
      position:fixed;
      display:block;
@@ -988,134 +620,10 @@ html, body {
      max-width: 300px;
  }
 
-
-
-
-#pedigreeWrapper {
-    padding-right: 20px;
-    /*display: none;*/
-}
-
-#pedigreeChart {
-    padding-right: 25px;
-    font-size: medium;
-    max-height: 200px;
-    overflow-y: auto;
-    /*font-weight: bold;*/
-    line-height : 1.5;
-}
-    #pedigreeChart ul {
-        margin:0 0 0 -1.5em;
-        padding:0 0 0 1.5em;
-    }
-
-        #pedigreeChart ul ul ul{
-            background:url('../images/list-item-contents.png') repeat-y left;
-        }
-        
-        #pedigreeChart li.lastChild > ul{
-            background-image:none;
-        }
-
-    #pedigreeChart li {
-        margin:0;
-        padding:0;
-        background: url('../images/list-item-root.png') no-repeat top left;
-        cursor: auto;        
-    }
-
-    #pedigreeChart span:hover {
-        color: gray;
-        cursor: pointer;
-    }
-
-
-    #pedigreeChart li.Male{
-        list-style-image:url('../images/openMale.png');
-        list-style-position:inside;
-    }
-
-    #pedigreeChart li.Female{
-        list-style-image:url('../images/openFemale.png');
-        list-style-position:inside;
-    }
-
-#pedigreeChart li.collapsibleListOpen.Male {
-    list-style-image:url('../images/minMale.png');
-    list-style-position:inside;
-    cursor:pointer;
-}
-
-#pedigreeChart li.collapsibleListClosed.Male {
-    list-style-position:inside;
-    list-style-image:url('../images/expandMale.png');
-    cursor:pointer;
-}
-
-#pedigreeChart li.collapsibleListOpen.Female {
-    list-style-position:inside;
-    list-style-image:url('../images/minFemale.png');
-    cursor:pointer;
-}
-
-#pedigreeChart li.collapsibleListClosed.Female {
-    list-style-position:inside;
-    list-style-image:url('../images/expandFemale.png');
-    cursor:pointer;
-}
-
-#pedigreeChart li.Male.lastGen {
-    list-style-position:inside;
-    list-style-image:url('../images/openMale.png');
-    cursor:auto;
-}
-
-#pedigreeChart li.Female.lastGen {
-    list-style-position:inside;
-    list-style-image:url('../images/openFemale.png');
-    cursor:auto;
-}
-
-#pedigreeChart li li {
-    background-image:url('../images/list-item.png');
-    padding-left:1.5em;
-}
-
-#pedigreeChart li.lastChild {
-    background-image:url('../images/list-item-last.png');
-}
-
-#pedigreeChart li.collapsibleListOpen {
-    background-image:url('../images/list-item-open.png');
-}
-
-#pedigreeChart li.collapsibleListOpen.lastChild {
-    background-image:url('../images/list-item-last-open.png');
-}
-
-#pedigreeChart li.Root {
-    background:url('../images/list-item-root.png') no-repeat top left;
-    cursor:auto;     
-}
-
-#pedigreeChart li.Root.collapsibleListClosed {
-    background:none;
-    cursor:pointer;     
-}
-
+/* Styles for feedback, donate, etc. buttons */
 #lowerbuttonframe {
     position: absolute;
     bottom: 60px;
-    right: 5px;
-    margin: 0 auto;
-    white-space: nowrap;
-    z-index: 1;
-    background-color: transparent;
-}
-
-#lowerbuttonbox {
-    position: absolute;
-    bottom: 19px;
     right: 5px;
     margin: 0 auto;
     white-space: nowrap;
@@ -1156,6 +664,29 @@ html, body {
     margin-left: 7px;
 }
 
+/* Alert styles */
+#alertDiv {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height:100%;
+    background-color:rgba(0,0,0,0.5);
+    z-index: 9999;
+}
+
+#alertText {
+    position:absolute;
+    top: 40%;
+    left: 40%;
+    width: 20%;
+    background-color: white;
+    padding: 5px;
+    border-radius: 4px;
+    color: black;
+    font: bold 14px arial;
+}
+
 @media only screen
 and (max-width: 1110px) {
     #adDiv { display: none}
@@ -1167,7 +698,12 @@ and (max-height: 605px) {
 }
 
 @media print {
-    #inputFrame { display: none }
+    #zoomControl { display: none }
+    #userDiv { display: none }
+    #rootDiv { display: none }
+    #countryDiv { display: none }
+    #optionButtons { display: none }
+    #pedigreeDiv { display: none }
     #lowerbuttonframe { display: none }
     #adDiv { display: none }
 }

@@ -1136,16 +1136,16 @@ function mouseTimer(trigger,target,c,what,how) {
                                 "<div style='height: 38px; display:inline-block;'>" + father + "</br>" + mother + "</div>" +
                             '</div>';
 
-        mark.expandButton = "<ul id='expandList' class='runListClass'>" +
-                                "<li id='ebutton' onclick='expandList(\"expandList\");'><b>Expand</b><img id='downTriangle' src='images/triangle-down.png'></li>" +
-                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 1 + ");'>1 generation</li>" +
-                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 2 + ");'>2 generations</li>" + 
-                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 3 + ");'>3 generations</li>" +
-                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 4 + ");'>4 generations</li>" +
-                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 5 + ");'>5 generations</li>" +
-                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 6 + ");'>6 generations</li>" +
-                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 7 + ");'>7 generations</li>" +
-                                "<li class='item' onclick='expandList(\"expandList\"); expandClick(" + p.generation + "," + p.node + "," + 8 + ");'>8 generations</li>" +
+        mark.expandButton = "<ul id='expandList' class='listClass'>" +
+                                "<li id='ebutton' class='clear' onclick='expandList({listName:\"expandList\"});'><b>Expand</b><img class='triangle' src='images/triangle-down.png'></li>" +
+                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 1 + ");'>1 generation</li>" +
+                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 2 + ");'>2 generations</li>" + 
+                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 3 + ");'>3 generations</li>" +
+                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 4 + ");'>4 generations</li>" +
+                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 5 + ");'>5 generations</li>" +
+                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 6 + ");'>6 generations</li>" +
+                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 7 + ");'>7 generations</li>" +
+                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 8 + ");'>8 generations</li>" +
                             "</ul>";
         mark.deleteButton = "<div style='height: 38px; display:inline-block;'><img id='trashcan' src='images/trash.png?v=" + version +
                           "' style='width:25px; height:26px; margin-top: 12px;' onclick='deleteMarker(" + p.generation + "," + p.node + ") ;'</div>";
@@ -1475,7 +1475,7 @@ function mouseTimer(trigger,target,c,what,how) {
         google.maps.event.addListener(ib, 'domready', function () {
 
             if (document.getElementById("ebutton")) {
-            	tooltip.set({id: "ebutton", tip: "Plot the parents of this person"});
+            	tooltip.set({id: "ebutton", tip: "Plot the ancestors of this person"});
 			}
             if (document.getElementById("trashcan")) { 
             	tooltip.set({id: "trashcan", tip: "Remove this person from the map"});
@@ -1514,23 +1514,10 @@ function mouseTimer(trigger,target,c,what,how) {
     function startEvents() {
         delay = 1;
         loadingAnimationStart();
-        var runList = document.getElementById('runList');
-        runList.style.pointerEvents = 'none';
-        var items = runList.getElementsByTagName("li");
-        items[0].className = 'disabled';
-        for (i = 1; i<items.length; i++) {
-        	items[i].className = 'item disabled';
-        }
     }
 
     function enableButtons() {
-    	var runList = document.getElementById('runList');
-        runList.style.pointerEvents = 'auto';
-        var items = runList.getElementsByTagName("li");
-        items[0].className = '';
-        for (i = 1; i<items.length; i++) {
-        	items[i].className = 'item';
-        }
+
     }
 
     function completionEvents(rootGen, rootNode, callback) {

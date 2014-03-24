@@ -140,8 +140,8 @@ if (isset($access_token))
             </div>
 
 			<div id="rootDiv">
-				<ul id="runList" class="runListClass">
-					<li id="runButton" onclick="expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
+				<ul id="runList" class="listClass">
+					<li class="clear" onclick="expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
 					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(1)">1 generation</li>
 					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(2)">2 generations</li>
 					<li class="item" onclick="expandList({listName:'runList'}); ancestorgens(3)">3 generations</li>
@@ -158,8 +158,8 @@ if (isset($access_token))
 				<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 			</div>
 
-			<div id="countryBox">
-				<ul id="countryList" class="countryListClass">
+			<div id="countryDiv">
+				<ul id="countryList" class="listClass">
 					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,10)">10<sup>th</sup> generation</li>
 					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,9)">9<sup>th</sup> generation</li>
 					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,8)">8<sup>th</sup> generation</li>
@@ -171,13 +171,13 @@ if (isset($access_token))
 					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,2)">2<sup>nd</sup> generation</li>
 					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
 					<li class="item" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11}); countryLoop()">All generations</li>
-					<li id="countryButton" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11});"><b>Country Totals</b><img class="triangle" src="images/triangle-up.png"></li>
+					<li class="clear" onclick="expandList({listName:'countryList',arrowUp:true,buttonIndex:11});"><b>Country Totals</b><img class="triangle" src="images/triangle-up.png"></li>
 				</ul>
 				<div id="countryStats"></div>
 			</div>
 
-			<div style="position: absolute; top: 0px; left: 0px; height: 0px; width: 100%; text-align: center">
-				<div id="newTree">
+			<div id="pedigreeDiv">
+				<div id="pedigree">
 					<div id="tree1" class="trees"></div>
 					<div id="tree3" class="trees"></div></br>
 					<div id="tree2" class="trees"></div>
@@ -191,13 +191,9 @@ if (isset($access_token))
 				<button id="reset" class="button yellow off" onclick="clearOverlays()">Reset</button>
 			</div>
 
-
-			<div id="lowerbuttonbox">
-				<button id="logoutbutton" onclick="window.location='logout.php'">Logout</button>
-		    	<div id="userDiv">
-		    	<button id="populateUser" class="button blue" onclick="populateUser()">Set as root</button>
-					<div id="username" onclick="populateUser()"></div>
-				</div>
+			<div id="userDiv">
+				<button id="logoutbutton" class="clear" onclick="window.location='logout.php'">Logout</button>
+				<div id="username" onclick="populateUser()"></div>
 			</div>
 
 <?php
