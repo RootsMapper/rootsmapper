@@ -48,8 +48,8 @@ function initialize() {
 
             	// Run 3 generations by default
             	// ancestorgens(3);
-            	// rootsMapper();
-            	loadingAnimationEnd();
+            	rootsMapper();
+            	// loadingAnimationEnd();
 
             });
 
