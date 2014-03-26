@@ -1496,44 +1496,15 @@ function createKML() {
 
 		cont();
 	}, function() {
-
 		var text = string + xml.innerHTML;
 
-		var url = "data:application/xml," + text;
+        var url = "data:application/octet-stream," + text;
 
-		window.open(url,"kml");	});
+        var a = document.createElement("a");
+        a.setAttribute("href",url);
+        a.setAttribute("download","rootsmapper.kml");
+        a.click();
+    });
 
 
-}
-
-function makeXML() {
-    var node = doc.createElement(arguments[0]), text;
-    
-    for(var i = 1; i < arguments.length; i++) {
-        if(typeof arguments[i] == 'string') {
-            node.appendChild(doc.createTextNode(arguments[i]));
-        }
-        else {
-            node.appendChild(arguments[i]);
-        }
-    }
-
-    return node;
-};
-
-function createXmlDocument(string)
-{
-    var doc;
-    if (window.DOMParser)
-    {
-        parser = new DOMParser();
-        doc = parser.parseFromString(string, "application/xml");
-    }
-    else // Internet Explorer
-    {
-        doc = new ActiveXObject("Microsoft.XMLDOM");
-        doc.async = "false";
-        doc.loadXML(string); 
-    }
-    return doc;
 }
