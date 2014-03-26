@@ -1501,7 +1501,7 @@ function createKML() {
         var url = "data:application/octet-stream," + text;
 
         var a = document.createElement("a");
-        a.setAttribute("href",url);
+        a.setAttribute("href",encodeURI(url));
         a.setAttribute("download","rootsmapper.kml");
         a.click();
     });
