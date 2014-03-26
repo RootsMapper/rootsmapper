@@ -79,7 +79,6 @@ else
 	<script type="text/javascript" src="scripts/loading.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 	<!-- loading animation references -->
 		<script src="scripts/binarytree.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-		<script src="scripts/CollapsibleLists.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/fsAPI.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/tooltip.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/utilities.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
@@ -189,6 +188,7 @@ if (isset($access_token))
 				<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
 				<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
 				<button id="reset" class="button yellow off" onclick="clearOverlays()">Reset</button>
+				<button id="KML" class="button yellow off" onclick="createKML()">KML</button>
 			</div>
 
 			<div id="userDiv">

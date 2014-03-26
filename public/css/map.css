@@ -664,6 +664,18 @@ html, body {
     margin-left: 7px;
 }
 
+/* KML display*/
+
+#xmlDiv {
+    height: 50%;
+    width: 50%;
+    z-index: 400;
+    background-color: white;
+    position: fixed;
+    left: 100px;
+    top: 100px;
+}
+
 /* Alert styles */
 #alertDiv {
     position: absolute;

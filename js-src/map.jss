@@ -48,7 +48,8 @@ function initialize() {
 
             	// Run 3 generations by default
             	// ancestorgens(3);
-            	rootsMapper();
+            	// rootsMapper();
+            	loadingAnimationEnd();
 
             });
 
@@ -1456,3 +1457,83 @@ function checkID() {
 }
 
     google.maps.event.addDomListener(window, 'load', initialize);
+
+function createKML() {
+	var string = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+
+	var doc = document.implementation.createDocument(null,null,null);
+	var xml = doc.createElement("xml");
+
+	// Make "kml" the root node
+	var kml = doc.createElement("kml");
+	kml.setAttribute("xmlns","http://www.opengis.net/kml/2.2");
+	xml.appendChild(kml);
+
+	// Append "Document" node
+	var Document = doc.createElement("Document");
+	kml.appendChild(Document);
+
+    familyTree.IDDFS(function (leaf, cont) {
+
+    	// for each person in familyTree...
+		var Placemark = doc.createElement("Placemark");
+		Document.appendChild(Placemark);
+
+		var name = doc.createElement("name");
+		name.textContent = HtmlEncode(leaf.value.display.name);
+		Placemark.appendChild(name);
+
+		var description = doc.createElement("description");
+		description.textContent = familyTree.btSMF(leaf.generation,leaf.node);
+		Placemark.appendChild(description);
+
+		var Point = doc.createElement("Point");
+		Placemark.appendChild(Point);
+
+		var coordinates = doc.createElement("coordinates");
+		coordinates.textContent = leaf.value.marker.getPosition().lng() + ',' + leaf.value.marker.getPosition().lat();
+		Point.appendChild(coordinates);
+
+		cont();
+	}, function() {
+
+		var text = string + xml.innerHTML;
+
+		var url = "data:application/xml," + text;
+
+		window.open(url,"kml");	});
+
+
+}
+
+function makeXML() {
+    var node = doc.createElement(arguments[0]), text;
+    
+    for(var i = 1; i < arguments.length; i++) {
+        if(typeof arguments[i] == 'string') {
+            node.appendChild(doc.createTextNode(arguments[i]));
+        }
+        else {
+            node.appendChild(arguments[i]);
+        }
+    }
+
+    return node;
+};
+
+function createXmlDocument(string)
+{
+    var doc;
+    if (window.DOMParser)
+    {
+        parser = new DOMParser();
+        doc = parser.parseFromString(string, "application/xml");
+    }
+    else // Internet Explorer
+    {
+        doc = new ActiveXObject("Microsoft.XMLDOM");
+        doc.async = "false";
+        doc.loadXML(string); 
+    }
+    return doc;
+}
