@@ -1211,6 +1211,10 @@ function createMarker(p,yellow) {
 
     function clearOverlays() {
 
+    document.getElementById('tree1').innerHTML = '';
+    document.getElementById('tree2').innerHTML = '';
+    document.getElementById('tree3').innerHTML = '';
+
         oms.clearMarkers();
         oms.clearListeners('click');
         if (familyTree) {
@@ -1232,7 +1236,7 @@ function createMarker(p,yellow) {
     	}
 
     	familyTree = new BinaryTree();
-    	ib = new InfoBox({ contents: "", maxWidth: 0, pixelOffset: new google.maps.Size(9, 9), enableEventPropagation: true });
+    	ib = new InfoBox({ contents: "", maxWidth: 0, pixelOffset: new google.maps.Size(9, 9), enableEventPropagation: false });
     	ib2 = new InfoBox({ contents: "", maxWidth: 0, closeBoxURL: "", pixelOffset: new google.maps.Size(9, -37) });
 
         firstTime = {
@@ -1487,12 +1491,29 @@ function createKML() {
 		description.textContent = familyTree.btSMF(leaf.generation,leaf.node);
 		Placemark.appendChild(description);
 
+        var ExtendedData = doc.createElement("ExtendedData");
+
+        ExtendedData.appendChild(createDataElement(doc,"id",leaf.value.id));
+        ExtendedData.appendChild(createDataElement(doc,"generation",leaf.generation));
+        ExtendedData.appendChild(createDataElement(doc,"node",leaf.node));
+        ExtendedData.appendChild(createDataElement(doc,"gender",leaf.value.display.gender));
+        ExtendedData.appendChild(createDataElement(doc,"lifespan",leaf.value.display.lifespan));
+        ExtendedData.appendChild(createDataElement(doc,"birthDate",leaf.value.display.birthDate));
+        ExtendedData.appendChild(createDataElement(doc,"birthPlace",leaf.value.display.birthPlace));
+        ExtendedData.appendChild(createDataElement(doc,"birthCountry",leaf.value.display.birthCountry));
+        ExtendedData.appendChild(createDataElement(doc,"deathDate",leaf.value.display.deathDate));
+        ExtendedData.appendChild(createDataElement(doc,"deathPlace",leaf.value.display.deathPlace));
+
+        Placemark.appendChild(ExtendedData);
+
 		var Point = doc.createElement("Point");
 		Placemark.appendChild(Point);
 
 		var coordinates = doc.createElement("coordinates");
 		coordinates.textContent = leaf.value.marker.getPosition().lng() + ',' + leaf.value.marker.getPosition().lat();
 		Point.appendChild(coordinates);
+
+
 
 		cont();
 	}, function() {
@@ -1506,5 +1527,19 @@ function createKML() {
         a.click();
     });
 
+}
 
+
+function createDataElement(doc,name,value) {
+    var Data = doc.createElement("Data");
+    Data.setAttribute("name",name);
+
+    var val = doc.createElement("value");
+    if (value != undefined) {
+        val.textContent = value;
+    }
+
+    Data.appendChild(val);
+
+    return Data;
 }
