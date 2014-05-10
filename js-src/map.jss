@@ -7,6 +7,7 @@
 
 var map;
 var oms;
+var layer;
 var accesstoken;
 var ib;
 var ib2;
@@ -25,12 +26,15 @@ var fixColors;
 var optionvar = false;
 var isolate = false;
 var onlyPins = false;
+var pinsVisible = true;
 var treeVar = false;
 var statVar = false;
 var highlights = true;
 
 function initialize() {
  	
+
+
  	// Load the map (whether user is logged in or not)
  	startGoogleMaps();
 
@@ -39,6 +43,9 @@ function initialize() {
 
  	// If user is logged in
     if (accesstoken) {
+
+		drawCurve();
+//		queryTable(['United States','Canada','United Kingdom']);
 
     	// Get discovery resource
         discoveryResource(function () {
@@ -59,9 +66,143 @@ function initialize() {
 
 }
 
+function drawCurve() {
+    var canvas = document.getElementById('canvas');
+if (canvas) {
+  if (canvas.getContext){
+    var ctx = canvas.getContext('2d');
+
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(300,0);
+    ctx.lineTo(300,150);
+    ctx.bezierCurveTo(200, 100, 100, 100, 0, 150)
+    ctx.lineTo(0,0);
+	ctx.fillStyle = 'rgba(0,0,0,0.78)';
+    ctx.fill();
+
+  }
+}
+
+    var canvas = document.getElementById('canvas2');
+if (canvas) {
+  if (canvas.getContext){
+    var ctx = canvas.getContext('2d');
+
+    ctx.beginPath();
+    ctx.moveTo(0,0);
+    ctx.lineTo(0,150);
+    ctx.lineTo(300,150);
+    ctx.lineTo(300,0);
+    ctx.bezierCurveTo(200, 50, 100, 50, 0,0)
+	ctx.fillStyle = 'rgba(0,0,0,0.78)';
+    ctx.fill();
+
+  }
+}
+}
+
+function queryTable(countryArray,countryCount) {
+	var tableid = 424206; // 423734; //
+	var where = "'name' IN ('" + countryArray.join("','") + "')";
+	var maxval = Math.max.apply(Math,countryCount);
+
+	var styles = [];
+	for (k=0; k<5; k++) {
+		var opacArray = [];
+		for (i=0; i<countryArray.length;i++) {
+			if (countryCount[i] / maxval > (k)/5 && countryCount[i] / maxval <= (k+1)/5) {
+				opacArray.push(countryArray[i]);
+			}
+		}
+
+		styles[k] = {
+			where: "'name' IN ('" + opacArray.join("','") + "')",
+			polygonOptions: {
+				fillColor: rgbToHex(255,0,0),
+				fillOpacity: (k+1)/10
+			}
+		}
+
+	}
+
+	layer = new google.maps.FusionTablesLayer({query:{
+			select: 'kml_4326',
+			from: tableid,
+			where: where
+		},styles: styles,
+		suppressInfoWindows: true
+	});
+
+  	layer.setMap(map);
+}
+
 function startGoogleMaps() {
 
 	// Google Maps constructor options
+	var style_array = [
+    {
+        "featureType": "road",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "landscape",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "color": "#fffffa"
+            }
+        ]
+    },
+    {
+        "featureType": "water",
+        "stylers": [
+            {
+                "lightness": 0
+            }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "labels",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "transit",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "administrative",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "lightness": 40
+            }
+        ]
+    }
+];
     var lat = 30.0;
     var lng = -30.0;
     var place = new google.maps.LatLng(lat, lng);
@@ -75,6 +216,7 @@ function startGoogleMaps() {
 		mapTypeControlOptions: {
   			position: google.maps.ControlPosition.TOP_RIGHT
 		},
+		styles: style_array
     }
 
     // Construct map
@@ -115,6 +257,7 @@ function pageSetup() {
 	tooltip.set({id: "faqbutton", tip: "Frequently asked questions"});
 	tooltip.set({id: "donatebutton", tip: "Help keep this site up and running"});
 	tooltip.set({id: "showlines", tip: "Hide connecting lines"});
+	tooltip.set({id: "showpins", tip: "Hide pins"});
 	tooltip.set({id: "highlight", tip: "Toggle trace back to root person"});
 	tooltip.set({id: "isolate", tip: "Show only selected ancestral line"});
 	tooltip.set({id: "zoomIn", tip: "Zoom in"});
@@ -508,11 +651,11 @@ function countryLoop(callback, all, generation) {
         var node = tree.node;
         var gen = tree.generation;
         if (all == true) {
-	        var value = familyTree.getNode(gen, node).display.birthCountry;
+	        var value = scrubCountry(familyTree.getNode(gen, node).display.birthCountry);
 	        var n = group[value] = 1 - -(group[value] | 0);
 	        if (n > max) { max = n; }
         } else if (gen == generation) {
-	        var value = familyTree.getNode(gen, node).display.birthCountry;
+	        var value = scrubCountry(familyTree.getNode(gen, node).display.birthCountry);
 	        var n = group[value] = 1 - -(group[value] | 0);
 	        if (n > max) { max = n; }
         }
@@ -523,13 +666,26 @@ function countryLoop(callback, all, generation) {
     });
 }
 
+function scrubCountry(val) {
+	if (val == 'England') {
+		return 'United Kingdom';
+	} else {
+		return val;
+	}
+}
+
 function displayCountryStats(group) {
 	var div = document.getElementById('countryStats');
     div.innerHTML = '';
 
+	var keys = [];
+	var vals = [];
+
     for (var key in group) {
         if (group.hasOwnProperty(key)) {
             if (key !== 'undefined') {
+				keys.push(key);
+				vals.push(group[key]);
                 var d = document.createElement('span');
                 d.textContent = key + ': ' + group[key];
                 var br = document.createElement('br');
@@ -539,6 +695,9 @@ function displayCountryStats(group) {
         }
     }
     div.style.display = "block";
+	
+	
+	queryTable(keys,vals);
 }
 
 function getPhoto(id, gen, node, callback) {
@@ -625,6 +784,7 @@ function getMeABirthPlace(gen, node, cont, callback) {
             getLatLng(familyTree.getNode(gen, node).display.birthPlace, cont, function (result, status) {
                 if (status == "OK") {
                     familyTree.getNode(gen, node).display.birthLatLng = result.latlng;
+            		familyTree.getNode(gen, node).display.birthCountry = result.country;
                     if (gen == 0 && node == 0) {
                         result.cont();
                         createMarker(familyTree.root());
@@ -665,7 +825,12 @@ function getLatLng(place, cont, callback) {
             geocoder.geocode(georequest, function (result, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
                     var latlng = result[0].geometry.location;
-                    typeof callback === 'function' && callback({latlng: latlng, cont: cont}, "OK");
+					var split = place.split(",");
+                    var country = split[split.length - 1];
+                    while (country.charAt(0) === ' ') {
+                        country = country.substr(1);
+                    }
+                    typeof callback === 'function' && callback({latlng: latlng, country: country, cont: cont}, "OK");
                 } else {
                     if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
                         //typeof callback === 'function' && callback(undefined, "LIMIT");
@@ -1141,6 +1306,22 @@ function createMarker(p,yellow) {
             typeof callback === 'function' && callback();
         });
     }
+	
+	function togglePins(callback) {
+		familyTree.IDDFS(function (leaf, cont) {
+			leaf.value.marker.setVisible(!pinsVisible);
+			cont();
+		},function() {
+			if (pinsVisible == false) {
+				pinsVisible = true;
+				document.getElementById('showpins').className = 'button yellow';
+			} else {
+				pinsVisible = false;
+				document.getElementById('showpins').className = 'button yellow off';
+			}
+			typeof callback === 'function' && callback();
+		});
+	}
 
     function toggleHighlight(callback) {
         var high = document.getElementById('isolate');
@@ -1214,7 +1395,10 @@ function createMarker(p,yellow) {
     document.getElementById('tree1').innerHTML = '';
     document.getElementById('tree2').innerHTML = '';
     document.getElementById('tree3').innerHTML = '';
-
+	
+	if (layer) {
+		layer.setMap(null);
+	}
         oms.clearMarkers();
         oms.clearListeners('click');
         if (familyTree) {

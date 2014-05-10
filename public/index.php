@@ -138,6 +138,14 @@ if (isset($access_token))
             	</div>
             </div>
 
+<!--	    <div id="headerbox">
+		<canvas id='canvas'></canvas>
+	    </div>
+
+	    <div id="footerbox">
+		<canvas id='canvas2'></canvas>
+	    </div> -->
+
 			<div id="rootDiv">
 				<ul id="runList" class="listClass">
 					<li class="clear" onclick="expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
@@ -185,6 +193,7 @@ if (isset($access_token))
 
 			<div id="optionButtons">
 				<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
+				<button id="showpins" class="button yellow off" onclick="togglePins()">Pins</button>
 				<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
 				<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
 				<button id="reset" class="button yellow off" onclick="clearOverlays()">Reset</button>
