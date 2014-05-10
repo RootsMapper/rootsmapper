@@ -103,6 +103,11 @@ if (canvas) {
 }
 
 function queryTable(countryArray,countryCount) {
+
+	if (layer) {
+		layer.setMap(null);
+	}
+
 	var tableid = 424206; // 423734; //
 	var where = "'name' IN ('" + countryArray.join("','") + "')";
 	var maxval = Math.max.apply(Math,countryCount);
@@ -1396,9 +1401,7 @@ function createMarker(p,yellow) {
     document.getElementById('tree2').innerHTML = '';
     document.getElementById('tree3').innerHTML = '';
 	
-	if (layer) {
-		layer.setMap(null);
-	}
+
         oms.clearMarkers();
         oms.clearListeners('click');
         if (familyTree) {
