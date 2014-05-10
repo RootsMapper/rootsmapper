@@ -1319,10 +1319,10 @@ function createMarker(p,yellow) {
 		},function() {
 			if (pinsVisible == false) {
 				pinsVisible = true;
-				document.getElementById('showpins').className = 'button yellow';
+				document.getElementById('showpins').className = 'button yellow off';
 			} else {
 				pinsVisible = false;
-				document.getElementById('showpins').className = 'button yellow off';
+				document.getElementById('showpins').className = 'button yellow';
 			}
 			typeof callback === 'function' && callback();
 		});
