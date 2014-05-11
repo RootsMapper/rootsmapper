@@ -38,37 +38,95 @@ html, body {
 
 #headerbox {
     position: absolute;
-    left: 0px;
+    left: 5px;
     top: 0px;
-    width: 100%;
+    width: 200px;
+	height: auto;
+	border-radius: 0 0 10px 10px;
+	background-color: rgba(0,0,0,0.7);
+	z-index: 30;
+	-webkit-transition: width 0.3s;
+	transition: width 0.3s;
+/*    box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.5);*/
 }
 
-#footerbox {
-    position: absolute;
-    left: 0px;
-    bottom: 0px;
-    width: 100%;
-	height: 150px;
-}
-
-#canvas {
+.menuButton {
+	float: left;
+	text-align: left;
+	text-indent: 20px;
 	width: 100%;
+	height: 40px;
+	margin: 0px;
+	padding-top: 15px;
+/*	background-color: rgba(0,0,0,0.7);*/
+	border-bottom: 1px solid rgba(120,120,120,0.7);
+/*	border-right: 1px solid rgba(120,120,120,0.7);*/
+	color: white;
+	font-size: large;
+	font-family: 'sans-serif';
+	-webkit-transition: height 0.3s;
+	transition: height 0.3s;
+}
+
+.menuButton:hover{
+	cursor: pointer;
+	background-color: rgba(0,0,0,0.7);
+	color: rgb(230,230,230);
+
+}
+
+.menuButton.selected{
+	background-color: rgba(0,0,0,0.8);
+	color: white;
+	border-right: none;
+	height: 300px;
+}
+
+.menuButton.selected:hover{
+	color: rgb(230,230,230);
+}
+
+#pedigreeChart.selected {
 	height: 150px;
 }
 
-#canvas2 {
-	width: 100%;
-	height: 150px;
+#rootsMapper.selected {
+	height: 130px;
+}
+
+#viewOptions.selected {
+	height: 255px;
+}
+
+#userInfo{
+	border-radius: 0 0 10px 10px;
+}
+
+#countryStatistics.selected {
+	height: 300px;
+}
+
+.unselectable {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 /* Styles for root person box */
 #rootDiv {
     position: absolute;
-    left: 10px;
-    top: 10px;
+    left: 5px;
+    top: 48px;
+	width: 200px;
+	height: 88px;
     font-weight: bold;
     font-family:'Open Sans';
     padding-bottom: 10px;
+	color: white;
+	z-index: 30;
 /*    background-color: rgba(255,255,255,0.5);*/
 /*    box-shadow: 0 15px 50px 50px rgba(255, 255, 255, 0.5);*/
 }
@@ -79,7 +137,9 @@ html, body {
     font-family: inherit;
     font-weight: inherit;
     margin: 0;
+	margin-left: 20px;
     background-color: transparent;
+	color: white;
 }
 
     #personid:focus {
@@ -119,6 +179,7 @@ html, body {
 #runList {
     list-style-type: none;
     margin: 0;
+	margin-left: 20px;
     padding: 0;
     position: absolute;
     left: 0px;
@@ -131,6 +192,11 @@ html, body {
     height: 22px;
     width: 100px;
 }
+
+    #runList li.main {
+        background-color: green;
+        border: 1px solid green;
+    }
 
     #runList li.item {
         display: none;
@@ -152,6 +218,7 @@ html, body {
 #countryList {
     list-style-type: none;
     margin: 0;
+	margin-left: 20px;
     padding: 0;
     z-index: 30px;
     display: block;
@@ -162,11 +229,16 @@ html, body {
     width: 120px;
 }
 
-#countryList li.item {
-    display: none;
-    background-color: #003e97;
-    border: 1px solid #003e97;
-}
+	#countryList li.item {
+		display: none;
+		background-color: #003e97;
+		border: 1px solid #003e97;
+	}
+
+    #countryList li.main {
+		background-color: #003e97;
+		border: 1px solid #003e97;
+    }
 
     #countryList li:hover {
         background-color: rgba(0,62,169,1);
@@ -181,20 +253,23 @@ html, body {
 /* Styles for display of country totals*/
 #countryDiv {
     position: absolute;
-    left: 5px;
-    bottom: 30px;
-    padding-bottom: 5px;
-    padding-left: 5px;
-    border-bottom: 1px solid lightgray;
+    left: -1000px;
+    top: 210px;
+	width: 200px;
+	height: 276px;
+	z-index: 30;
 }
 
 #countryStats {
     font-family:'Open Sans';
     overflow-y: auto;
     display: none;
+	margin-bottom: 15px;
+	margin-left: 20px;
 }
 
 #countryStats span {
+	color: white;
     font-size: small;
     font-weight: bold;
 }
@@ -211,26 +286,31 @@ html, body {
 }
 
 #username { 
-    position: absolute;
-    right: 60px;
-    bottom: 0px;
-    font-weight: bold;
-    font-family:'Open Sans';
-    padding: 5px 10px;
+/*	margin-left: 20px;*/
+/*    font-weight: bold;*/
+    font-family:'sans-serif';
+/*    padding: 5px 10px;*/
 }
 
     #username:hover {
-        color: rgba(0,0,0,0.7);
+        color: blue;
         cursor: pointer;
     }
 
 #logoutbutton {
+	position: absolute;
+	top: 360px;
+	left: -1000px;
     white-space: nowrap;
     height: 28px;
 /*    border-radius: 2px;     */
     color: white;
     margin: 0;
+	margin-left: 20px;
     font-weight: bold;
+	z-index: 30;
+    background-color: rgba(139,0,0,1);
+    border: 1px solid rgba(139,0,0,1);
 }
 
     #logoutbutton:hover {
@@ -241,11 +321,12 @@ html, body {
 /* Styles for yellow option buttons at bottom of screen */
 #optionButtons {
     position: absolute;
-    left: 0px;
-    bottom: 35px;
-    width: 100%;
-    height: 0px;
+    left: -1000px;
+    top: 105px;
+    width: 200px;
+    height: 222px;
     text-align: center;
+	z-index: 30;
 }
 
 /* Styles for zoom control elements */
@@ -287,19 +368,24 @@ html, body {
 /* Styles for pedigree display menu */
 #pedigreeDiv {
     position: absolute;
-    top: 0px;
-    left: 0px;
+    top: 150px;
+    left: -1000px;
     height: 0px;
-    width: 100%;
-    text-align: center;
+    width: 300px;
+/*    text-align: center;*/
+	z-index: 30;
 }
 
 #pedigree {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center;
+/*    margin-left: auto;*/
+/*    margin-right: auto;*/
+/*    text-align: center;*/
+	width: 385px;
+	padding-right: 15px;
+	overflow-x: hidden;
     display: inline-block;
     margin-top: 5px;
+	margin-bottom: 15px;
 }
 
 .trees {
@@ -310,18 +396,26 @@ html, body {
     cursor: pointer;
     padding: 5px;
     display: inline-block;
+	float: left;
     margin-top: 5px;
+	height: 20px;
+/*	min-width: 20px;*/
 }
 
 #tree1 {
+	margin-left: 70px;
+	margin-right: 100px;
     background-color: dodgerblue;
 }
 
 #tree2 {
-    margin-bottom: 5px;
+	margin-left: 20px;
+	margin-right: 100px;
 }
 
 #tree3 {
+	margin-right: 100px;
+	margin-left: 70px;
     background-color: pink;
 }
 
@@ -569,9 +663,14 @@ html, body {
         }
 
     .button.yellow {
+		float: left;
         color: black;
+		width: 100px;
+		margin-bottom: 5px;
+		margin-left: 20px;
+		text-align: left;
         /*background-color: #C08500;*/
-        background-color: rgba(192,133,0,0.5);
+        background-color: rgba(162,103,0,1);
         border: 1px solid #C08500;
     }
 
@@ -586,7 +685,7 @@ html, body {
         }
 
         .button.yellow.off {
-            background-color: rgba(233,176,15,0.5);
+            background-color: rgba(233,176,15,1);
             /*background-color: #F2B50F;*/
             border: 1px solid #F2B50F;
         }

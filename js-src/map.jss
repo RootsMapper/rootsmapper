@@ -45,6 +45,7 @@ function initialize() {
     if (accesstoken) {
 
 		drawCurve();
+		setupMenu();
 //		queryTable(['United States','Canada','United Kingdom']);
 
     	// Get discovery resource
@@ -64,6 +65,135 @@ function initialize() {
 
     }
 
+}
+
+function unselectItem(strName,boxName) {
+	var div = document.getElementById(strName);
+	var box = document.getElementById(boxName);
+	if (div) {
+		div.setAttribute('class','menuButton unselectable');
+	}
+
+	if (box) {
+		box.style.left = '-1000px';
+	}
+
+	if (strName == 'pedigreeChart') {
+		var box = document.getElementById('headerbox');
+		box.style.width = '200px';
+	}
+}
+
+function setupMenu() {
+	var rm = document.getElementById('rootsMapper');
+	var vo = document.getElementById('viewOptions');
+	var pc = document.getElementById('pedigreeChart');
+	var cs = document.getElementById('countryStatistics');
+	var ui = document.getElementById('userInfo');
+
+	rm.onclick = function () {
+		if (rm.getAttribute('class').indexOf('selected') !== -1) {
+			// currently selected, unselect	
+			unselectItem('rootsMapper','rootDiv');
+		} else {
+			// unselected, select it
+			rm.setAttribute('class','menuButton selected unselectable');
+			unselectItem('viewOptions','optionButtons');
+			unselectItem('pedigreeChart','pedigreeDiv');
+			unselectItem('countryStatistics','countryDiv');
+
+			setTimeout(function(){
+				var rd = document.getElementById('rootDiv');
+				rd.style.left = '5px';
+			},250);
+		}
+	}
+
+	vo.onclick = function () {
+		if (vo.getAttribute('class').indexOf('selected') !== -1) {
+			// currently selected, unselect	
+			unselectItem('viewOptions','optionButtons');
+		} else {
+			// unselected, select it
+			vo.setAttribute('class','menuButton selected unselectable');
+			unselectItem('rootsMapper','rootDiv');
+			unselectItem('pedigreeChart','pedigreeDiv');
+			unselectItem('countryStatistics','countryDiv');
+
+			setTimeout(function(){
+				var rd = document.getElementById('optionButtons');
+				rd.style.left = '5px';
+			},250);
+		}
+
+	}
+
+	pc.onclick = function () {
+		if (pc.getAttribute('class').indexOf('selected') !== -1) {
+			// currently selected, unselect	
+			unselectItem('pedigreeChart','pedigreeDiv');
+
+		} else {
+
+			pc.setAttribute('class','menuButton selected unselectable');
+			unselectItem('rootsMapper','rootDiv');
+			unselectItem('viewOptions','optionButtons');
+			unselectItem('countryStatistics','countryDiv');
+
+			var box = document.getElementById('headerbox');
+			box.style.width = '400px';
+
+			setTimeout(function(){
+				var rd = document.getElementById('pedigreeDiv');
+				rd.style.left = '5px';
+			},250);
+		}
+	}
+
+	cs.onclick = function () {
+		if (cs.getAttribute('class').indexOf('selected') !== -1) {
+			// currently selected, unselect	
+			unselectItem('countryStatistics','countryDiv');
+		} else {
+
+			cs.setAttribute('class','menuButton selected unselectable');
+			unselectItem('rootsMapper','rootDiv');
+			unselectItem('viewOptions','optionButtons');
+			unselectItem('pedigreeChart','pedigreeDiv');
+
+			setTimeout(function(){
+				var rd = document.getElementById('countryDiv');
+				rd.style.left = '5px';
+			},250);
+		}
+	}
+
+	ui.onmouseover = function() {
+		ui.style.height = '78px';
+
+		setTimeout(function(){
+			var un = document.getElementById('username').getBoundingClientRect();
+			var rd = document.getElementById('logoutbutton');
+			rd.style.left = '5px';
+			rd.style.top = un.top + 35 + 'px';
+		},0);
+
+		ui.onmouseout = function() {
+			ui.style.height = '40px';
+			var rd = document.getElementById('logoutbutton');
+			rd.style.left = '-1000px';
+		}
+	}
+}
+
+function resetMenu() {
+	var rd = document.getElementById('rootDiv');
+	rd.style.left = '-1000px';
+	if (document.getElementById('displayBox')) document.body.removeChild(document.getElementById('displayBox'));
+	if (document.getElementById('rootsMapper')) document.getElementById('rootsMapper').setAttribute('class','menuButton unselectable');
+	if (document.getElementById('viewOptions')) document.getElementById('viewOptions').setAttribute('class','menuButton unselectable');
+	if (document.getElementById('pedigreeChart')) document.getElementById('pedigreeChart').setAttribute('class','menuButton unselectable');
+	if (document.getElementById('countryStatistics')) document.getElementById('countryStatistics').setAttribute('class','menuButton unselectable');
 }
 
 function drawCurve() {
@@ -91,13 +221,16 @@ if (canvas) {
 
     ctx.beginPath();
     ctx.moveTo(0,0);
-    ctx.lineTo(0,150);
-    ctx.lineTo(300,150);
     ctx.lineTo(300,0);
-    ctx.bezierCurveTo(200, 50, 100, 50, 0,0)
+    ctx.bezierCurveTo(200, 50, 200, 100, 300,150);
+    ctx.lineTo(0,300);
+    ctx.lineTo(0,0);
 	ctx.fillStyle = 'rgba(0,0,0,0.78)';
     ctx.fill();
-
+	ctx.setShadow(10,10,10,'red',0.5);
+//	ctx.shadowBlur = 10;
+//	ctx.shadowColor = 'rgba(0,0,0,0.78)';
+//	ctx.shadowOffsetX = 10;
   }
 }
 }
@@ -169,7 +302,7 @@ function startGoogleMaps() {
         "elementType": "geometry",
         "stylers": [
             {
-                "color": "#fffffa"
+                "color": "#ffffdd"
             }
         ]
     },
@@ -177,7 +310,7 @@ function startGoogleMaps() {
         "featureType": "water",
         "stylers": [
             {
-                "lightness": 0
+                "lightness": -10
             }
         ]
     },
@@ -1397,6 +1530,10 @@ function createMarker(p,yellow) {
 
     function clearOverlays() {
 
+	if (layer) {
+		layer.setMap(null);
+	}
+
     document.getElementById('tree1').innerHTML = '';
     document.getElementById('tree2').innerHTML = '';
     document.getElementById('tree3').innerHTML = '';
@@ -1452,6 +1589,7 @@ function createMarker(p,yellow) {
         if (name) {
         	var personName = document.getElementById("personName");
         	personName.textContent = name;
+//			document.getElementById("userInfo").textContent = name;
     	}
     }
 
