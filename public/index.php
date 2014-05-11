@@ -139,11 +139,13 @@ if (isset($access_token))
             </div>
 
     <div id="headerbox">
-		<div id='rootsMapper' class='menuButton selected unselectable' >RootsMapper</div>
-		<div id='viewOptions' class='menuButton unselectable' >Map Options</div>
-		<div id='pedigreeChart' class='menuButton unselectable' >Pedigree Chart</div>
-		<div id='countryStatistics' class='menuButton unselectable' >Country Statistics</div>
-		<div id='userInfo' class='menuButton unselectable' ><span id="username" onclick="populateUser()">Current User</span></div>
+		<ul style="list-style-type: none; margin: 0; padding: 0; -webkit-transition: height 0.3s, width 0.3s; transition: height 0.3s, width 0.3s;">
+			<li id='rootsMapper' class='menuButton selected unselectable' >RootsMapper</li>
+			<li id='viewOptions' class='menuButton unselectable' >Map Options</li>
+			<li id='pedigreeChart' class='menuButton unselectable' >Pedigree Chart</li>
+			<li id='countryStatistics' class='menuButton unselectable' >Country Statistics</li>
+			<li id='userInfo' class='menuButton unselectable' ><span id="username" onclick="populateUser()">Current User</span></li>
+		</ul>
 	</div> 
 
 	  <!--  <div id="displayBox">
