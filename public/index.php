@@ -190,9 +190,9 @@ if (isset($access_token))
 
 			<div id="pedigreeDiv">
 				<div id="pedigree">
-					<div id="tree1" class="trees unselectable"></div>
-					<div id="tree2" class="trees unselectable"></div>
-					<div id="tree3" class="trees unselectable"></div>
+					<div class="trees unselectable"><div id="tree1" ></div></div>
+					<div class="trees unselectable"><div id="tree2" ></div></div>
+					<div class="trees unselectable"><div id="tree3" ></div></div>
 				</div>
 			</div>
 

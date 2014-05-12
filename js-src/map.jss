@@ -177,7 +177,7 @@ function setupMenu() {
 			setTimeout(function(){
 				var un = document.getElementById('username').getBoundingClientRect();
 				var rd = document.getElementById('logoutbutton');
-				rd.style.left = '5px';
+				rd.style.left = '0px';
 				rd.style.top = un.top + 35 + 'px';
 				ui.appendChild(rd);
 			},0);
@@ -710,8 +710,12 @@ function plotterLoop(callback) {
 }
 
 function finish(options) {
-	// Create pedigree browser
-	makePedigree(options.rootGen,options.rootNode);
+
+//    if (options.rootGen == 0 && options.rootNode == 0) {
+		// Not expanding 
+		// Update pedigree browser
+		makePedigree(options.rootGen,options.rootNode);
+//    }
 
 	// Setup spiderfying of pins
 	addOMSListeners();
@@ -737,7 +741,7 @@ function makePedigree(gen, node) {
 	var father = familyTree.getFather(gen, node);
 	var mother = familyTree.getMother(gen, node);
 
-	child.innerHTML = HtmlEncode(person.display.name) + ' (' + HtmlEncode(person.display.lifespan) + ')';
+	child.innerHTML = HtmlEncode(person.display.name) + '</br> (' + HtmlEncode(person.display.lifespan) + ')';
 
 	if (person.display.gender == "Male") {
             child.style.backgroundColor = 'dodgerblue';
@@ -746,7 +750,7 @@ function makePedigree(gen, node) {
         }
 
 	if (father) {
-		daddy.innerHTML = HtmlEncode(father.display.name) + ' (' + HtmlEncode(father.display.lifespan) + ')';
+		daddy.innerHTML = HtmlEncode(father.display.name) + '</br> (' + HtmlEncode(father.display.lifespan) + ')';
 		daddy.onclick = function () {
 			makePedigree(gen + 1, node * 2);
 			infoBoxClick(familyTree.getNode(gen + 1, node * 2).marker);
@@ -754,7 +758,7 @@ function makePedigree(gen, node) {
 	}
 
 	if (mother) {
-		mommy.innerHTML = HtmlEncode(mother.display.name) + ' (' + HtmlEncode(mother.display.lifespan) + ')';
+		mommy.innerHTML = HtmlEncode(mother.display.name) + '</br> (' + HtmlEncode(mother.display.lifespan) + ')';
 		mommy.onclick = function () {
 			makePedigree(gen + 1, node * 2 + 1);
 			infoBoxClick(familyTree.getNode(gen + 1, node * 2 + 1).marker);
@@ -1314,6 +1318,7 @@ function createMarker(p,yellow) {
         }
 
     	ib.open(map, mark);
+		makePedigree(mark.generation, mark.node);
 
 		if (baseurl.indexOf('sandbox') == -1) {
 			//setPhoto(mark.generation, mark.node, 0);

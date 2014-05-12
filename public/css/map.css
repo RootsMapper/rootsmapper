@@ -382,7 +382,7 @@ html, body {
 /*    margin-left: auto;*/
 /*    margin-right: auto;*/
 /*    text-align: center;*/
-	width: 385px;
+	width: 185px;
 	padding-right: 15px;
 	overflow-x: hidden;
     display: inline-block;
@@ -393,34 +393,44 @@ html, body {
 .trees {
     font-family: 'Open Sans';
     font-size: small;
-    background-color: gray;
-    border-radius: 5px;
+/*    background-color: gray;*/
     cursor: pointer;
-    padding: 5px;
+/*    padding: 5px;*/
 /*    display: inline-block;*/
 	float: left;
     margin-top: 5px;
-	height: 54px;
+	height: 64px;
 	white-space: normal;
+	width: 188px;
 /*	min-width: 20px;*/
 }
 
 #tree1 {
+	padding: 5px;
+	height: 54px;
 	margin-left: 70px;
-	margin-right: 100px;
+    border-radius: 5px;
+/*	margin-right: 100px;*/
     background-color: dodgerblue;
 	max-width: 100px;
 }
 
 #tree2 {
+	padding: 5px;
+	height: 54px;
 	margin-left: 20px;
-	margin-right: 100px;
+    border-radius: 5px;
+	background-color: gray;
+/*	margin-right: 100px;*/
 	max-width: 100px;
 }
 
 #tree3 {
-	margin-right: 100px;
+	padding: 5px;
+	height: 54px;
+/*	margin-right: 100px;*/
 	margin-left: 70px;
+    border-radius: 5px;
     background-color: pink;
 	max-width: 100px;
 }
