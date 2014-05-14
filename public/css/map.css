@@ -45,13 +45,9 @@ html, body {
 	border-radius: 0 0 10px 10px;
 	background-color: rgba(0,0,0,0.7);
 	z-index: 30;
-	-webkit-transition: width 0.3s;
-	transition: width 0.3s;
-/*    box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.5);*/
 }
 
 .menuButton {
-/*	float: left;*/
 	text-align: left;
 	text-indent: 20px;
 	width: auto;
@@ -60,27 +56,23 @@ html, body {
 	padding-top: 15px;
 	padding-right: 20px;
 	overflow-x: hidden;
-/*	background-color: rgba(0,0,0,0.7);*/
 	border-bottom: 1px solid rgba(120,120,120,0.7);
-/*	border-right: 1px solid rgba(120,120,120,0.7);*/
 	color: white;
 	font-size: large;
-	font-family: 'sans-serif';
-	-webkit-transition: height 0.3s, width 0.3s;
-	transition: height 0.3s, width 0.3s;
+	font-family: 'Open Sans', sans-serif;
+	-webkit-transition: height 0.3s;
+	transition: height 0.3s;
 }
 
 .menuButton:hover{
 	cursor: pointer;
 	background-color: rgba(0,0,0,0.7);
 	color: rgb(230,230,230);
-
 }
 
 .menuButton.selected{
 	background-color: rgba(0,0,0,0.8);
 	color: white;
-	border-right: none;
 	height: 300px;
 }
 
@@ -125,12 +117,10 @@ html, body {
 	width: 200px;
 	height: 88px;
     font-weight: bold;
-    font-family:'Open Sans';
+    font-family: 'Open Sans', sans-serif;
     padding-bottom: 10px;
 	color: white;
 	z-index: 30;
-/*    background-color: rgba(255,255,255,0.5);*/
-/*    box-shadow: 0 15px 50px 50px rgba(255, 255, 255, 0.5);*/
 }
 
 #personid {
@@ -159,7 +149,7 @@ html, body {
     color: white;
     margin: 0;
     cursor: pointer;
-    font-family: helvetica, arial, sans-serif;
+    font-family: 'Open Sans', sans-serif;
     font-size: small;
     z-index: 30;
 }
@@ -263,7 +253,7 @@ html, body {
 }
 
 #countryStats {
-    font-family:'Open Sans';
+    font-family: 'Open Sans', sans-serif;
     overflow-y: auto;
     display: none;
 	margin-bottom: 15px;
@@ -290,7 +280,7 @@ html, body {
 #username { 
 /*	margin-left: 20px;*/
 /*    font-weight: bold;*/
-    font-family:'sans-serif';
+    font-family: 'Open Sans', sans-serif;
 /*    padding: 5px 10px;*/
 }
 
@@ -309,6 +299,7 @@ html, body {
     color: white;
     margin: 0;
 	margin-left: 20px;
+	font-family: 'Open Sans', sans-serif;
     font-weight: bold;
 	z-index: 30;
     background-color: rgba(139,0,0,1);
@@ -374,14 +365,10 @@ html, body {
     left: -1000px;
     height: 0px;
     width: 300px;
-/*    text-align: center;*/
 	z-index: 30;
 }
 
 #pedigree {
-/*    margin-left: auto;*/
-/*    margin-right: auto;*/
-/*    text-align: center;*/
 	width: 185px;
 	padding-right: 15px;
 	overflow-x: hidden;
@@ -391,18 +378,14 @@ html, body {
 }
 
 .trees {
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', sans-serif;
     font-size: small;
-/*    background-color: gray;*/
     cursor: pointer;
-/*    padding: 5px;*/
-/*    display: inline-block;*/
 	float: left;
     margin-top: 5px;
 	height: 64px;
 	white-space: normal;
 	width: 188px;
-/*	min-width: 20px;*/
 }
 
 #tree1 {
@@ -410,7 +393,6 @@ html, body {
 	height: 54px;
 	margin-left: 70px;
     border-radius: 5px;
-/*	margin-right: 100px;*/
     background-color: dodgerblue;
 	max-width: 100px;
 }
@@ -421,14 +403,12 @@ html, body {
 	margin-left: 20px;
     border-radius: 5px;
 	background-color: gray;
-/*	margin-right: 100px;*/
 	max-width: 100px;
 }
 
 #tree3 {
 	padding: 5px;
 	height: 54px;
-/*	margin-right: 100px;*/
 	margin-left: 70px;
     border-radius: 5px;
     background-color: pink;
@@ -460,6 +440,12 @@ html, body {
         border: 1px solid green;
     }
 
+    #expandList li.main {
+        background-color: green;
+        border: 1px solid green;
+    }
+
+
     #expandList li:hover {
         background-color: rgba(0,140,0,1);
         border: 1px solid rgba(0,140,0,1);
@@ -483,6 +469,7 @@ html, body {
     white-space: nowrap;
     clear: both;
     margin-bottom: 10px;
+	font-family: 'Open Sans', sans-serif;
 }
 
     .person .box44 {
@@ -500,8 +487,7 @@ html, body {
     .person .label {
         display: inline-block;
         width: 44px;
-        font: 13px arial;
-        font-weight: lighter;
+        font-size: 13px;
         text-align: right;
     }
 
@@ -509,21 +495,21 @@ html, body {
         display: inline-block;
         vertical-align: top;
         margin-left: 15px;
-        font: 14px arial;
+        font-size: 14px;
     }
 
     .person .box .xlarge {
-        font: 22px arial;
+        font-size: 22px;
         font-family: Rockwell, "Book Antiqua", Palatino, serif;
         margin-bottom: 2px;
     }
 
     .person .box .large {
-        font: 14px arial;
+        font-size: 14px;
     }
 
     .person .box .small {
-        font: 12px arial;
+        font-size: 12px;
         color: #666666;
     }
 
@@ -592,7 +578,7 @@ html, body {
 
 #loadingMessage {
     color: white;
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', sans-serif;
     font-weight: bold;
     font-size: small;
     margin-top: 40px;
@@ -607,6 +593,7 @@ html, body {
     color: white;
     margin: 0;
     cursor: pointer;
+	font-family: 'Open Sans', sans-serif;
     font-weight: bold;
 }
 
@@ -757,7 +744,7 @@ html, body {
      background-color: #ffffca;
      padding: 2px 4px;
      color: #000023;
-     font-family: 'Open Sans';
+     font-family: 'Open Sans', sans-serif;
      font-size: small;
      max-width: 300px;
  }
@@ -765,7 +752,7 @@ html, body {
 /* Styles for feedback, donate, etc. buttons */
 #lowerbuttonframe {
     position: absolute;
-    bottom: 60px;
+    bottom: 20px;
     right: 5px;
     margin: 0 auto;
     white-space: nowrap;
