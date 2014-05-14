@@ -146,6 +146,7 @@ html, body {
     font-weight: bold;
     font-family: 'Open Sans', sans-serif;
     padding-bottom: 10px;
+	padding-right: 15px;
 	color: white;
 /*	z-index: 30;*/
 }
