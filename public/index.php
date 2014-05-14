@@ -143,7 +143,7 @@ if (isset($access_token))
 			<li id='rootsMapper' class='menuButton selected unselectable' >
 				<div id='rootsMapperSpan' class='menuButtonSpan lighted'>RootsMapper</div>
 				<div id="rootDiv">
-					<div id="personName" style="margin-left: 20px">Root Name</div>
+					<div id="personName" style="margin-left: 20px padding-right: 15px;">Root Name</div>
 		 			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
 					<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 					<ul id="runList" class="listClass">
