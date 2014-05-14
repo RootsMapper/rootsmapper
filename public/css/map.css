@@ -48,14 +48,11 @@ html, body {
 }
 
 .menuButton {
-	text-align: left;
-	text-indent: 20px;
 	width: auto;
-	height: 40px;
+	height: 55px;
 	margin: 0px;
-	padding-top: 15px;
-	padding-right: 20px;
-	overflow-x: hidden;
+	overflow: hidden;
+	position: relative;
 	border-bottom: 1px solid rgba(120,120,120,0.7);
 	color: white;
 	font-size: large;
@@ -64,14 +61,26 @@ html, body {
 	transition: height 0.3s;
 }
 
-.menuButton:hover{
+.menuButtonSpan {
+	text-align: left;
+	text-indent: 20px;
+	width: 100%;
+	height: 40px;
+	padding-top: 15px;
+}
+
+.menuButtonSpan:hover {
 	cursor: pointer;
-	background-color: rgba(0,0,0,0.7);
+	background-color: rgba(0,0,0,0.8);
 	color: rgb(230,230,230);
 }
 
-.menuButton.selected{
+.menuButtonSpan.lighted {
 	background-color: rgba(0,0,0,0.8);
+}
+
+
+.menuButton.selected{
 	color: white;
 	height: 300px;
 }
@@ -81,15 +90,32 @@ html, body {
 }
 
 #pedigreeChart.selected {
-	height: 250px;
+	height: 280px;
+}
+
+#rootsMapper {
+	z-index: 50;
+	overflow: visible;
+}
+
+#viewOptions {
+	z-index: 40;
+}
+
+#userInfo {
+	z-index: 30;
+}
+
+#countryStatistics {
+	z-index: 20;
 }
 
 #rootsMapper.selected {
-	height: 130px;
+	height: 150px;
 }
 
 #viewOptions.selected {
-	height: 255px;
+	height: 275px;
 }
 
 #userInfo{
@@ -111,16 +137,17 @@ html, body {
 
 /* Styles for root person box */
 #rootDiv {
-    position: absolute;
-    left: 5px;
-    top: 48px;
-	width: 200px;
+/*    position: absolute;*/
+/*    left: 0px;*/
+/*    top: 48px;*/
+	background-color: rgba(0,0,0,0.8);
+	width: 100%;
 	height: 88px;
     font-weight: bold;
     font-family: 'Open Sans', sans-serif;
     padding-bottom: 10px;
 	color: white;
-	z-index: 30;
+/*	z-index: 30;*/
 }
 
 #personid {
@@ -171,13 +198,12 @@ html, body {
 #runList {
     list-style-type: none;
     margin: 0;
+	margin-top: 10px;
 	margin-left: 20px;
     padding: 0;
-    position: absolute;
-    left: 0px;
-    top: 50px;
-    z-index: 30px;
-    display: block;
+	text-indent: 0px;
+    z-index: 50;
+/*    display: block;*/
 }
 
 #runList li {
@@ -194,6 +220,7 @@ html, body {
         display: none;
         background-color: green;
         border: 1px solid green;
+		font-weight: normal;
     }
 
     #runList li:hover {
@@ -244,12 +271,11 @@ html, body {
 
 /* Styles for display of country totals*/
 #countryDiv {
-    position: absolute;
-    left: -1000px;
-    top: 210px;
-	width: 200px;
+	width: 100%;
 	height: 276px;
 	z-index: 30;
+	text-indent: 0px;
+    background-color: rgba(0,0,0,0.8);
 }
 
 #countryStats {
@@ -290,9 +316,9 @@ html, body {
     }
 
 #logoutbutton {
-	position: absolute;
-	top: 360px;
-	left: -1000px;
+/*	position: absolute;*/
+/*	top: 360px;*/
+/*	left: -1000px;*/
     white-space: nowrap;
     height: 28px;
 /*    border-radius: 2px;     */
@@ -313,13 +339,11 @@ html, body {
 
 /* Styles for yellow option buttons at bottom of screen */
 #optionButtons {
-    position: absolute;
-    left: -1000px;
-    top: 105px;
-    width: 200px;
+    width: 100%;
     height: 222px;
     text-align: center;
 	z-index: 30;
+	background-color: rgba(0,0,0,0.8);
 }
 
 /* Styles for zoom control elements */
@@ -328,7 +352,7 @@ html, body {
     right: 5px;
     top: 30px;
     background-color: white;
-    border: 1px solid lightgray;
+    border: 1px solid darkgray;
     width: 15px;
     text-align: center;
     padding-left: 5px;
@@ -360,21 +384,18 @@ html, body {
 
 /* Styles for pedigree display menu */
 #pedigreeDiv {
-    position: absolute;
-    top: 150px;
-    left: -1000px;
-    height: 0px;
-    width: 300px;
+    height: 240px;
+    width: 100%;
 	z-index: 30;
+	background-color: rgba(0,0,0,0.8);
 }
 
 #pedigree {
+	height: 240px;
 	width: 185px;
 	padding-right: 15px;
 	overflow-x: hidden;
     display: inline-block;
-    margin-top: 5px;
-	margin-bottom: 15px;
 }
 
 .trees {
@@ -386,6 +407,7 @@ html, body {
 	height: 64px;
 	white-space: normal;
 	width: 188px;
+	color: black;
 }
 
 #tree1 {

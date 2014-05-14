@@ -140,72 +140,88 @@ if (isset($access_token))
 
     <div id="headerbox">
 		<ul style="list-style-type: none; margin: 0; padding: 0; -webkit-transition: height 0.3s, width 0.3s; transition: height 0.3s, width 0.3s;">
-			<li id='rootsMapper' class='menuButton selected unselectable' >RootsMapper</li>
-			<li id='viewOptions' class='menuButton unselectable' >Map Options</li>
-			<li id='pedigreeChart' class='menuButton unselectable' >Pedigree Chart</li>
-			<li id='countryStatistics' class='menuButton unselectable' >Country Statistics</li>
-			<li id='userInfo' class='menuButton unselectable' ><span id="username" onclick="populateUser()">Current User</span></li>
+			<li id='rootsMapper' class='menuButton selected unselectable' >
+				<div id='rootsMapperSpan' class='menuButtonSpan lighted'>RootsMapper</div>
+				<div id="rootDiv">
+					<div id="personName" style="margin-left: 20px">Root Name</div>
+		 			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
+					<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+					<ul id="runList" class="listClass">
+						<li class="main" onclick="expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:1})">1 generation</li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:2})">2 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:3})">3 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:4})">4 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:5})">5 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:6})">6 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:7})">7 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:8})">8 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:9})">9 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:10})">10 generations</li>
+					</ul>
+				</div>
+			</li>
+			<li id='viewOptions' class='menuButton unselectable' >
+				<div id='viewOptionsSpan' class='menuButtonSpan'>Map Options</div>
+				<div id="optionButtons">
+					<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button></br>
+					<button id="showpins" class="button yellow off" onclick="togglePins()">Pins</button></br>
+					<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button></br>
+					<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button></br>
+					<button id="reset" class="button yellow off" onclick="clearOverlays()">Reset</button></br>
+					<button id="KML" class="button yellow off" onclick="createKML()">KML</button>
+				</div>
+			</li>
+			<li id='pedigreeChart' class='menuButton unselectable' >
+				<div id='pedigreeChartSpan' class='menuButtonSpan'>Pedigree Chart</div>
+				<div id="pedigreeDiv">
+					<div id="pedigree">
+						<div class="trees unselectable"><div id="tree1" ></div></div>
+						<div class="trees unselectable"><div id="tree2" ></div></div>
+						<div class="trees unselectable"><div id="tree3" ></div></div>
+					</div>
+				</div>
+			</li>
+			<li id='countryStatistics' class='menuButton unselectable' >
+				<div id='countryStatisticsSpan' class='menuButtonSpan'>Country Statistics</div>
+				<div id="countryDiv">
+					<div id="countryStats"></div>
+					<ul id="countryList" class="listClass">
+						<li class="main" onclick="expandList({listName:'countryList'});"><b>Generation</b><img class="triangle" src="images/triangle-down.png"></li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop()">All generations</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,2)">2<sup>nd</sup> generation</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,3)">3<sup>rd</sup> generation</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,4)">4<sup>th</sup> generation</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,5)">5<sup>th</sup> generation</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,6)">6<sup>th</sup> generation</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,7)">7<sup>th</sup> generation</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,8)">8<sup>th</sup> generation</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,9)">9<sup>th</sup> generation</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,10)">10<sup>th</sup> generation</li>
+					</ul>
+				</div>
+			</li>
+			<li id='userInfo' class='menuButton unselectable' >
+				<div id="username" class='menuButtonSpan' onclick="populateUser()">Current User</div>
+				<button id="logoutbutton" class="clear" onclick="window.location='logout.php'">Logout</button>
+			</li>
 		</ul>
 	</div> 
+
 
 	  <!--  <div id="displayBox">
 	    </div> -->
 
-			<div id="rootDiv">
-				<ul id="runList" class="listClass">
-					<li class="main" onclick="expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:1})">1 generation</li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:2})">2 generations</li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:3})">3 generations</li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:4})">4 generations</li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:5})">5 generations</li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:6})">6 generations</li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:7})">7 generations</li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:8})">8 generations</li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:9})">9 generations</li>
-					<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:10})">10 generations</li>
-				</ul>
-				<div id="personName" style="margin-left: 20px">Root Name</div>
-     			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
-				<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-			</div>
-
-			<div id="countryDiv">
-				<div id="countryStats"></div>
-				<ul id="countryList" class="listClass">
-					<li class="main" onclick="expandList({listName:'countryList'});"><b>Generation</b><img class="triangle" src="images/triangle-down.png"></li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop()">All generations</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,2)">2<sup>nd</sup> generation</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,3)">3<sup>rd</sup> generation</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,4)">4<sup>th</sup> generation</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,5)">5<sup>th</sup> generation</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,6)">6<sup>th</sup> generation</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,7)">7<sup>th</sup> generation</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,8)">8<sup>th</sup> generation</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,9)">9<sup>th</sup> generation</li>
-					<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,10)">10<sup>th</sup> generation</li>
-				</ul>
-			</div>
-
-			<div id="pedigreeDiv">
-				<div id="pedigree">
-					<div class="trees unselectable"><div id="tree1" ></div></div>
-					<div class="trees unselectable"><div id="tree2" ></div></div>
-					<div class="trees unselectable"><div id="tree3" ></div></div>
-				</div>
-			</div>
-
-			<div id="optionButtons">
-				<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
-				<button id="showpins" class="button yellow off" onclick="togglePins()">Pins</button>
-				<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
-				<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
-				<button id="reset" class="button yellow off" onclick="clearOverlays()">Reset</button>
-				<button id="KML" class="button yellow off" onclick="createKML()">KML</button>
-			</div>
 			
-			<button id="logoutbutton" class="clear" onclick="window.location='logout.php'">Logout</button>
+
+
+
+
+
+
+			
+			
 			
 			<div id="userDiv">
 				

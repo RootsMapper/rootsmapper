@@ -67,20 +67,19 @@ function initialize() {
 
 }
 
-function unselectItem(strName,boxName) {
+function unselectItem(strName,spanName) {
 	var div = document.getElementById(strName);
-	var box = document.getElementById(boxName);
+	var span = document.getElementById(spanName);
 	if (div) {
 		div.setAttribute('class','menuButton unselectable');
 	}
 
-	if (box) {
-		box.style.left = '-1000px';
+	if (span) {
+		span.setAttribute('class','menuButtonSpan');
 	}
 
-	if (strName == 'pedigreeChart') {
-//		var box = document.getElementById('headerbox');
-//		box.style.width = 'auto';
+	if (strName == 'rootsMapper') {
+		div.style.overflow = 'hidden';
 	}
 }
 
@@ -91,103 +90,93 @@ function setupMenu() {
 	var cs = document.getElementById('countryStatistics');
 	var ui = document.getElementById('userInfo');
 
-	rm.onclick = function () {
+	var rms = document.getElementById('rootsMapperSpan');
+	var vos = document.getElementById('viewOptionsSpan');
+	var pcs = document.getElementById('pedigreeChartSpan');
+	var css = document.getElementById('countryStatisticsSpan');
+	var uis = document.getElementById('userInfoSpan');
+
+	rms.onclick = function () {
 		if (rm.getAttribute('class').indexOf('selected') !== -1) {
 			// currently selected, unselect	
-			unselectItem('rootsMapper','rootDiv');
+			unselectItem('rootsMapper','rootsMapperSpan');
+			rm.style.overflow = 'hidden';
 		} else {
 			// unselected, select it
 			rm.setAttribute('class','menuButton selected unselectable');
-			unselectItem('viewOptions','optionButtons');
-			unselectItem('pedigreeChart','pedigreeDiv');
-			unselectItem('countryStatistics','countryDiv');
+			rms.setAttribute('class','menuButtonSpan lighted');
+			unselectItem('viewOptions','viewOptionsSpan');
+			unselectItem('pedigreeChart','pedigreeChartSpan');
+			unselectItem('countryStatistics','countryStatisticsSpan');
 
 			setTimeout(function(){
-				var rd = document.getElementById('rootDiv');
-				rd.style.left = '5px';
+				rm.style.overflow = 'visible';
 			},250);
 		}
 	}
 
-	vo.onclick = function () {
+	vos.onclick = function () {
 		if (vo.getAttribute('class').indexOf('selected') !== -1) {
 			// currently selected, unselect	
-			unselectItem('viewOptions','optionButtons');
+			unselectItem('viewOptions','viewOptionsSpan');
 		} else {
 			// unselected, select it
 			vo.setAttribute('class','menuButton selected unselectable');
-			unselectItem('rootsMapper','rootDiv');
-			unselectItem('pedigreeChart','pedigreeDiv');
-			unselectItem('countryStatistics','countryDiv');
-
-			setTimeout(function(){
-				var rd = document.getElementById('optionButtons');
-				rd.style.left = '5px';
-			},250);
+			vos.setAttribute('class','menuButtonSpan lighted');
+			unselectItem('rootsMapper','rootsMapperSpan');
+			unselectItem('pedigreeChart','pedigreeChartSpan');
+			unselectItem('countryStatistics','countryStatisticsSpan');
 		}
 
 	}
 
-	pc.onclick = function () {
+	pcs.onclick = function () {
 		if (pc.getAttribute('class').indexOf('selected') !== -1) {
 			// currently selected, unselect	
-			unselectItem('pedigreeChart','pedigreeDiv');
-//			pc.style.width = 'auto';
+			unselectItem('pedigreeChart','pedigreeChartSpan');
 
 		} else {
-
+			// unselected, select it
 			pc.setAttribute('class','menuButton selected unselectable');
-			unselectItem('rootsMapper','rootDiv');
-			unselectItem('viewOptions','optionButtons');
-			unselectItem('countryStatistics','countryDiv');
-
-//			var box = document.getElementById('headerbox');
-//			box.style.width = '400px';
-//			pc.style.width = '400px';
-
-			setTimeout(function(){
-				var rd = document.getElementById('pedigreeDiv');
-				rd.style.left = '5px';
-			},250);
+			pcs.setAttribute('class','menuButtonSpan lighted');
+			unselectItem('rootsMapper','rootsMapperSpan');
+			unselectItem('viewOptions','viewOptionsSpan');
+			unselectItem('countryStatistics','countryStatisticsSpan');
 		}
 	}
 
-	cs.onclick = function () {
+	css.onclick = function () {
 		if (cs.getAttribute('class').indexOf('selected') !== -1) {
 			// currently selected, unselect	
-			unselectItem('countryStatistics','countryDiv');
+			unselectItem('countryStatistics','countryStatisticsSpan');
 		} else {
-
+			// unselected, select it
 			cs.setAttribute('class','menuButton selected unselectable');
-			unselectItem('rootsMapper','rootDiv');
-			unselectItem('viewOptions','optionButtons');
-			unselectItem('pedigreeChart','pedigreeDiv');
-
-			setTimeout(function(){
-				var rd = document.getElementById('countryDiv');
-				rd.style.left = '5px';
-			},250);
+			css.setAttribute('class','menuButtonSpan lighted');
+			unselectItem('rootsMapper','rootsMapperSpan');
+			unselectItem('viewOptions','viewOptionsSpan');
+			unselectItem('pedigreeChart','pedigreeChartSpan');
 		}
 	}
 
 	ui.onmouseover = function(e) {
 		if (isEventFromChild(e,ui) == false) {
-			ui.style.height = '78px';
-
-			setTimeout(function(){
-				var un = document.getElementById('username').getBoundingClientRect();
-				var rd = document.getElementById('logoutbutton');
-				rd.style.left = '0px';
-				rd.style.top = un.top + 35 + 'px';
-				ui.appendChild(rd);
-			},0);
+			ui.style.height = '100px';
+			
+//			setTimeout(function(){
+//				var un = document.getElementById('username').getBoundingClientRect();
+//				var rd = document.getElementById('logoutbutton');
+//				rd.style.left = '0px';
+//				rd.style.top = un.top + 35 + 'px';
+//				ui.appendChild(rd);
+//			},0);
 
 			ui.onmouseout = function(e) {
 				if (isEventToChild(e,ui) == false) {
-					ui.style.height = '40px';
-					var rd = document.getElementById('logoutbutton');
-					rd.style.left = '-1000px';
-					document.body.appendChild(rd);
+					ui.style.height = '55px';
+//					var rd = document.getElementById('logoutbutton');
+//					rd.style.left = '-1000px';
+//					document.body.appendChild(rd);
 				}
 			}
 		}
@@ -1217,7 +1206,7 @@ function createMarker(p,yellow) {
         mark.lifespan = p.display.lifespan;
 
         mark.expandButton = "<ul id='expandList' class='listClass'>" +
-                                "<li id='ebutton' class='clear' onclick='expandList({listName:\"expandList\"});'><b>Expand</b><img class='triangle' src='images/triangle-down.png'></li>" +
+                                "<li id='ebutton' class='main' onclick='expandList({listName:\"expandList\"});'><b>Expand</b><img class='triangle' src='images/triangle-down.png'></li>" +
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 1 + ");'>1 generation</li>" +
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 2 + ");'>2 generations</li>" + 
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 3 + ");'>3 generations</li>" +
