@@ -145,7 +145,7 @@ if (isset($access_token))
 				<div id="rootDiv">
 					<div id="personName" style="margin-left: 20px; padding-right: 15px;">Root Name</div>
 		 			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
-					<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+					<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script></br>
 					<ul id="runList" class="listClass">
 						<li class="main" onclick="expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
 						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:1})">1 generation</li>
@@ -203,30 +203,15 @@ if (isset($access_token))
 				</div>
 			</li>
 			<li id='userInfo' class='menuButton unselectable' >
-				<div id="username" class='menuButtonSpan' onclick="populateUser()">Current User</div>
-				<button id="logoutbutton" class="clear" onclick="window.location='logout.php'">Logout</button>
+				<div id="username" class='menuButtonSpan' >Current User</div>
+				<div id="userDiv">
+					<button id="copyUserId" class="button blue" onclick="populateUser()">Set As Root</button></br>
+					<button id="logoutbutton" class="clear" onclick="window.location='logout.php'">Logout</button>
+				</div>
 			</li>
 		</ul>
 	</div> 
 
-
-	  <!--  <div id="displayBox">
-	    </div> -->
-
-			
-
-
-
-
-
-
-			
-			
-			
-			<div id="userDiv">
-				
-
-			</div>
 
 <?php
 }

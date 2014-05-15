@@ -44,9 +44,7 @@ function initialize() {
  	// If user is logged in
     if (accesstoken) {
 
-		drawCurve();
 		setupMenu();
-//		queryTable(['United States','Canada','United Kingdom']);
 
     	// Get discovery resource
         discoveryResource(function () {
@@ -72,15 +70,17 @@ function unselectItem(strName,spanName) {
 	var span = document.getElementById(spanName);
 	if (div) {
 		div.setAttribute('class','menuButton unselectable');
+		div.style.overflow = 'hidden';
 	}
 
 	if (span) {
 		span.setAttribute('class','menuButtonSpan');
 	}
-
-	if (strName == 'rootsMapper') {
-		div.style.overflow = 'hidden';
+	
+	if (strName == 'countryStatistics') {
+		div.style.height = '55px';
 	}
+
 }
 
 function setupMenu() {
@@ -94,7 +94,7 @@ function setupMenu() {
 	var vos = document.getElementById('viewOptionsSpan');
 	var pcs = document.getElementById('pedigreeChartSpan');
 	var css = document.getElementById('countryStatisticsSpan');
-	var uis = document.getElementById('userInfoSpan');
+	var uis = document.getElementById('username');
 
 	rms.onclick = function () {
 		if (rm.getAttribute('class').indexOf('selected') !== -1) {
@@ -146,90 +146,40 @@ function setupMenu() {
 	}
 
 	css.onclick = function () {
-		if (cs.getAttribute('class').indexOf('selected') !== -1) {
+		if (css.getAttribute('class').indexOf('lighted') !== -1) {
 			// currently selected, unselect	
 			unselectItem('countryStatistics','countryStatisticsSpan');
 		} else {
 			// unselected, select it
-			cs.setAttribute('class','menuButton selected unselectable');
 			css.setAttribute('class','menuButtonSpan lighted');
 			unselectItem('rootsMapper','rootsMapperSpan');
 			unselectItem('viewOptions','viewOptionsSpan');
 			unselectItem('pedigreeChart','pedigreeChartSpan');
+
+			var un = document.getElementById('countryStats').getBoundingClientRect();
+			var rd = document.getElementById('logoutbutton');
+
+			cs.style.height = document.getElementById('countryStats').clientHeight + 55 + 'px';
+			document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 'px';
+			
+			setTimeout(function(){
+				cs.style.overflow = 'visible';
+			},250);
 		}
 	}
 
-	ui.onmouseover = function(e) {
-		if (isEventFromChild(e,ui) == false) {
-			ui.style.height = '100px';
-			
-//			setTimeout(function(){
-//				var un = document.getElementById('username').getBoundingClientRect();
-//				var rd = document.getElementById('logoutbutton');
-//				rd.style.left = '0px';
-//				rd.style.top = un.top + 35 + 'px';
-//				ui.appendChild(rd);
-//			},0);
+	uis.onmouseover = function(e) {
 
-			ui.onmouseout = function(e) {
-				if (isEventToChild(e,ui) == false) {
-					ui.style.height = '55px';
-//					var rd = document.getElementById('logoutbutton');
-//					rd.style.left = '-1000px';
-//					document.body.appendChild(rd);
-				}
+		ui.setAttribute('class','menuButton selected unselectable');
+		uis.setAttribute('class','menuButtonSpan lighted');
+
+		ui.onmouseout = function(e) {
+			if (isEventToChild(e,ui) == false) {
+				unselectItem('userInfo','username');
 			}
 		}
+
 	}
-}
-
-function resetMenu() {
-	var rd = document.getElementById('rootDiv');
-	rd.style.left = '-1000px';
-	if (document.getElementById('displayBox')) document.body.removeChild(document.getElementById('displayBox'));
-	if (document.getElementById('rootsMapper')) document.getElementById('rootsMapper').setAttribute('class','menuButton unselectable');
-	if (document.getElementById('viewOptions')) document.getElementById('viewOptions').setAttribute('class','menuButton unselectable');
-	if (document.getElementById('pedigreeChart')) document.getElementById('pedigreeChart').setAttribute('class','menuButton unselectable');
-	if (document.getElementById('countryStatistics')) document.getElementById('countryStatistics').setAttribute('class','menuButton unselectable');
-}
-
-function drawCurve() {
-    var canvas = document.getElementById('canvas');
-if (canvas) {
-  if (canvas.getContext){
-    var ctx = canvas.getContext('2d');
-
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.lineTo(300,0);
-    ctx.lineTo(300,150);
-    ctx.bezierCurveTo(200, 100, 100, 100, 0, 150)
-    ctx.lineTo(0,0);
-	ctx.fillStyle = 'rgba(0,0,0,0.78)';
-    ctx.fill();
-
-  }
-}
-
-    var canvas = document.getElementById('canvas2');
-if (canvas) {
-  if (canvas.getContext){
-    var ctx = canvas.getContext('2d');
-
-    ctx.beginPath();
-    ctx.moveTo(0,0);
-    ctx.lineTo(300,0);
-    ctx.bezierCurveTo(200, 50, 200, 100, 300,150);
-    ctx.lineTo(0,300);
-    ctx.lineTo(0,0);
-	ctx.fillStyle = 'rgba(0,0,0,0.78)';
-    ctx.fill();
-	ctx.setShadow(10,10,10,'red',0.5);
-//	ctx.shadowBlur = 10;
-//	ctx.shadowColor = 'rgba(0,0,0,0.78)';
-//	ctx.shadowOffsetX = 10;
-  }
-}
 }
 
 function queryTable(countryArray,countryCount) {
@@ -376,7 +326,7 @@ function startGoogleMaps() {
 	google.maps.event.addListener(map, 'click', function () {
 		ib.close();
 		expandList({listName:"runList",noExpanding:true});
-		expandList({listName:"countryList",noExpanding:true,buttonIndex:11,arrowUp:true});
+		expandList({listName:"countryList",noExpanding:true});
 	});
 
 }
@@ -384,7 +334,7 @@ function startGoogleMaps() {
 function pageSetup() {
 
 	// Create tooltips for buttons
-	tooltip.set({id: "username", tip: "Current user. Click to set as root person"});
+	tooltip.set({id: "copyUserId", tip: "Click to set user as root person"});
 	tooltip.set({id: "countryButton", tip: "Choose a generation to get totals from this map"});
 	tooltip.set({id: "populateUser", tip: "Set yourself as the root person"});
 	tooltip.set({id: "runButton", tip: "Begin the plotting process"});
@@ -833,7 +783,7 @@ function displayCountryStats(group) {
             }
         }
     }
-    div.style.display = "block";
+    
 	
 	
 	queryTable(keys,vals);

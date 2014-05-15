@@ -85,10 +85,6 @@ html, body {
 	height: 300px;
 }
 
-.menuButton.selected:hover{
-	color: rgb(230,230,230);
-}
-
 #pedigreeChart.selected {
 	height: 280px;
 }
@@ -99,19 +95,19 @@ html, body {
 }
 
 #viewOptions {
-	z-index: 40;
-}
-
-#userInfo {
-	z-index: 30;
-}
-
-#countryStatistics {
 	z-index: 20;
 }
 
+#userInfo {
+	z-index: 20;
+}
+
+#countryStatistics {
+	z-index: 45;
+}
+
 #rootsMapper.selected {
-	height: 150px;
+	height: 153px;
 }
 
 #viewOptions.selected {
@@ -122,8 +118,12 @@ html, body {
 	border-radius: 0 0 10px 10px;
 }
 
+#userInfo.selected{
+	height: 145px;
+}
+
 #countryStatistics.selected {
-	height: 300px;
+	height: 55px;
 }
 
 .unselectable {
@@ -137,9 +137,6 @@ html, body {
 
 /* Styles for root person box */
 #rootDiv {
-/*    position: absolute;*/
-/*    left: 0px;*/
-/*    top: 48px;*/
 	background-color: rgba(0,0,0,0.8);
 	width: 100%;
 	height: 88px;
@@ -147,7 +144,6 @@ html, body {
     font-family: 'Open Sans', sans-serif;
     padding-bottom: 10px;
 	color: white;
-/*	z-index: 30;*/
 }
 
 #personid {
@@ -203,7 +199,7 @@ html, body {
     padding: 0;
 	text-indent: 0px;
     z-index: 50;
-/*    display: block;*/
+    display: inline-block;
 }
 
 #runList li {
@@ -239,8 +235,9 @@ html, body {
     margin: 0;
 	margin-left: 20px;
     padding: 0;
-    z-index: 30px;
-    display: block;
+	position: relative;
+	top: -45px;
+    display: inline-block;
 }
 
 #countryList li {
@@ -272,18 +269,17 @@ html, body {
 /* Styles for display of country totals*/
 #countryDiv {
 	width: 100%;
-	height: 276px;
 	z-index: 30;
 	text-indent: 0px;
-    background-color: rgba(0,0,0,0.8);
 }
 
 #countryStats {
     font-family: 'Open Sans', sans-serif;
     overflow-y: auto;
-    display: none;
-	margin-bottom: 15px;
-	margin-left: 20px;
+	padding-bottom: 55px;
+	padding-left: 20px;
+	height: auto;
+    background-color: rgba(0,0,0,0.8);
 }
 
 #countryStats span {
@@ -294,34 +290,27 @@ html, body {
 
 /* Styles for display of user information */
 #userDiv {
-    position: absolute;
-    bottom: 19px;
-    right: 5px;
-    margin: 0 auto;
-    white-space: nowrap;
-    z-index: 1;
-    background-color: transparent;
+	width: 100%;
+	height: 90px;
+    margin: 0;
+    background-color: rgba(0,0,0,0.8);
+	border-radius: 0 0 10px 10px;
 }
 
 #username { 
-/*	margin-left: 20px;*/
-/*    font-weight: bold;*/
     font-family: 'Open Sans', sans-serif;
-/*    padding: 5px 10px;*/
 }
 
-    #username:hover {
-        color: blue;
-        cursor: pointer;
-    }
+
+#copyUserId {
+	margin-left: 20px;
+	margin-bottom: 15px;
+	border-radius: 0;
+}
 
 #logoutbutton {
-/*	position: absolute;*/
-/*	top: 360px;*/
-/*	left: -1000px;*/
     white-space: nowrap;
     height: 28px;
-/*    border-radius: 2px;     */
     color: white;
     margin: 0;
 	margin-left: 20px;
@@ -602,7 +591,7 @@ html, body {
     color: white;
     font-family: 'Open Sans', sans-serif;
     font-weight: bold;
-    font-size: small;
+/*    font-size: small;*/
     margin-top: 40px;
     line-height: 2em;
 }
