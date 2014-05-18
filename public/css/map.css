@@ -168,7 +168,7 @@ html, body {
     padding: 0;
     padding-top: 5px;
     padding-left: 6px;
-    white-space: nowrap;    
+    white-space: nowrap;
     color: white;
     margin: 0;
     cursor: pointer;
@@ -280,6 +280,12 @@ html, body {
 	padding-left: 20px;
 	height: auto;
     background-color: rgba(0,0,0,0.8);
+    -webkit-touch-callout: text;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 
 #countryStats span {
@@ -297,7 +303,7 @@ html, body {
 	border-radius: 0 0 10px 10px;
 }
 
-#username { 
+#username {
     font-family: 'Open Sans', sans-serif;
 	padding-right: 15px;
 }
@@ -441,7 +447,7 @@ html, body {
     cursor: pointer;
 }
 
-    #expandList li {    
+    #expandList li {
         height: 22px;
         width: 100px;
     }
@@ -601,7 +607,7 @@ html, body {
 .button {
     white-space: nowrap;
     height: 30px;
-    border-radius: 2px;     
+    border-radius: 2px;
     color: white;
     margin: 0;
     cursor: pointer;
@@ -721,7 +727,7 @@ html, body {
     background-color: #003e97;
     color: white;
     border: 1px solid #003e97;
-    border-radius: 2px; 
+    border-radius: 2px;
     height: 40px;
     width: 210px;
     margin-top: -20px;
@@ -732,7 +738,7 @@ html, body {
     left: 50%;
     top: 50%;
     z-index: 1;
-    border-radius: 3px; 
+    border-radius: 3px;
     box-shadow: 0 3px 5px 0 rgba(100, 100, 100, 0.8);
     font-size: medium;
 }
@@ -852,11 +858,7 @@ and (max-height: 605px) {
 
 @media print {
     #zoomControl { display: none }
-    #userDiv { display: none }
-    #rootDiv { display: none }
-    #countryDiv { display: none }
-    #optionButtons { display: none }
-    #pedigreeDiv { display: none }
+    #headerbox { display: none }
     #lowerbuttonframe { display: none }
     #adDiv { display: none }
 }

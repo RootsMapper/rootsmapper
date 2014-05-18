@@ -36,7 +36,7 @@ if( isset($_REQUEST['code']) ) {
 	  $_SESSION['fingerprint'] = md5($fingerprint);
 	  header('Location: ./'); //Refresh page to clear POST variables
 	  exit;
-} 
+}
 
 // If login is clicked, begin request
 else if (isset($_REQUEST['login'])) {
@@ -68,7 +68,7 @@ else
         <?php echo isset($DESCRIPTION)? "<meta name=\"description\" content=\"" . $DESCRIPTION . "\" />" : ""; ?>
 
         <link href="css/map.css?v=<?php echo isset($VERSION)? $VERSION : ""; ?>" rel="stylesheet" />
-		
+
         <!-- Google Maps API reference -->
         <script src="//maps.googleapis.com/maps/api/js?sensor=false&libraries=places,geometry"></script>
 		<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css' />
@@ -103,9 +103,9 @@ else
         <?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
 		<div id="bigDiv">
 			<div id="adDiv">
-<?php 
+<?php
 if (!empty($SIDEAD_CODE))
-{ 
+{
 echo($SIDEAD_CODE);
 }
 ?>
@@ -121,7 +121,7 @@ if (!isset($access_token))
 ?>
 
 				<div id="mapDisplay"></div>
-					<div id="zoomControl">
+					<div id="zoomControl" class='unselectable'>
 						<div id="zoomIn" class="zoom">+</div>
 						<div id="zoomOut" class="zoom">&ndash;</div>
 					</div>
@@ -129,7 +129,7 @@ if (!isset($access_token))
 // If we are authorized, load the buttons, otherwise show the login button
 if (isset($access_token))
 { ?>
-			
+
 
             <div id="loadingDiv" style="visibility: hidden">
             	<div id="loadHolder">
@@ -166,10 +166,10 @@ if (isset($access_token))
 				<div id="optionButtons">
 					<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button></br>
 					<button id="showpins" class="button yellow off" onclick="togglePins()">Pins</button></br>
+					<button id="countryToggle" class="button yellow off" onclick="toggleLayers()">Countries</button></br>
 					<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button></br>
 					<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button></br>
-					<button id="reset" class="button yellow off" onclick="clearOverlays()">Reset</button></br>
-					<button id="KML" class="button yellow off" onclick="createKML()">KML</button>
+					<button id="KML" class="button yellow off" onclick="createKML()">Export KML</button>
 				</div>
 			</li>
 			<li id='pedigreeChart' class='menuButton unselectable' >
@@ -210,15 +210,15 @@ if (isset($access_token))
 				</div>
 			</li>
 		</ul>
-	</div> 
+	</div>
 
 
 <?php
 }
 ?>
-				
+
 			    <div id="lowerbuttonframe">
-						
+
 
 
 <?php
@@ -245,7 +245,7 @@ if (!empty($DONATE_URL))
 ?>
             		<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">$</button>
 <?php
-} 
+}
 if (!empty($BLOG_URL))
 {
 ?>
@@ -253,8 +253,8 @@ if (!empty($BLOG_URL))
 <?php
 }
 ?>
-					
-						
+
+
 				</div>
 			</div>
 		</div>

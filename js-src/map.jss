@@ -1,4 +1,4 @@
-/* 
+/*
   RootsMapper
   https://github.com/dawithers/rootsmapper
   Copyright (c) 2013 Mitch Withers, Drew Withers
@@ -26,13 +26,14 @@ var fixColors;
 var optionvar = false;
 var isolate = false;
 var onlyPins = false;
+var showLayers = true;
 var pinsVisible = true;
 var treeVar = false;
 var statVar = false;
 var highlights = true;
 
 function initialize() {
- 	
+
 
 
  	// Load the map (whether user is logged in or not)
@@ -76,7 +77,7 @@ function unselectItem(strName,spanName) {
 	if (span) {
 		span.setAttribute('class','menuButtonSpan');
 	}
-	
+
 	if (strName == 'countryStatistics') {
 		div.style.height = '55px';
 	}
@@ -98,7 +99,7 @@ function setupMenu() {
 
 	rms.onclick = function () {
 		if (rm.getAttribute('class').indexOf('selected') !== -1) {
-			// currently selected, unselect	
+			// currently selected, unselect
 			unselectItem('rootsMapper','rootsMapperSpan');
 			rm.style.overflow = 'hidden';
 		} else {
@@ -117,7 +118,7 @@ function setupMenu() {
 
 	vos.onclick = function () {
 		if (vo.getAttribute('class').indexOf('selected') !== -1) {
-			// currently selected, unselect	
+			// currently selected, unselect
 			unselectItem('viewOptions','viewOptionsSpan');
 		} else {
 			// unselected, select it
@@ -132,7 +133,7 @@ function setupMenu() {
 
 	pcs.onclick = function () {
 		if (pc.getAttribute('class').indexOf('selected') !== -1) {
-			// currently selected, unselect	
+			// currently selected, unselect
 			unselectItem('pedigreeChart','pedigreeChartSpan');
 
 		} else {
@@ -147,7 +148,7 @@ function setupMenu() {
 
 	css.onclick = function () {
 		if (css.getAttribute('class').indexOf('lighted') !== -1) {
-			// currently selected, unselect	
+			// currently selected, unselect
 			unselectItem('countryStatistics','countryStatisticsSpan');
 		} else {
 			// unselected, select it
@@ -161,7 +162,7 @@ function setupMenu() {
 
 			cs.style.height = document.getElementById('countryStats').clientHeight + 55 + 'px';
 			document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 'px';
-			
+
 			setTimeout(function(){
 				cs.style.overflow = 'visible';
 			},250);
@@ -182,45 +183,7 @@ function setupMenu() {
 	}
 }
 
-function queryTable(countryArray,countryCount) {
 
-	if (layer) {
-		layer.setMap(null);
-	}
-
-	var tableid = 424206; // 423734; //
-	var where = "'name' IN ('" + countryArray.join("','") + "')";
-	var maxval = Math.max.apply(Math,countryCount);
-
-	var styles = [];
-	for (k=0; k<5; k++) {
-		var opacArray = [];
-		for (i=0; i<countryArray.length;i++) {
-			if (countryCount[i] / maxval > (k)/5 && countryCount[i] / maxval <= (k+1)/5) {
-				opacArray.push(countryArray[i]);
-			}
-		}
-
-		styles[k] = {
-			where: "'name' IN ('" + opacArray.join("','") + "')",
-			polygonOptions: {
-				fillColor: rgbToHex(255,0,0),
-				fillOpacity: (k+1)/10
-			}
-		}
-
-	}
-
-	layer = new google.maps.FusionTablesLayer({query:{
-			select: 'kml_4326',
-			from: tableid,
-			where: where
-		},styles: styles,
-		suppressInfoWindows: true
-	});
-
-  	layer.setMap(map);
-}
 
 function startGoogleMaps() {
 
@@ -395,7 +358,7 @@ function currentUser(callback) {
             typeof callback === 'function' && callback();
         }
     });
-    
+
 }
 
 function rootsMapper(options) {
@@ -419,7 +382,7 @@ function rootsMapper(options) {
     options.rootNode || (options.rootNode = 0);
 
     if (options.rootGen == 0 && options.rootNode == 0) {
-		// Not expanding, so reset map 
+		// Not expanding, so reset map
     	clearOverlays();
     }
 
@@ -431,7 +394,7 @@ function rootsMapper(options) {
     	if (options.tooManyGens == true) {
 
     		mapEightMore(options, function() {
-    			
+
     			loadingAnimationEnd();
 
 	            if (firstTime.box == true) {
@@ -454,7 +417,7 @@ function mainRoutine(options, callback) {
     // Update loading message
     document.getElementById('loadingMessage').textContent = 'Retrieving FamilySearch ancestry data...';
 
-    // Get FamilySearch pedigree 
+    // Get FamilySearch pedigree
     getPedigree(options, function () {
 
         // Geocode birth locations
@@ -500,7 +463,7 @@ function mapEightMore(options,callback) {
                 cont();
             });
 
-        // Since these generations are now populated (and there are TONS of people), stop the loop 
+        // Since these generations are now populated (and there are TONS of people), stop the loop
         } else {
             typeof callback === 'function' && callback();
         }
@@ -546,9 +509,9 @@ function getPedigree(options, callback) {
 			typeof callback === 'function' && callback();
 		} else {
 		    loadingAnimationEnd();
-		    
+
 		}
-	});  
+	});
 }
 
 function personReadLoop(callback) {
@@ -575,7 +538,7 @@ function personReadLoop(callback) {
         } else {
             cont();
         }
-    }, function () { 
+    }, function () {
 		typeof callback === 'function' && callback();
     });
 }
@@ -588,7 +551,7 @@ function personRead(url, callback) {
                 var places = result.places;
                 var display = person.display;
                 var links = person.links;
-                
+
                 if (person.living == true) {
                     display.deathDate = "Living";
                 }
@@ -651,7 +614,7 @@ function plotterLoop(callback) {
 function finish(options) {
 
 //    if (options.rootGen == 0 && options.rootNode == 0) {
-		// Not expanding 
+		// Not expanding
 		// Update pedigree browser
 		makePedigree(options.rootGen,options.rootNode);
 //    }
@@ -775,18 +738,77 @@ function displayCountryStats(group) {
             if (key !== 'undefined') {
 				keys.push(key);
 				vals.push(group[key]);
-                var d = document.createElement('span');
-                d.textContent = key + ': ' + group[key];
-                var br = document.createElement('br');
-                div.appendChild(d);
-                div.appendChild(br);
             }
         }
     }
-    
-	
-	
-	queryTable(keys,vals);
+
+    var valstore = vals.slice(0);
+    var keystore = keys.slice(0);
+    // vals.sort(function(a, b){return b-a});
+
+	var absmaxval = Math.max.apply(Math,vals);
+
+	for (var i = 0; i < vals.length; i++) {
+        var maxval = Math.max.apply(Math,vals);
+
+        for (var j = 0; j < keys.length; j++) {
+            if (group[keys[j]] == maxval) {
+                var d = document.createElement('span');
+                d.textContent = keys[j] + ': ' + group[keys[j]];
+                var br = document.createElement('br');
+                div.appendChild(d);
+                div.appendChild(br);
+                var yc = (Math.round(vals[j] / absmaxval * 5) / 5).toFixed(2) * 200;
+                d.style.color = 'rgba(255,' + (200 - yc) + ',' + (200 - yc) + ',1)';
+                vals[j] = 0;
+                keys[j] = '';
+                break;
+            }
+        }
+	}
+
+	queryTable(keystore,valstore);
+}
+
+function queryTable(countryArray,countryCount) {
+    if (showLayers == true) {
+    	if (layer) {
+    		layer.setMap(null);
+    	}
+
+    	var tableid = 424206; // 423734; //
+    	var where = "'name' IN ('" + countryArray.join("','") + "')";
+    	var maxval = Math.max.apply(Math,countryCount);
+
+    	var styles = [];
+    	for (k=0; k<5; k++) {
+    		var opacArray = [];
+    		for (i=0; i<countryArray.length;i++) {
+    			if (countryCount[i] / maxval > (k)/5 && countryCount[i] / maxval <= (k+1)/5) {
+    				opacArray.push(countryArray[i]);
+    			}
+    		}
+
+    		styles[k] = {
+    			where: "'name' IN ('" + opacArray.join("','") + "')",
+    			polygonOptions: {
+    				fillColor: rgbToHex(255,0,0),
+    				fillOpacity: (k+1)/10
+    			}
+    		}
+
+    	}
+
+    	layer = new google.maps.FusionTablesLayer({query:{
+    			select: 'kml_4326',
+    			from: tableid,
+    			where: where
+    		},styles: styles,
+    		suppressInfoWindows: true
+    	});
+
+        layer.setMap(map);
+    }
 }
 
 function getPhoto(id, gen, node, callback) {
@@ -860,7 +882,7 @@ function getMeABirthPlace(gen, node, cont, callback) {
 					  "Please update their information or enter a new root person.");
 				loadingAnimationEnd();
 
-				
+
 			} else {
 			    typeof result === 'function' && result();
 				getChildBirthPlace(gen, node, function (result) {
@@ -888,7 +910,7 @@ function getMeABirthPlace(gen, node, cont, callback) {
                             alert("Root person's location information in FamilySearch Family Tree does not match any known locations. " +
                                   "Please update their information.");
                             loadingAnimationEnd();
-                            
+
                         } else {
                             getChildBirthPlace(gen, node, function (result) {
                                 familyTree.getNode(gen, node).display.birthLatLng = result;
@@ -897,7 +919,7 @@ function getMeABirthPlace(gen, node, cont, callback) {
                         }
                     //});
                 }
-            });   
+            });
         }
     });
 }
@@ -986,7 +1008,7 @@ function getPlaceAuthority(gen, node, cont, callback) {
     }
 }
 
-function plotParent(gen, node) { 
+function plotParent(gen, node) {
     var parent = familyTree.getNode(gen, node);
     var child = familyTree.getChild(gen, node);
 
@@ -1158,7 +1180,7 @@ function createMarker(p,yellow) {
         mark.expandButton = "<ul id='expandList' class='listClass'>" +
                                 "<li id='ebutton' class='main' onclick='expandList({listName:\"expandList\"});'><b>Expand</b><img class='triangle' src='images/triangle-down.png'></li>" +
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 1 + ");'>1 generation</li>" +
-                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 2 + ");'>2 generations</li>" + 
+                                "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 2 + ");'>2 generations</li>" +
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 3 + ");'>3 generations</li>" +
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 4 + ");'>4 generations</li>" +
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 5 + ");'>5 generations</li>" +
@@ -1181,10 +1203,10 @@ function createMarker(p,yellow) {
                 "</div>" +
                 "<div class='box'>" +
                         "<a class='xlarge' id='fsButton' href='" + url + "' target='_blank'>" + HtmlEncode(p.display.name) + "</a>" +
-                    "<div class='large'>" + 
+                    "<div class='large'>" +
                         p.id +
                         "<img id='copyButton' src='images/copy.png?v=" + version + "' onclick='populateIdField(\"" + p.id + "\", \"" + HtmlEncode(p.display.name) + "\"); ib.close();'>" + "</div>" +
-                "</div>" + 
+                "</div>" +
             "</div>" +
             "<div class='person'>" +
                 "<div class='label'>BIRTH</div>" +
@@ -1243,16 +1265,16 @@ function createMarker(p,yellow) {
             } else {
                 var buttons = mark.expandButton +mark.deleteButton + '</div>';
             }
-        } else if (motherPlotted == true && fatherPlotted == true) { 
+        } else if (motherPlotted == true && fatherPlotted == true) {
             var buttons = "";
         } else {
             var buttons = mark.expandButton + '</div>';
         }
 
         if (mark.isExpanded) {
-            ib.setContent("<div id='infow'>" + mark.infoBoxContent + '</div>');
+            ib.setContent("<div id='infow' class='unselectable'>" + mark.infoBoxContent + '</div>');
         } else {
-            ib.setContent("<div id='infow'>" + mark.infoBoxContent +buttons + '</div>');
+            ib.setContent("<div id='infow' class='unselectable'>" + mark.infoBoxContent +buttons + '</div>');
 
         }
 
@@ -1381,7 +1403,7 @@ function createMarker(p,yellow) {
                 } else {
                     leaf.value.polyline.setVisible(onlyPins);
                 }
-            } 
+            }
             cont();
         }, function () {
             if (onlyPins == false) {
@@ -1396,7 +1418,7 @@ function createMarker(p,yellow) {
             typeof callback === 'function' && callback();
         });
     }
-	
+
 	function togglePins(callback) {
 		familyTree.IDDFS(function (leaf, cont) {
 			leaf.value.marker.setVisible(!pinsVisible);
@@ -1429,6 +1451,23 @@ function createMarker(p,yellow) {
             high.className = 'button yellow disabled';
             highlights = false;
         }
+    }
+
+    function toggleLayers(callback) {
+        if (showLayers == true) {
+            if (layer) {
+                layer.setMap(null);
+            }
+            document.getElementById('countryToggle').className = 'button yellow';
+            showLayers = false;
+        } else {
+            if (layer) {
+                layer.setMap(map);
+            }
+            document.getElementById('countryToggle').className = 'button yellow off';
+            showLayers = true;
+        }
+
     }
 
 	function deleteMarker(gen, node) {
@@ -1489,7 +1528,7 @@ function createMarker(p,yellow) {
     document.getElementById('tree1').innerHTML = '';
     document.getElementById('tree2').innerHTML = '';
     document.getElementById('tree3').innerHTML = '';
-	
+
 
         oms.clearMarkers();
         oms.clearListeners('click');
@@ -1512,7 +1551,7 @@ function createMarker(p,yellow) {
     	}
 
     	familyTree = new BinaryTree();
-    	ib = new InfoBox({ contents: "", maxWidth: 0, pixelOffset: new google.maps.Size(9, 9), enableEventPropagation: false });
+    	ib = new InfoBox({ contents: "", maxWidth: 0, pixelOffset: new google.maps.Size(9, 9), boxClass: 'unselectable' });
     	ib2 = new InfoBox({ contents: "", maxWidth: 0, closeBoxURL: "", pixelOffset: new google.maps.Size(9, -37) });
 
         firstTime = {
@@ -1525,7 +1564,7 @@ function createMarker(p,yellow) {
             if (document.getElementById("ebutton")) {
             	tooltip.set({id: "ebutton", tip: "Plot the ancestors of this person"});
 			}
-            if (document.getElementById("trashcan")) { 
+            if (document.getElementById("trashcan")) {
             	tooltip.set({id: "trashcan", tip: "Remove this person from the map"});
             }
             tooltip.set({id: "copyButton", tip:"Copy this ID to the Root Person ID"});
@@ -1559,7 +1598,7 @@ function createMarker(p,yellow) {
     }
 
     function completionEvents(options,callback) {
-        
+
         markerCheckLoop(function () {
 
         	if (options.tooManyGens == true) {
@@ -1572,7 +1611,7 @@ function createMarker(p,yellow) {
 	                firstTime.box = false;
 	            }
         	}
-            
+
 
         	typeof callback === 'function' && callback();
         });
