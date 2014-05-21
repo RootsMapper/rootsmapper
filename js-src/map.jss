@@ -160,8 +160,8 @@ function setupMenu() {
 			var un = document.getElementById('countryStats').getBoundingClientRect();
 			var rd = document.getElementById('logoutbutton');
 
-			cs.style.height = document.getElementById('countryStats').clientHeight + 55 + 'px';
-			document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 'px';
+			cs.style.height = document.getElementById('countryStats').clientHeight + 115 + 'px';
+			document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 60 + 'px';
 
 			setTimeout(function(){
 				cs.style.overflow = 'visible';
@@ -727,6 +727,14 @@ function scrubCountry(val) {
 }
 
 function displayCountryStats(group) {
+    var cs = document.getElementById('countryStatistics');
+    var css = document.getElementById('countryStatisticsSpan');
+    if (css.getAttribute('class').indexOf('lighted') !== -1) {
+        // currently selected, unselect
+        unselectItem('countryStatistics','countryStatisticsSpan');
+        var statsOpen = true;
+    }
+
 	var div = document.getElementById('countryStats');
     div.innerHTML = '';
 
@@ -766,6 +774,23 @@ function displayCountryStats(group) {
             }
         }
 	}
+
+    if (statsOpen == true) {
+        css.setAttribute('class','menuButtonSpan lighted');
+        unselectItem('rootsMapper','rootsMapperSpan');
+        unselectItem('viewOptions','viewOptionsSpan');
+        unselectItem('pedigreeChart','pedigreeChartSpan');
+
+        var un = document.getElementById('countryStats').getBoundingClientRect();
+        var rd = document.getElementById('logoutbutton');
+
+        cs.style.height = document.getElementById('countryStats').clientHeight + 115 + 'px';
+        document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 60 + 'px';
+
+        setTimeout(function(){
+            cs.style.overflow = 'visible';
+        },250);
+    }
 
 	queryTable(keystore,valstore);
 }
@@ -1261,14 +1286,14 @@ function createMarker(p,yellow) {
 
         if (motherPlotted == false && fatherPlotted == false) { // neither parent is plotted, okay to show delete button
             if (mark.generation == 0) {
-                var buttons = mark.expandButton + '</div>';
+                var buttons = mark.expandButton + "<div style='height: 30px' ></div>" + '</div>';
             } else {
                 var buttons = mark.expandButton +mark.deleteButton + '</div>';
             }
         } else if (motherPlotted == true && fatherPlotted == true) {
             var buttons = "";
         } else {
-            var buttons = mark.expandButton + '</div>';
+            var buttons = mark.expandButton + "<div style='height: 30px' ></div>" + '</div>';
         }
 
         if (mark.isExpanded) {

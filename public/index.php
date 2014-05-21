@@ -176,9 +176,9 @@ if (isset($access_token))
 				<div id='pedigreeChartSpan' class='menuButtonSpan'>Pedigree Chart</div>
 				<div id="pedigreeDiv">
 					<div id="pedigree">
-						<div class="trees unselectable"><div id="tree1" ></div></div>
-						<div class="trees unselectable"><div id="tree2" ></div></div>
-						<div class="trees unselectable"><div id="tree3" ></div></div>
+						<div class="trees unselectable"><div id="tree1" ></div>
+						<div class="trees unselectable"><div id="tree2" ></div>
+						<div class="trees unselectable"><div id="tree3" ></div>
 					</div>
 				</div>
 			</li>
@@ -186,20 +186,22 @@ if (isset($access_token))
 				<div id='countryStatisticsSpan' class='menuButtonSpan'>Country Statistics</div>
 				<div id="countryDiv">
 					<div id="countryStats"></div>
-					<ul id="countryList" class="listClass">
-						<li class="main" onclick="expandList({listName:'countryList'});"><b>Generation</b><img class="triangle" src="images/triangle-down.png"></li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop()">All generations</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,2)">2<sup>nd</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,3)">3<sup>rd</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,4)">4<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,5)">5<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,6)">6<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,7)">7<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,8)">8<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,9)">9<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,10)">10<sup>th</sup> generation</li>
-					</ul>
+					<div id="countryListHolder">
+						<ul id="countryList" class="listClass">
+							<li class="main" onclick="expandList({listName:'countryList'});"><b>Generation</b><img class="triangle" src="images/triangle-down.png"></li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop()">All generations</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,2)">2<sup>nd</sup> generation</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,3)">3<sup>rd</sup> generation</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,4)">4<sup>th</sup> generation</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,5)">5<sup>th</sup> generation</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,6)">6<sup>th</sup> generation</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,7)">7<sup>th</sup> generation</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,8)">8<sup>th</sup> generation</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,9)">9<sup>th</sup> generation</li>
+							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,10)">10<sup>th</sup> generation</li>
+						</ul>
+					</div>
 				</div>
 			</li>
 			<li id='userInfo' class='menuButton unselectable' >

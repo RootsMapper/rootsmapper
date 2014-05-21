@@ -230,13 +230,24 @@ html, body {
     }
 
 /* Country Totals button menu styles */
+#countryListHolder {
+    margin: 0;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    display: inline-block;
+    background-color: rgba(0,0,0,0.8);
+    width: 100%;
+    height: 30px;
+    overflow-y: visible;
+}
+
 #countryList {
     list-style-type: none;
     margin: 0;
-	margin-left: 20px;
+    margin-left: 20px;
     padding: 0;
-	position: relative;
-	top: -45px;
+	/*position: relative;
+	top: -45px;*/
     display: inline-block;
 }
 
@@ -276,7 +287,6 @@ html, body {
 #countryStats {
     font-family: 'Open Sans', sans-serif;
     overflow-y: auto;
-	padding-bottom: 55px;
 	padding-left: 20px;
 	height: auto;
     background-color: rgba(0,0,0,0.8);
