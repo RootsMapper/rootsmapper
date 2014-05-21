@@ -164,11 +164,11 @@ if (isset($access_token))
 			<li id='viewOptions' class='menuButton unselectable' >
 				<div id='viewOptionsSpan' class='menuButtonSpan'>Map Options</div>
 				<div id="optionButtons">
-					<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button></br>
-					<button id="showpins" class="button yellow off" onclick="togglePins()">Pins</button></br>
-					<button id="countryToggle" class="button yellow off" onclick="toggleLayers()">Countries</button></br>
-					<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button></br>
-					<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button></br>
+					<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
+					<button id="showpins" class="button yellow off" onclick="togglePins()">Pins</button>
+					<button id="countryToggle" class="button yellow off" onclick="toggleLayers()">Countries</button>
+					<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
+					<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
 					<button id="KML" class="button yellow off" onclick="createKML()">Export KML</button>
 				</div>
 			</li>

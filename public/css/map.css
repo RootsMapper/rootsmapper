@@ -694,11 +694,12 @@ html, body {
         }
 
     .button.yellow {
-		float: left;
+		display: block;
         color: black;
 		width: 100px;
 		margin-bottom: 5px;
 		margin-left: 20px;
+        margin-right: auto;
 		text-align: left;
         /*background-color: #C08500;*/
         background-color: rgba(162,103,0,1);
