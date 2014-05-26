@@ -376,12 +376,15 @@ function currentUser(callback) {
 
 function rootsMapper(options) {
 	options || (options = {});
+	
 
 	// If no id is supplied, get from input box
 	options.pid || (options.pid = document.getElementById('personid').value);
 
 	// Default to 3 generations
 	options.generations || (options.generations = 3);
+	
+	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.generations);
 
     if (options.generations > 8) {
 		// Map as few generations as possible, then expand by 8 gens on each member of the last generation plotted at the start
