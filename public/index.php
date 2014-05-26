@@ -98,8 +98,8 @@ else
              accesstoken='<?php echo isset($access_token) ? $access_token : ""; ?>';
              baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
              version='<?php echo isset($VERSION)? $VERSION : ""; ?>';
-             root='<?php echo isset($GET_ROOT)? $GET_ROOT : ""; ?>';
-             rootgens='<?php echo isset($GET_GENS)? $GET_GENS : ""; ?>';
+             get_root='<?php echo isset($GET_ROOT)? $GET_ROOT : ""; ?>';
+             get_gens='<?php echo isset($GET_GENS)? $GET_GENS : ""; ?>';
 	</script>
 	<script language="javascript" type="text/javascript">
   		$(window).load(function() {

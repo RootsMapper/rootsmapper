@@ -55,11 +55,11 @@ function initialize() {
 
             	// Run 3 generations by default
             	// ancestorgens(3);
-            	if (rootgens == "") {
+            	if (get_gens == "") {
 			rootsMapper();
 		} else {
 			var options = {
-					generations: rootgens
+					generations: get_gens
 					}
 			rootsMapper(options);
 		}
@@ -360,11 +360,11 @@ function currentUser(callback) {
             document.getElementById("username").innerHTML = userName;
 
             // Set user as root person by default unless URL root parameter is set
-            if (root == "") {
+            if (get_root == "") {
                 populateIdField(userID,userName);
             } else
             {
-                populateIdField(root);
+                populateIdField(get_root);
             }
 
             typeof callback === 'function' && callback();
