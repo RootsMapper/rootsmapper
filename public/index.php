@@ -50,8 +50,8 @@ else if (isset($_REQUEST['login'])) {
 }
 
 // Store URL parameters
-$_SESSION['root'] = isset($_GET['root'])? $_GET['root'] : "";
-$_SESSION['gens'] = isset($_GET['gens'])? $_GET['gens'] : "";
+$_SESSION['root'] = isset($_GET['root'])? preg_replace('/[^A-z0-9\-]+/','',$_GET['root']) : "";
+$_SESSION['gens'] = isset($_GET['gens'])? preg_replace('/[^0-9]+/','',$_GET['gens']) : "";
 
 // If we have both a valid auth token in our session and our fingerprint matches
 // set the access token to a local variable, otherwise make sure it is unset
