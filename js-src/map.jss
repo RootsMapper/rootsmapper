@@ -365,6 +365,7 @@ function currentUser(callback) {
             } else
             {
                 populateIdField(get_root);
+		checkID();
             }
 
             typeof callback === 'function' && callback();
