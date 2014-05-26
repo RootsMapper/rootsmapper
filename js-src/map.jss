@@ -55,7 +55,14 @@ function initialize() {
 
             	// Run 3 generations by default
             	// ancestorgens(3);
-            	rootsMapper();
+            	if (rootgens == "") {
+			rootsMapper();
+		} else {
+			var options = {
+					generations: rootgens
+					}
+			rootsMapper(options);
+		}
             	// loadingAnimationEnd();
 
             });
@@ -352,8 +359,13 @@ function currentUser(callback) {
             // Display username in appropriate field
             document.getElementById("username").innerHTML = userName;
 
-            // Set user as root person by default
-            populateIdField(userID,userName);
+            // Set user as root person by default unless URL root parameter is set
+            if (root == "") {
+                populateIdField(userID,userName);
+            } else
+            {
+                populateIdField(root);
+            }
 
             typeof callback === 'function' && callback();
         }
