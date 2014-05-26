@@ -127,6 +127,10 @@ function setupMenu() {
 			unselectItem('rootsMapper','rootsMapperSpan');
 			unselectItem('pedigreeChart','pedigreeChartSpan');
 			unselectItem('countryStatistics','countryStatisticsSpan');
+
+            setTimeout(function(){
+                vo.style.overflow = 'visible';
+            },250);
 		}
 
 	}
@@ -618,12 +622,69 @@ function finish(options) {
 		// Update pedigree browser
 		makePedigree(options.rootGen,options.rootNode);
 //    }
+    updateLists();
 
 	// Setup spiderfying of pins
 	addOMSListeners();
 
 	// Generate country statistics
 	countryLoop();
+}
+
+function updateLists() {
+    var gen = Math.floor(log2(familyTree.Nodes.length-1));
+
+    var ilist = document.getElementById('isolateList');
+    var clist = document.getElementById('countryList');
+
+    var items = ilist.getElementsByTagName("li");
+
+    for (var i=items.length-1;i>1;i--) {
+        if (items[i].getAttribute('class').indexOf('item') !== -1) {
+            ilist.removeChild(items[i]);
+        }
+    }
+
+    for (var i=0; i<gen; i++) {
+        var li = document.createElement('li');
+        li.setAttribute('class','item');
+        li.innerHTML = getGetOrdinal(i+1) + ' generation';
+        li.onclick = function(arg) {
+            return function() {
+                expandList({listName:'isolateList'});
+                isolateLoop('',false,arg+1);
+            }
+        }(i);
+        ilist.appendChild(li);
+    }
+
+    var items = clist.getElementsByTagName("li");
+
+    for (var i=items.length-1;i>1;i--) {
+        if (items[i].getAttribute('class').indexOf('item') !== -1) {
+            clist.removeChild(items[i]);
+        }
+    }
+
+    for (var i=0; i<gen; i++) {
+        var li = document.createElement('li');
+        li.setAttribute('class','item');
+        li.innerHTML = getGetOrdinal(i+1) + ' generation';
+        li.onclick = function(arg) {
+            return function() {
+                expandList({listName:'countryList'});
+                countryLoop('',false,arg+1);
+            }
+        }(i);
+        clist.appendChild(li);
+    }
+
+}
+
+function getGetOrdinal(n) {
+   var s=["th","st","nd","rd"],
+       v=n%100;
+   return n+'<sup>'+(s[(v-20)%10]||s[v]||s[0])+'</sup>';
 }
 
 function makePedigree(gen, node) {
@@ -688,6 +749,37 @@ function addOMSListeners() {
     // When a pile of pins is clicked, don't bring up an infoBox
     oms.addListener('spiderfy', function (mark) {
         ib.close();
+    });
+}
+
+function isolateLoop(callback, all, generation) {
+
+    if (all == undefined) {
+        all = true;
+    }
+
+    familyTree.IDDFS(function (tree, cont) {
+        var node = tree.node;
+        var gen = tree.generation;
+        if (all == true) {
+            tree.value.marker.setVisible(pinsVisible);
+            if (tree.value.polyline) {
+                tree.value.polyline.setVisible(!onlyPins);
+            }
+        } else if (gen == generation) {
+            tree.value.marker.setVisible(pinsVisible);
+            if (tree.value.polyline) {
+                tree.value.polyline.setVisible(false);
+            }
+        } else {
+            tree.value.marker.setVisible(false);
+            if (tree.value.polyline) {
+                tree.value.polyline.setVisible(false);
+            }
+        }
+        cont();
+    }, function () {
+        typeof callback === 'function' && callback(group);
     });
 }
 
