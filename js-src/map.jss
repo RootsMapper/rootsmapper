@@ -384,8 +384,6 @@ function rootsMapper(options) {
 	// Default to 3 generations
 	options.generations || (options.generations = 3);
 	
-	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.generations);
-
     if (options.generations > 8) {
 		// Map as few generations as possible, then expand by 8 gens on each member of the last generation plotted at the start
     	options.tooManyGens = true;
@@ -399,6 +397,7 @@ function rootsMapper(options) {
 
     if (options.rootGen == 0 && options.rootNode == 0) {
 		// Not expanding, so reset map
+	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.generations);
     	clearOverlays();
     }
 
