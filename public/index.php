@@ -34,7 +34,8 @@ if( isset($_REQUEST['code']) ) {
 	  session_regenerate_id(true); //Regenerate session ID
 	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
 	  $_SESSION['fingerprint'] = md5($fingerprint);
-	  header('Location: ./'); //Refresh page to clear POST variables
+          $url_params = (isset($_SESSION['root'])? ("root=" . $_SESSION['root']) : "") . (isset($_SESSION['gens'])? ("&gens=" . $_SESSION['gens']) : "");
+	  header("Location: ./" . (isset($url_params)? "?" . $url_params : "")); //Refresh page to clear POST variables
 	  exit;
 }
 
@@ -42,17 +43,23 @@ if( isset($_REQUEST['code']) ) {
 else if (isset($_REQUEST['login'])) {
 	unset($_SESSION['fs-session']); //clear session variable
 	unset($_SESSION['fingerprint']); //clear fingerprint variable
-	session_destroy();
+	//session_destroy();
 	$url = $fs->RequestAccessCode($DEV_KEY, $OAUTH2_REDIRECT_URI);
 	header("Location: " . $url); //Redirect to FamilySearch auth page
 	exit;
 }
+
+// Store URL parameters
+$_SESSION['root'] = isset($_GET['root'])? trim(preg_replace('/[^A-z0-9\-]+/','',$_GET['root'])) : "";
+$_SESSION['gens'] = isset($_GET['gens'])? trim(preg_replace('/[^0-9]+/','',$_GET['gens'])) : "";
 
 // If we have both a valid auth token in our session and our fingerprint matches
 // set the access token to a local variable, otherwise make sure it is unset
 if (isset($_SESSION['fs-session']) && $_SESSION['fingerprint'] == md5($fingerprint))
 {
 	$access_token = $_SESSION['fs-session']; //store access token in variable
+	$GET_ROOT = isset($_SESSION['root'])? $_SESSION['root'] : "";
+	$GET_GENS = isset($_SESSION['gens'])? $_SESSION['gens'] : "";
 }
 else
 {
@@ -91,6 +98,8 @@ else
              accesstoken='<?php echo isset($access_token) ? $access_token : ""; ?>';
              baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
              version='<?php echo isset($VERSION)? $VERSION : ""; ?>';
+             get_root='<?php echo isset($GET_ROOT)? $GET_ROOT : ""; ?>';
+             get_gens='<?php echo isset($GET_GENS)? $GET_GENS : ""; ?>';
 	</script>
 	<script language="javascript" type="text/javascript">
   		$(window).load(function() {
@@ -147,7 +156,7 @@ if (isset($access_token))
 		 			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
 					<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script></br>
 					<ul id="runList" class="listClass">
-						<li class="main" onclick="expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
+						<li class="main" onclick="checkID(); expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
 						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:1})">1 generation</li>
 						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:2})">2 generations</li>
 						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:3})">3 generations</li>

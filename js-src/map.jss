@@ -55,7 +55,14 @@ function initialize() {
 
             	// Run 3 generations by default
             	// ancestorgens(3);
-            	rootsMapper();
+            	if (get_gens == "") {
+			rootsMapper();
+		} else {
+			var options = {
+					generations: get_gens
+					}
+			rootsMapper(options);
+		}
             	// loadingAnimationEnd();
 
             });
@@ -356,8 +363,14 @@ function currentUser(callback) {
             // Display username in appropriate field
             document.getElementById("username").innerHTML = userName;
 
-            // Set user as root person by default
-            populateIdField(userID,userName);
+            // Set user as root person by default unless URL root parameter is set
+            if (get_root == "") {
+                populateIdField(userID,userName);
+            } else
+            {
+                populateIdField(get_root);
+		checkID();
+            }
 
             typeof callback === 'function' && callback();
         }
@@ -367,13 +380,14 @@ function currentUser(callback) {
 
 function rootsMapper(options) {
 	options || (options = {});
+	
 
 	// If no id is supplied, get from input box
 	options.pid || (options.pid = document.getElementById('personid').value);
 
 	// Default to 3 generations
 	options.generations || (options.generations = 3);
-
+	
     if (options.generations > 8) {
 		// Map as few generations as possible, then expand by 8 gens on each member of the last generation plotted at the start
     	options.tooManyGens = true;
@@ -387,6 +401,7 @@ function rootsMapper(options) {
 
     if (options.rootGen == 0 && options.rootNode == 0) {
 		// Not expanding, so reset map
+	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.generations);
     	clearOverlays();
     }
 
