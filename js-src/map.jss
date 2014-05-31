@@ -204,7 +204,7 @@ function toggleHeaderBox() {
         var before = new Date();
         var step = 0;
         var numSteps = 100; //Change this to set animation resolution
-        var timePerStep = 5; //Change this to alter animation speed
+        var timePerStep = 3; //Change this to alter animation speed
         var interval = setInterval(function () {
             var now = new Date();
             var elapsedTime = (now.getTime() - before.getTime())
@@ -215,8 +215,8 @@ function toggleHeaderBox() {
                 headerBoxVisible = false;
             } else {
                 step = elapsedTime / (timePerStep * numSteps);
-                div.style.top = Math.round(-1000 * step,0) + 'px';
-                div.style.left = Math.round(-500 * step,0) + 'px';
+                div.style.top = Math.round(-500 * step,0) + 'px';
+                div.style.left = Math.round(-200 * step,0) + 'px';
             }
         }, timePerStep);
     } else {
@@ -225,7 +225,7 @@ function toggleHeaderBox() {
         var before = new Date();
         var step = 0;
         var numSteps = 100; //Change this to set animation resolution
-        var timePerStep = 5; //Change this to alter animation speed
+        var timePerStep = 3; //Change this to alter animation speed
         var interval = setInterval(function () {
             var now = new Date();
             var elapsedTime = (now.getTime() - before.getTime())
@@ -237,8 +237,8 @@ function toggleHeaderBox() {
                 headerBoxVisible = true;
             } else {
                 step = elapsedTime / (timePerStep * numSteps);
-                div.style.top = Math.round(-1000 * (1-step),0) + 'px';
-                div.style.left = Math.round(-500 * (1-step),0) + 'px';
+                div.style.top = Math.round(-500 * (1-step),0) + 'px';
+                div.style.left = Math.round(-200 * (1-step),0) + 'px';
             }
         }, timePerStep);
     }
