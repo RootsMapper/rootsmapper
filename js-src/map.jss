@@ -22,6 +22,8 @@ var discovery;
 var grouping;
 var tooManyGens;
 var title;
+var cur_title;
+var cur_gens;
 var fixColors;
 var optionvar = false;
 var isolate = false;
@@ -437,7 +439,7 @@ function rootsMapper(options) {
 
 	// Default to 3 generations
 	options.generations || (options.generations = 3);
-
+	cur_gens = options.generations;
     if (options.generations > 8) {
 		// Map as few generations as possible, then expand by 8 gens on each member of the last generation plotted at the start
     	options.tooManyGens = true;
@@ -452,7 +454,7 @@ function rootsMapper(options) {
     if (options.rootGen == 0 && options.rootNode == 0) {
 		// Not expanding, so reset map
 	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.generations);
-    	clearOverlays();
+	clearOverlays();
     }
 
     // Start loading animation
@@ -478,6 +480,8 @@ function rootsMapper(options) {
     	} else {
     		finish(options);
     	}
+        cur_title = title + ": " + cur_gens + "x " + document.getElementById("personName").textContent + " (" + document.getElementById("personid").value + ")";
+	document.title = cur_title;
     });
 }
 
@@ -1680,7 +1684,7 @@ function createMarker(p,yellow) {
     }
 
     function loadingAnimationStart() {
-        document.title = "*" + title;
+        document.title = "*" + cur_title;
         document.getElementById('loadingDiv').style.visibility = 'visible';
         $(function () {
             $('#loading').show();
@@ -1691,7 +1695,7 @@ function createMarker(p,yellow) {
     }
 
     function loadingAnimationEnd() {
-        document.title = title;
+        document.title = cur_title;
         $(function () {
             $('#loading').activity(false);
         });
