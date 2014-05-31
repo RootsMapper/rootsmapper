@@ -188,15 +188,6 @@ if (isset($access_token))
 						<li class="main" onclick="expandList({listName:'isolateList'});"><b>Single Gen</b><img class="triangle" src="images/triangle-down.png"></li>
 						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop()">View All</li>
 						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,1)">1<sup>st</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,2)">2<sup>nd</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,3)">3<sup>rd</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,4)">4<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,5)">5<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,6)">6<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,7)">7<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,8)">8<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,9)">9<sup>th</sup> generation</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,10)">10<sup>th</sup> generation</li>
 					</ul>
 				</div>
 			</li>
@@ -219,15 +210,6 @@ if (isset($access_token))
 							<li class="main" onclick="expandList({listName:'countryList'});"><b>Generation</b><img class="triangle" src="images/triangle-down.png"></li>
 							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop()">All generations</li>
 							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,2)">2<sup>nd</sup> generation</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,3)">3<sup>rd</sup> generation</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,4)">4<sup>th</sup> generation</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,5)">5<sup>th</sup> generation</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,6)">6<sup>th</sup> generation</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,7)">7<sup>th</sup> generation</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,8)">8<sup>th</sup> generation</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,9)">9<sup>th</sup> generation</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,10)">10<sup>th</sup> generation</li>
 						</ul>
 					</div>
 				</div>
