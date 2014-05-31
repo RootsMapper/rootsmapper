@@ -54,11 +54,15 @@ function initialize() {
         	// Load user information
             currentUser(function () {
 
-            	// Run 3 generations by default
-            	// ancestorgens(3);
-            	rootsMapper();
-            	// loadingAnimationEnd();
-
+            	// Run with gens from URL parameters
+		if (get_gens == "") {
+			rootsMapper();
+		} else {
+			var options = {
+					generations: get_gens
+					}
+ 			rootsMapper(options);
+ 		}
             });
 
         });
@@ -411,9 +415,14 @@ function currentUser(callback) {
             // Display username in appropriate field
             document.getElementById("username").innerHTML = userName;
 
-            // Set user as root person by default
-            populateIdField(userID,userName);
-
+            // Set user as root person by default unless URL root parameter is set
+            if (get_root == "") {
+                populateIdField(userID,userName);
+            } else
+            {
+                populateIdField(get_root);
+		checkID();
+            }
             typeof callback === 'function' && callback();
         }
     });
@@ -442,6 +451,7 @@ function rootsMapper(options) {
 
     if (options.rootGen == 0 && options.rootNode == 0) {
 		// Not expanding, so reset map
+	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.generations);
     	clearOverlays();
     }
 
