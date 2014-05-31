@@ -36,16 +36,44 @@ html, body {
     width: inherit;
 }
 
+#toggleHeaderBox {
+    z-index: 99;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: -1px;
+    top: -1px;
+    background-color: transparent;
+    border: none;
+    padding: none;
+    padding-top: 5px;
+    padding-right: 4px;
+}
+
+#toggleHeaderBox:hover {
+    cursor: pointer;
+    background-color: rgba(0,0,255,0.8);
+}
+
 #headerbox {
     position: absolute;
-    left: 5px;
+    left: 0px;
     top: 0px;
     width: auto;
 	height: auto;
-	border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 0;
 	background-color: rgba(0,0,0,0.7);
 	z-index: 30;
 }
+
+/*
+#rootsMapper {
+    border-radius: 0 30px 0 0;
+}
+
+#rootsMapperSpan {
+    border-radius: 0 30px 0 0;
+}*/
 
 .menuButton {
 	width: auto;
@@ -110,16 +138,17 @@ html, body {
 	height: 153px;
 }
 
+
 #viewOptions.selected {
 	height: 305px;
 }
 
 #userInfo{
-	border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 0px;
 }
 
 #userInfo.selected{
-	height: 145px;
+	height: 100px;
 }
 
 #countryStatistics.selected {
@@ -189,6 +218,20 @@ html, body {
     padding-top: 3px;
     padding-right: 16px;
     float: right;
+}
+
+.triangleNarrow {
+    display:block;
+    width: 20px;
+    height: 10px;
+    /*padding: 5px;*/
+    /*padding-top: 3px;*/
+    -webkit-transform: rotate(315deg);
+    -moz-transform: rotate(315deg);
+    -o-transform: rotate(315deg);
+    -ms-transform: rotate(315deg);
+    transform: rotate(315deg);
+
 }
 
 .clear {
@@ -376,15 +419,15 @@ html, body {
 
 #logoutbutton {
     white-space: nowrap;
-    height: 28px;
+    height: 30px;
     color: white;
     margin: 0;
-	margin-left: 20px;
+	margin-left: 10px;
 	font-family: 'Open Sans', sans-serif;
     font-weight: bold;
 	z-index: 30;
-    background-color: rgba(139,0,0,1);
-    border: 1px solid rgba(139,0,0,1);
+    background-color: rgb(139,0,0);
+    border: 1px solid rgb(139,0,0);
 }
 
     #logoutbutton:hover {
@@ -917,6 +960,7 @@ and (max-height: 605px) {
 
 @media print {
     #zoomControl { display: none }
+    #toggleHeaderBox { display: none }
     #headerbox { display: none }
     #lowerbuttonframe { display: none }
     #adDiv { display: none }

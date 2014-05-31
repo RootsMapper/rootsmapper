@@ -31,6 +31,7 @@ var pinsVisible = true;
 var treeVar = false;
 var statVar = false;
 var highlights = true;
+var headerBoxVisible = true;
 
 function initialize() {
 
@@ -55,14 +56,7 @@ function initialize() {
 
             	// Run 3 generations by default
             	// ancestorgens(3);
-            	if (get_gens == "") {
-			rootsMapper();
-		} else {
-			var options = {
-					generations: get_gens
-					}
-			rootsMapper(options);
-		}
+            	rootsMapper();
             	// loadingAnimationEnd();
 
             });
@@ -116,6 +110,7 @@ function setupMenu() {
 			unselectItem('viewOptions','viewOptionsSpan');
 			unselectItem('pedigreeChart','pedigreeChartSpan');
 			unselectItem('countryStatistics','countryStatisticsSpan');
+            unselectItem('userInfo','username');
 
 			setTimeout(function(){
 				rm.style.overflow = 'visible';
@@ -134,6 +129,7 @@ function setupMenu() {
 			unselectItem('rootsMapper','rootsMapperSpan');
 			unselectItem('pedigreeChart','pedigreeChartSpan');
 			unselectItem('countryStatistics','countryStatisticsSpan');
+            unselectItem('userInfo','username');
 
             setTimeout(function(){
                 vo.style.overflow = 'visible';
@@ -154,6 +150,7 @@ function setupMenu() {
 			unselectItem('rootsMapper','rootsMapperSpan');
 			unselectItem('viewOptions','viewOptionsSpan');
 			unselectItem('countryStatistics','countryStatisticsSpan');
+            unselectItem('userInfo','username');
 		}
 	}
 
@@ -167,6 +164,7 @@ function setupMenu() {
 			unselectItem('rootsMapper','rootsMapperSpan');
 			unselectItem('viewOptions','viewOptionsSpan');
 			unselectItem('pedigreeChart','pedigreeChartSpan');
+            unselectItem('userInfo','username');
 
 			var un = document.getElementById('countryStats').getBoundingClientRect();
 			var rd = document.getElementById('logoutbutton');
@@ -180,21 +178,71 @@ function setupMenu() {
 		}
 	}
 
-	uis.onmouseover = function(e) {
-
-		ui.setAttribute('class','menuButton selected unselectable');
-		uis.setAttribute('class','menuButtonSpan lighted');
-
-		ui.onmouseout = function(e) {
-			if (isEventToChild(e,ui) == false) {
-				unselectItem('userInfo','username');
-			}
-		}
-
+	uis.onclick = function(e) {
+        if (uis.getAttribute('class').indexOf('lighted') !== -1) {
+            // currently selected, unselect
+            unselectItem('userInfo','username');
+        } else {
+            // unselected, select it
+            ui.setAttribute('class','menuButton selected unselectable');
+            uis.setAttribute('class','menuButtonSpan lighted');
+            unselectItem('rootsMapper','rootsMapperSpan');
+            unselectItem('viewOptions','viewOptionsSpan');
+            unselectItem('pedigreeChart','pedigreeChartSpan');
+            unselectItem('countryStatistics','countryStatisticsSpan');
+        }
 	}
 }
 
+function toggleHeaderBox() {
+    var div = document.getElementById('headerbox');
+    var bt = document.getElementById('toggleHeaderBox');
+    if (headerBoxVisible) {
+        // hide it
+        bt.style.backgroundColor = 'rgba(0,0,255,0.8)';
 
+        var before = new Date();
+        var step = 0;
+        var numSteps = 100; //Change this to set animation resolution
+        var timePerStep = 5; //Change this to alter animation speed
+        var interval = setInterval(function () {
+            var now = new Date();
+            var elapsedTime = (now.getTime() - before.getTime())
+            if (elapsedTime > timePerStep * numSteps) {
+                clearInterval(interval);
+                div.style.left = '-500px';
+                div.style.top = '-1000px';
+                headerBoxVisible = false;
+            } else {
+                step = elapsedTime / (timePerStep * numSteps);
+                div.style.top = Math.round(-1000 * step,0) + 'px';
+                div.style.left = Math.round(-500 * step,0) + 'px';
+            }
+        }, timePerStep);
+    } else {
+        // show it
+
+        var before = new Date();
+        var step = 0;
+        var numSteps = 100; //Change this to set animation resolution
+        var timePerStep = 5; //Change this to alter animation speed
+        var interval = setInterval(function () {
+            var now = new Date();
+            var elapsedTime = (now.getTime() - before.getTime())
+            if (elapsedTime > timePerStep * numSteps) {
+                clearInterval(interval);
+                div.style.top = '0px';
+                div.style.left = '0px';
+                bt.style.backgroundColor = '';
+                headerBoxVisible = true;
+            } else {
+                step = elapsedTime / (timePerStep * numSteps);
+                div.style.top = Math.round(-1000 * (1-step),0) + 'px';
+                div.style.left = Math.round(-500 * (1-step),0) + 'px';
+            }
+        }, timePerStep);
+    }
+}
 
 function startGoogleMaps() {
 
@@ -363,14 +411,8 @@ function currentUser(callback) {
             // Display username in appropriate field
             document.getElementById("username").innerHTML = userName;
 
-            // Set user as root person by default unless URL root parameter is set
-            if (get_root == "") {
-                populateIdField(userID,userName);
-            } else
-            {
-                populateIdField(get_root);
-		checkID();
-            }
+            // Set user as root person by default
+            populateIdField(userID,userName);
 
             typeof callback === 'function' && callback();
         }
@@ -380,14 +422,13 @@ function currentUser(callback) {
 
 function rootsMapper(options) {
 	options || (options = {});
-	
 
 	// If no id is supplied, get from input box
 	options.pid || (options.pid = document.getElementById('personid').value);
 
 	// Default to 3 generations
 	options.generations || (options.generations = 3);
-	
+
     if (options.generations > 8) {
 		// Map as few generations as possible, then expand by 8 gens on each member of the last generation plotted at the start
     	options.tooManyGens = true;
@@ -401,7 +442,6 @@ function rootsMapper(options) {
 
     if (options.rootGen == 0 && options.rootNode == 0) {
 		// Not expanding, so reset map
-	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.generations);
     	clearOverlays();
     }
 

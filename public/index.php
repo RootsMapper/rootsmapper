@@ -147,6 +147,11 @@ if (isset($access_token))
             	</div>
             </div>
 
+	<div id='toggleHeaderBox' class='unselectable' onclick='toggleHeaderBox();'>
+		<img class='triangleNarrow' src="images/triangle-up.png">
+		<!-- <img class='triangleNarrow' src="images/triangle-up.png"> -->
+	</div>
+
     <div id="headerbox">
 		<ul style="list-style-type: none; margin: 0; padding: 0; -webkit-transition: height 0.3s, width 0.3s; transition: height 0.3s, width 0.3s;">
 			<li id='rootsMapper' class='menuButton selected unselectable' >
@@ -230,8 +235,8 @@ if (isset($access_token))
 			<li id='userInfo' class='menuButton unselectable' >
 				<div id="username" class='menuButtonSpan' >Current User</div>
 				<div id="userDiv">
-					<button id="copyUserId" class="button blue" onclick="populateUser()">Set As Root</button></br>
-					<button id="logoutbutton" class="clear" onclick="window.location='logout.php'">Logout</button>
+					<button id="copyUserId" class="button blue" onclick="populateUser()">Set As Root</button>
+					<button id="logoutbutton" onclick="window.location='logout.php'">Logout</button>
 				</div>
 			</li>
 		</ul>
