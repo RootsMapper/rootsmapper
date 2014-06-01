@@ -452,9 +452,11 @@ function rootsMapper(options) {
     options.rootNode || (options.rootNode = 0);
 
     if (options.rootGen == 0 && options.rootNode == 0) {
-		// Not expanding, so reset map
 	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.generations);
-	clearOverlays();
+        if (!options.mother && !options.father) {
+            // Not expanding, so reset map
+            clearOverlays();
+        }
     }
 
     // Start loading animation
