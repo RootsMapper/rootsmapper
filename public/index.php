@@ -149,7 +149,7 @@ if (isset($access_token))
             </div>
 
 	<div id='toggleHeaderBox' class='unselectable' onclick='toggleHeaderBox();'>
-		<img class='triangleNarrow' src="images/triangle-up.png">
+		<img id='triangleNarrow' src="images/triangle-up.png">
 		<!-- <img class='triangleNarrow' src="images/triangle-up.png"> -->
 	</div>
 

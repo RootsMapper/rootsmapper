@@ -203,6 +203,7 @@ function setupMenu() {
 function toggleHeaderBox() {
     var div = document.getElementById('headerbox');
     var bt = document.getElementById('toggleHeaderBox');
+    var img = document.getElementById('triangleNarrow');
     if (headerBoxVisible) {
         // hide it
         bt.style.backgroundColor = 'rgba(0,0,255,0.8)';
@@ -219,6 +220,11 @@ function toggleHeaderBox() {
                 div.style.left = '-500px';
                 div.style.top = '-1000px';
                 headerBoxVisible = false;
+                img.src = "images/triangle-down.png";
+                img.style.paddingRight = '0px';
+                img.style.position = 'relative';
+                img.style.top = '5px';
+                img.style.left = '5px';
             } else {
                 step = elapsedTime / (timePerStep * numSteps);
                 div.style.top = Math.round(-500 * step,0) + 'px';
@@ -241,6 +247,10 @@ function toggleHeaderBox() {
                 div.style.left = '0px';
                 bt.style.backgroundColor = '';
                 headerBoxVisible = true;
+                img.src = "images/triangle-up.png";
+                img.style.position = '';
+                img.style.top = '';
+                img.style.left = '';
             } else {
                 step = elapsedTime / (timePerStep * numSteps);
                 div.style.top = Math.round(-500 * (1-step),0) + 'px';
