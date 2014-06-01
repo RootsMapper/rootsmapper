@@ -162,7 +162,7 @@ if (isset($access_token))
 		 			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
 					<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script></br>
 					<ul id="runList" class="listClass">
-						<li class="main" onclick="checkID(); expandList({listName:'runList'});"><b>Start</b><img class="triangle" src="images/triangle-down.png"></li>
+						<li class="main" onclick="checkID(); expandList({listName:'runList'});"><img class="triangle" src="images/triangle-down.png"><b>Start</b></li>
 						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:1})">1 generation</li>
 						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:2})">2 generations</li>
 						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:3})">3 generations</li>
@@ -186,7 +186,7 @@ if (isset($access_token))
 					<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
 					<button id="KML" class="button yellow off" onclick="createKML()">Export KML</button>
 					<ul id="isolateList" class="listClass">
-						<li class="main" onclick="expandList({listName:'isolateList'});"><b>Single Gen</b><img class="triangle" src="images/triangle-down.png"></li>
+						<li class="main" onclick="expandList({listName:'isolateList'});"><img class="triangle" src="images/triangle-down.png"><b>Single Gen</b></li>
 						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop()">View All</li>
 						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,1)">1<sup>st</sup> generation</li>
 					</ul>
@@ -208,7 +208,7 @@ if (isset($access_token))
 					<div id="countryStats"></div>
 					<div id="countryListHolder">
 						<ul id="countryList" class="listClass">
-							<li class="main" onclick="expandList({listName:'countryList'});"><b>Generation</b><img class="triangle" src="images/triangle-down.png"></li>
+							<li class="main" onclick="expandList({listName:'countryList'});"><img class="triangle" src="images/triangle-down.png"><b>Generation</b></li>
 							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop()">All generations</li>
 							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
 						</ul>

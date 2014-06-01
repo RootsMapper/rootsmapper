@@ -570,8 +570,20 @@ function getPedigree(options, callback) {
 					p[i].display.deathDate = "Living";
 				}
 				if (!familyTree.getNode(gen + options.rootGen, node)) {
-					familyTree.setNode(p[i], (gen +  options.rootGen), node);
-					delete familyTree.getNode(gen + options.rootGen, node).display.ascendancyNumber;
+                    if (options.father == true) {
+                        if (n == 0 || isEven(n)) {
+                            familyTree.setNode(p[i], (gen +  options.rootGen), node);
+                            delete familyTree.getNode(gen + options.rootGen, node).display.ascendancyNumber;
+                        }
+                    } else if (options.mother == true) {
+                        if (n == 0 || !isEven(n)) {
+                            familyTree.setNode(p[i], (gen +  options.rootGen), node);
+                            delete familyTree.getNode(gen + options.rootGen, node).display.ascendancyNumber;
+                        }
+                    } else {
+                        familyTree.setNode(p[i], (gen +  options.rootGen), node);
+                        delete familyTree.getNode(gen + options.rootGen, node).display.ascendancyNumber;
+                    }
 				}
 			}
 			if (p.length == 1) {
@@ -698,6 +710,8 @@ function finish(options) {
 
 	// Generate country statistics
 	countryLoop();
+
+    typeof options.callback === 'function' && options.callback();
 }
 
 function updateLists() {
@@ -787,7 +801,27 @@ function makePedigree(gen, node) {
 			makePedigree(gen + 1, node * 2);
 			infoBoxClick(familyTree.getNode(gen + 1, node * 2).marker);
 		}
-	}
+	} else {
+        daddy.innerHTML = "</br><span style='padding-left: 40px'>[+]</span>";
+        daddy.onclick = function () {
+
+            var options = {
+                pid: person.id,
+                generations: 1,
+                rootGen: person.generation,
+                rootNode: person.node,
+                father: true,
+                callback: function() {
+                    if (familyTree.getNode(gen + 1, node * 2).marker) {
+                        makePedigree(gen + 1, node * 2);
+                        infoBoxClick(familyTree.getNode(gen + 1, node * 2).marker);
+                    }
+                }
+            };
+
+            rootsMapper(options);
+        }
+    }
 
 	if (mother) {
 		mommy.innerHTML = HtmlEncode(mother.display.name) + '</br> (' + HtmlEncode(mother.display.lifespan) + ')';
@@ -795,7 +829,27 @@ function makePedigree(gen, node) {
 			makePedigree(gen + 1, node * 2 + 1);
 			infoBoxClick(familyTree.getNode(gen + 1, node * 2 + 1).marker);
 		}
-	}
+	} else {
+        mommy.innerHTML = "</br><span style='padding-left: 40px'>[+]</span>";
+        mommy.onclick = function () {
+
+            var options = {
+                pid: person.id,
+                generations: 1,
+                rootGen: person.generation,
+                rootNode: person.node,
+                mother: true,
+                callback: function() {
+                    if (familyTree.getNode(gen + 1, node * 2 + 1).marker) {
+                        makePedigree(gen + 1, node * 2 + 1);
+                        infoBoxClick(familyTree.getNode(gen + 1, node * 2 + 1).marker);
+                    }
+                }
+            };
+
+            rootsMapper(options);
+        }
+    }
 
 	if (gen > 0) {
 		child.onclick = function() {
@@ -1364,7 +1418,7 @@ function createMarker(p,yellow) {
         mark.lifespan = p.display.lifespan;
 
         mark.expandButton = "<ul id='expandList' class='listClass'>" +
-                                "<li id='ebutton' class='main' onclick='expandList({listName:\"expandList\"});'><b>Expand</b><img class='triangle' src='images/triangle-down.png'></li>" +
+                                "<li id='ebutton' class='main' onclick='expandList({listName:\"expandList\"});'><img class='triangle' src='images/triangle-down.png'><b>Expand</b></li>" +
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 1 + ");'>1 generation</li>" +
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 2 + ");'>2 generations</li>" +
                                 "<li class='item' onclick='expandList({listName:\"expandList\"}); expandClick(" + p.generation + "," + p.node + "," + 3 + ");'>3 generations</li>" +

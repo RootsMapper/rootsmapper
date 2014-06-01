@@ -530,6 +530,7 @@ html, body {
     border-radius: 5px;
     background-color: dodgerblue;
 	max-width: 100px;
+    overflow: hidden;
 }
 
 #tree2 {
@@ -539,6 +540,7 @@ html, body {
     border-radius: 5px;
 	background-color: gray;
 	max-width: 100px;
+    overflow: hidden;
 }
 
 #tree3 {
@@ -548,6 +550,7 @@ html, body {
     border-radius: 5px;
     background-color: pink;
 	max-width: 100px;
+    overflow: hidden;
 }
 
 
