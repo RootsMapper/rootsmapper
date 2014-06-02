@@ -462,7 +462,7 @@ function rootsMapper(options) {
     options.rootNode || (options.rootNode = 0);
 
     if (options.rootGen == 0 && options.rootNode == 0) {
-	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.generations);
+	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.genQuery);
         if (!options.mother && !options.father) {
             // Not expanding, so reset map
             clearOverlays();
@@ -1492,6 +1492,10 @@ function createMarker(p,yellow) {
     }
 
     function infoBoxClick(mark) {
+        var pathArray = window.location.href.split( '/' );
+        var yd = pathArray[pathArray.length-1].indexOf('&selected=');
+        if (yd == -1) {yd = undefined;}
+        window.history.pushState("none","",pathArray[pathArray.length-1].substring(0,yd) + "&selected=" + mark.generation + "," + mark.node);
 		if (baseurl.indexOf('sandbox') == -1) {
 		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
 		        setPhoto(mark.generation, mark.node,0);
