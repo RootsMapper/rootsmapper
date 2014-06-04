@@ -1066,26 +1066,30 @@ function queryTable(countryArray,countryCount) {
 function getPhoto(id, gen, node, callback) {
     var person = familyTree.getNode(gen, node);
     if (!person.image) {
+        var q = window.location.href.split('?');
+        // var q = document.URL.split();
         var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
             pid: id,
             access_token: accesstoken,
-            "default": document.URL + '/' + person.imageIcon
+            "default": q[0] + '/' + person.imageIcon
         });
 
         familyTree.getNode(gen, node).image = url;
         typeof callback === 'function' && callback(url);
+
+
         //var url = discovery.persons.href + '/' + id + '/portrait?access_token=' + accesstoken;
-        //fsAPI({ url: url, media: 'img' }, function (result, status) {
+        // fsAPI({ url: url, media: 'img' }, function (result, status) {
         //    if (status == "No Content") {
-        //        //familyTree.getNode(gen, node).imageIcon = url;
-        //        familyTree.getNode(gen, node).image = url;
-        //        typeof callback === 'function' && callback(result);
+               //familyTree.getNode(gen, node).imageIcon = url;
+            //    familyTree.getNode(gen, node).image = result;
+            //    typeof callback === 'function' && callback(result);
         //    } else {
-        //        //familyTree.getNode(gen, node).imageIcon = "none";
-        //        familyTree.getNode(gen, node).image = url;
-        //        typeof callback === 'function' && callback(result);
+               //familyTree.getNode(gen, node).imageIcon = "none";
+            //    familyTree.getNode(gen, node).image = url;
+            //    typeof callback === 'function' && callback(result);
         //    }
-        //}, 3000);
+        // }, 3000);
     } else {
         typeof callback === 'function' && callback('');
     }
@@ -1496,11 +1500,11 @@ function createMarker(p,yellow) {
         var yd = pathArray[pathArray.length-1].indexOf('&selected=');
         if (yd == -1) {yd = undefined;}
         window.history.pushState("none","",pathArray[pathArray.length-1].substring(0,yd) + "&selected=" + mark.generation + "," + mark.node);
-		if (baseurl.indexOf('sandbox') == -1) {
+		// if (baseurl.indexOf('sandbox') == -1) {
 		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
 		        setPhoto(mark.generation, mark.node,0);
 		    });
-		}
+		// }
 		var fatherPlotted = false;
 		var motherPlotted = false;
 		if (familyTree.getFather(mark.generation, mark.node)) {
