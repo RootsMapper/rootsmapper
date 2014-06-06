@@ -456,7 +456,6 @@ function rootsMapper(options) {
 	// Default to 3 generations
 	options.generations || (options.generations = 3);
 	cur_gens = options.generations;
-	cur_root = options.pid;
 	if(!cur_selected) {
 		cur_selected = "0,0";	
 	}
@@ -472,6 +471,7 @@ function rootsMapper(options) {
     options.rootNode || (options.rootNode = 0);
 
     if (options.rootGen == 0 && options.rootNode == 0) {
+	cur_root = options.pid;
 	window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected);
         if (!options.mother && !options.father) {
             // Not expanding, so reset map
