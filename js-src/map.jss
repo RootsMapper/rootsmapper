@@ -23,7 +23,12 @@ var grouping;
 var tooManyGens;
 var title;
 var cur_title;
+var cur_root;
 var cur_gens;
+var cur_selected;
+var get_root;
+var get_gens;
+var get_selected;
 var fixColors;
 var optionvar = false;
 var isolate = false;
@@ -56,6 +61,7 @@ function initialize() {
         	// Load user information
             currentUser(function () {
 
+		cur_selected = get_selected;
             	// Run with gens from URL parameters
 		if (get_gens == "") {
 			rootsMapper();
@@ -450,6 +456,10 @@ function rootsMapper(options) {
 	// Default to 3 generations
 	options.generations || (options.generations = 3);
 	cur_gens = options.generations;
+	cur_root = options.pid;
+	if(!cur_selected) {
+		cur_selected = "0,0";	
+	}
     if (options.generations > 8) {
 		// Map as few generations as possible, then expand by 8 gens on each member of the last generation plotted at the start
     	options.tooManyGens = true;
@@ -462,7 +472,7 @@ function rootsMapper(options) {
     options.rootNode || (options.rootNode = 0);
 
     if (options.rootGen == 0 && options.rootNode == 0) {
-	window.history.pushState("none","", "?root=" + options.pid + "&gens=" + options.genQuery);
+	window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected);
         if (!options.mother && !options.father) {
             // Not expanding, so reset map
             clearOverlays();
@@ -481,8 +491,12 @@ function rootsMapper(options) {
     			loadingAnimationEnd();
 
 	            if (firstTime.box == true) {
-	                infoBoxClick(familyTree.root().marker);
-	                firstTime.box = false;
+			if (cur_selected) {
+                        	infoBoxClick(familyTree.getNode(parseInt(cur_selected.split(",")[0]), parseInt(cur_selected.split(",")[1])).marker);
+	                }else{
+				infoBoxClick(familyTree.root().marker);
+	                }
+			firstTime.box = false;
 	            }
 
 	            finish(options);
@@ -1499,7 +1513,9 @@ function createMarker(p,yellow) {
         var pathArray = window.location.href.split( '/' );
         var yd = pathArray[pathArray.length-1].indexOf('&selected=');
         if (yd == -1) {yd = undefined;}
-        window.history.pushState("none","",pathArray[pathArray.length-1].substring(0,yd) + "&selected=" + mark.generation + "," + mark.node);
+        //window.history.pushState("none","",pathArray[pathArray.length-1].substring(0,yd) + "&selected=" + mark.generation + "," + mark.node);
+	cur_selected = mark.generation + "," + mark.node;
+	window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected);
 		// if (baseurl.indexOf('sandbox') == -1) {
 		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
 		        setPhoto(mark.generation, mark.node,0);
@@ -1867,7 +1883,11 @@ function createMarker(p,yellow) {
         		loadingAnimationEnd();
 
 	            if (firstTime.box == true) {
-	                infoBoxClick(familyTree.root().marker);
+			if (cur_selected) {
+                        	infoBoxClick(familyTree.getNode(parseInt(cur_selected.split(",")[0]), parseInt(cur_selected.split(",")[1])).marker);
+	                }else{
+				infoBoxClick(familyTree.root().marker);
+	                }
 	                firstTime.box = false;
 	            }
         	}
