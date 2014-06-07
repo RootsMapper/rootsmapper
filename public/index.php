@@ -195,7 +195,7 @@ if (isset($access_token))
 					<div id="KML" style="margin-left: 20px;" onclick="createKML()">Export KML</div>
 					<script type="text/javascript">
 						Downloadify.create('KML',{
-							filename: 'rootsMapper.kml',
+							filename: 'rootsmapper.kml',
 							data: function(){
 								return createKML();
 							},
