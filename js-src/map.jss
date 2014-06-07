@@ -549,6 +549,7 @@ function rootsMapper(options) {
 	// If we're expanding someone in the tree, give their generation and node
 	options.rootGen || (options.rootGen = 0);
     options.rootNode || (options.rootNode = 0);
+    expand_gens = options.genQuery || options.generations;
 
     if (options.rootGen == 0 && options.rootNode == 0) {
         if (!options.mother && !options.father) {
@@ -567,7 +568,7 @@ function rootsMapper(options) {
                 } else if (options.father) {
                     cur_expand = options.rootGen + "," + options.rootNode + ",1,m";
                 } else {
-                    cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens;
+                    cur_expand = options.rootGen + "," + options.rootNode + "," + expand_gens;
                 }
 
             } else {
@@ -577,7 +578,7 @@ function rootsMapper(options) {
                     } else if (options.father) {
                         cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",1,m";
                     } else {
-                        cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens;
+                        cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + expand_gens;
                     }
                 }
             }
@@ -586,21 +587,21 @@ function rootsMapper(options) {
     } else {
         if (cur_expand == '') {
             if (options.mother) {
-                cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens + ",f";
+                cur_expand = options.rootGen + "," + options.rootNode + ",1,f";
             } else if (options.father) {
-                cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens + ",m";
+                cur_expand = options.rootGen + "," + options.rootNode + ",1,m";
             } else {
-                cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens;
+                cur_expand = options.rootGen + "," + options.rootNode + "," + expand_gens;
             }
 
         } else {
             if (!options.expand) {
                 if (options.mother) {
-                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",f";
+                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",1,f";
                 } else if (options.father) {
-                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",m";
+                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",1,m";
                 } else {
-                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens;
+                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + expand_gens;
                 }
             }
         }
