@@ -26,9 +26,11 @@ var cur_title;
 var cur_root;
 var cur_gens;
 var cur_selected;
+var cur_expand;
 var get_root;
 var get_gens;
 var get_selected;
+var get_expand;
 var fixColors;
 var optionvar = false;
 var isolate = false;
@@ -61,16 +63,23 @@ function initialize() {
         	// Load user information
             currentUser(function () {
 
-		cur_selected = get_selected;
-            	// Run with gens from URL parameters
-		if (get_gens == "") {
-			rootsMapper();
-		} else {
-			var options = {
-					generations: get_gens
-					}
- 			rootsMapper(options);
- 		}
+        		cur_selected = get_selected;
+                    	// Run with gens from URL parameters
+        		if (get_gens == "") {
+        			rootsMapper();
+        		} else {
+                    var options = {
+                        generations: get_gens
+                    }
+
+                    if (get_expand) {
+                        cur_expand = get_expand.split(';');
+                        options.expand = cur_expand;
+                        rootsMapperURL(options);
+                    } else {
+                        rootsMapper(options);
+                    }
+                }
             });
 
         });
@@ -447,6 +456,63 @@ function currentUser(callback) {
 
 }
 
+function rootsMapperURL(options) {
+
+    if (options.expand.length > 0) {
+        options.callback = function () {
+            // run expansion
+            var expand = options.expand[0].split(',');
+            var gen = parseInt(expand[0]);
+            var node = parseInt(expand[1]);
+            options.expand.shift();
+
+            if (expand[4] == "m") {
+                options.father = true;
+            } else if (expand[4] == "f") {
+                options.mother = true;
+            }
+
+            var p = familyTree.getNode(gen,node);
+            p.marker.isExpanded = true;
+
+            var newOptions = {
+                rootGen: gen,
+                rootNode: node,
+                generations: parseInt(expand[2]),
+                expand: options.expand,
+                rootComplete: true,
+                pid: p.id
+            }
+
+            // newOptions.pid = p.id;
+
+            rootsMapperURL(newOptions);
+        }
+    } else {
+        // options.callback = function () {
+        //     // run expansion
+        //     var expand = options.expand[options.expand.length - 1].split('-');
+        //     options.expand.pop();
+        //     var newOptions = {
+        //         rootGen: expand[0],
+        //         rootNode: expand[1],
+        //         generations: expand[2],
+        //         expand: options.expand,
+        //         rootComplete: true
+        //     }
+        //
+        //     rootsMapperURL(newOptions);
+        // }
+    }
+
+    // if (options.rootComplete == false) {
+        // options.rootComplete = true;
+        rootsMapper(options);
+    // } else {
+        // rootsMapperURL(options);
+    // }
+}
+
 function rootsMapper(options) {
 	options || (options = {});
 
@@ -457,7 +523,7 @@ function rootsMapper(options) {
 	options.generations || (options.generations = 3);
 	cur_gens = options.generations;
 	if(!cur_selected) {
-		cur_selected = "0,0";	
+		cur_selected = "0,0";
 	}
     if (options.generations > 8) {
 		// Map as few generations as possible, then expand by 8 gens on each member of the last generation plotted at the start
@@ -471,12 +537,40 @@ function rootsMapper(options) {
     options.rootNode || (options.rootNode = 0);
 
     if (options.rootGen == 0 && options.rootNode == 0) {
-	cur_root = options.pid;
-	window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected);
         if (!options.mother && !options.father) {
             // Not expanding, so reset map
+            cur_root = options.pid;
+            cur_expand = '';
+            window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
             clearOverlays();
+        } else {
+            if (cur_expand == '') {
+                cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens;
+            } else {
+                cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens;
+            }
+            window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
         }
+    } else {
+        if (cur_expand == '') {
+            if (options.mother) {
+                cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens + ",f";
+            } else if (options.father) {
+                cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens + ",m";
+            } else {
+                cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens;
+            }
+
+        } else {
+            if (options.mother) {
+                cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",f";
+            } else if (options.father) {
+                cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",m";
+            } else {
+                cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens;
+            }
+        }
+        window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
     }
 
     // Start loading animation
@@ -491,17 +585,25 @@ function rootsMapper(options) {
     			loadingAnimationEnd();
 
 	            if (firstTime.box == true) {
-			if (cur_selected) {
-                        	infoBoxClick(familyTree.getNode(parseInt(cur_selected.split(",")[0]), parseInt(cur_selected.split(",")[1])).marker);
-	                }else{
-				infoBoxClick(familyTree.root().marker);
-	                }
-			firstTime.box = false;
+        			if (cur_selected) {
+                        if (options.expand) {
+                            if (options.expand.length == 0) {
+                                infoBoxClick(familyTree.getNode(parseInt(cur_selected.split(",")[0]), parseInt(cur_selected.split(",")[1])).marker);
+                                firstTime.box = false;
+                            }
+                        } else {
+                            infoBoxClick(familyTree.getNode(parseInt(cur_selected.split(",")[0]), parseInt(cur_selected.split(",")[1])).marker);
+                            firstTime.box = false;
+                        }
+                    } else {
+        				infoBoxClick(familyTree.root().marker);
+                        firstTime.box = false;
+                    }
 	            }
 
 	            finish(options);
 
-    		});
+        		});
 
     	} else {
     		finish(options);
@@ -613,9 +715,13 @@ function getPedigree(options, callback) {
 				}
 			}
 			if (p.length == 1) {
-			    alert('No parents found for person with ID: ' + options.pid);
+                if (!options.expand) {
+                    alert('No parents found for person with ID: ' + options.pid);
+                }
 			} else if (p.length == 2) {
-			    alert('Only one parent found for person with ID: ' + options.pid);
+                if (!options.expand) {
+                    alert('Only one parent found for person with ID: ' + options.pid);
+                }
 			}
 			typeof callback === 'function' && callback();
 		} else {
@@ -1494,19 +1600,25 @@ function createMarker(p,yellow) {
             "</div>";
     }
 
-    function expandClick(gen, node, gens) {
+    function expandClick(gen, node, gens, callback) {
         var p = familyTree.getNode(gen,node);
         p.marker.isExpanded=true;
+
+        if (callback == undefined) {
+            callback = function() {
+                infoBoxClick(p.marker);
+            }
+        }
 
         var options = {
         	pid: p.id,
         	generations: gens,
         	rootGen: gen,
-        	rootNode: node
+        	rootNode: node,
+            callback: callback
         };
 
         rootsMapper(options);
-        infoBoxClick(p.marker);
     }
 
     function infoBoxClick(mark) {
@@ -1514,8 +1626,8 @@ function createMarker(p,yellow) {
         var yd = pathArray[pathArray.length-1].indexOf('&selected=');
         if (yd == -1) {yd = undefined;}
         //window.history.pushState("none","",pathArray[pathArray.length-1].substring(0,yd) + "&selected=" + mark.generation + "," + mark.node);
-	cur_selected = mark.generation + "," + mark.node;
-	window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected);
+	       cur_selected = mark.generation + "," + mark.node;
+           window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
 		// if (baseurl.indexOf('sandbox') == -1) {
 		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
 		        setPhoto(mark.generation, mark.node,0);
@@ -1883,12 +1995,20 @@ function createMarker(p,yellow) {
         		loadingAnimationEnd();
 
 	            if (firstTime.box == true) {
-			if (cur_selected) {
-                        	infoBoxClick(familyTree.getNode(parseInt(cur_selected.split(",")[0]), parseInt(cur_selected.split(",")[1])).marker);
-	                }else{
-				infoBoxClick(familyTree.root().marker);
+                    if (cur_selected) {
+                        if (options.expand) {
+                            if (options.expand.length == 0) {
+                                infoBoxClick(familyTree.getNode(parseInt(cur_selected.split(",")[0]), parseInt(cur_selected.split(",")[1])).marker);
+                                firstTime.box = false;
+                            }
+                        } else {
+                            infoBoxClick(familyTree.getNode(parseInt(cur_selected.split(",")[0]), parseInt(cur_selected.split(",")[1])).marker);
+                            firstTime.box = false;
+                        }
+                    } else {
+                        infoBoxClick(familyTree.root().marker);
+                        firstTime.box = false;
 	                }
-	                firstTime.box = false;
 	            }
         	}
 

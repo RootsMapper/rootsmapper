@@ -169,16 +169,16 @@ if (isset($access_token))
 					<script src="scripts/keyfilter.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script></br>
 					<ul id="runList" class="listClass">
 						<li class="main" onclick="checkID(); expandList({listName:'runList'});"><img class="triangle" src="images/triangle-down.png"><b>Start</b></li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:1})">1 generation</li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:2})">2 generations</li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:3})">3 generations</li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:4})">4 generations</li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:5})">5 generations</li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:6})">6 generations</li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:7})">7 generations</li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:8})">8 generations</li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:9})">9 generations</li>
-						<li class="item" onclick="expandList({listName:'runList'}); rootsMapper({generations:10})">10 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:1})">1 generation</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:2})">2 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:3})">3 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:5})">5 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:6})">6 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:4})">4 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:7})">7 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:8})">8 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:9})">9 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:10})">10 generations</li>
 					</ul>
 				</div>
 			</li>
