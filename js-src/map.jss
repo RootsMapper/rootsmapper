@@ -864,11 +864,11 @@ function plotterLoop(callback) {
 
 function finish(options) {
 
-//    if (options.rootGen == 0 && options.rootNode == 0) {
-		// Not expanding
-		// Update pedigree browser
-		makePedigree(options.rootGen,options.rootNode);
-//    }
+        if (!options.expand) {
+            // only update pedigree chart if not running from URL
+            makePedigree(options.rootGen,options.rootNode);
+        }
+
     updateLists();
 
 	// Setup spiderfying of pins
@@ -1228,22 +1228,22 @@ function getPhoto(id, gen, node, callback) {
             "default": q[0] + '/' + person.imageIcon
         });
 
-        familyTree.getNode(gen, node).image = url;
-        typeof callback === 'function' && callback(url);
+        // familyTree.getNode(gen, node).image = url;
+        // typeof callback === 'function' && callback(url);
 
 
-        //var url = discovery.persons.href + '/' + id + '/portrait?access_token=' + accesstoken;
-        // fsAPI({ url: url, media: 'img' }, function (result, status) {
-        //    if (status == "No Content") {
-               //familyTree.getNode(gen, node).imageIcon = url;
-            //    familyTree.getNode(gen, node).image = result;
-            //    typeof callback === 'function' && callback(result);
-        //    } else {
-               //familyTree.getNode(gen, node).imageIcon = "none";
-            //    familyTree.getNode(gen, node).image = url;
-            //    typeof callback === 'function' && callback(result);
-        //    }
-        // }, 3000);
+        // var url = discovery.persons.href + '/' + id + '/portrait?access_token=' + accesstoken;
+        fsAPI({ url: url, media: 'img' }, function (result, status) {
+           if (status == "No Content") {
+               familyTree.getNode(gen, node).imageIcon = url;
+               familyTree.getNode(gen, node).image = result;
+               typeof callback === 'function' && callback(result);
+           } else {
+               familyTree.getNode(gen, node).imageIcon = "none";
+               familyTree.getNode(gen, node).image = url;
+               typeof callback === 'function' && callback(result);
+           }
+        }, 3000);
     } else {
         typeof callback === 'function' && callback('');
     }
@@ -1662,11 +1662,11 @@ function createMarker(p,yellow) {
         //window.history.pushState("none","",pathArray[pathArray.length-1].substring(0,yd) + "&selected=" + mark.generation + "," + mark.node);
 	       cur_selected = mark.generation + "," + mark.node;
            window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
-		// if (baseurl.indexOf('sandbox') == -1) {
+		if (baseurl.indexOf('sandbox') == -1) {
 		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
 		        setPhoto(mark.generation, mark.node,0);
 		    });
-		// }
+		}
 		var fatherPlotted = false;
 		var motherPlotted = false;
 		if (familyTree.getFather(mark.generation, mark.node)) {
