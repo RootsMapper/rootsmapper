@@ -15,7 +15,7 @@ function fsAPI(options, callback, timeout) {
     xhttp = new XMLHttpRequest();
 
     // Set request type
-    if (options.media == "img" ) {
+    if (options.media == "image" ) {
       xhttp.open("HEAD", options.url);
       xhttp.setRequestHeader('Accept', '*/*');
     } else {
