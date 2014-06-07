@@ -1240,7 +1240,7 @@ function getPhoto(id, gen, node, callback) {
                typeof callback === 'function' && callback(result);
            } else {
                familyTree.getNode(gen, node).imageIcon = "none";
-               familyTree.getNode(gen, node).image = url;
+               familyTree.getNode(gen, node).image = result;
                typeof callback === 'function' && callback(result);
            }
         }, 3000);
