@@ -653,7 +653,7 @@ html, body {
 /* Loading animation styles */
 #loadingDiv {
     background-color: rgba(0,0,0,0.5);
-    position: fixed;
+    position: absolute;
     left: 0px;
     top: 0px;
     display: table;
