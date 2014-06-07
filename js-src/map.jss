@@ -64,6 +64,7 @@ function initialize() {
             currentUser(function () {
 
         		cur_selected = get_selected;
+                cur_expand = get_expand;
                     	// Run with gens from URL parameters
         		if (get_gens == "") {
         			rootsMapper();
@@ -72,9 +73,8 @@ function initialize() {
                         generations: get_gens
                     }
 
-                    if (get_expand) {
-                        cur_expand = get_expand.split(';');
-                        options.expand = cur_expand;
+                    if (cur_expand) {
+                        options.expand = cur_expand.split(';');
                         rootsMapperURL(options);
                     } else {
                         rootsMapper(options);
@@ -466,11 +466,7 @@ function rootsMapperURL(options) {
             var node = parseInt(expand[1]);
             options.expand.shift();
 
-            if (expand[4] == "m") {
-                options.father = true;
-            } else if (expand[4] == "f") {
-                options.mother = true;
-            }
+
 
             var p = familyTree.getNode(gen,node);
             p.marker.isExpanded = true;
@@ -484,6 +480,11 @@ function rootsMapperURL(options) {
                 pid: p.id
             }
 
+            if (expand[3] == "m") {
+                newOptions.father = true;
+            } else if (expand[3] == "f") {
+                newOptions.mother = true;
+            }
             // newOptions.pid = p.id;
 
             rootsMapperURL(newOptions);
@@ -540,7 +541,9 @@ function rootsMapper(options) {
         if (!options.mother && !options.father) {
             // Not expanding, so reset map
             cur_root = options.pid;
-            cur_expand = '';
+            if (!options.expand) {
+                cur_expand = '';
+            }
             window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
             clearOverlays();
         } else {
@@ -944,7 +947,7 @@ function makePedigree(gen, node) {
                 rootNode: person.node,
                 father: true,
                 callback: function() {
-                    if (familyTree.getNode(gen + 1, node * 2).marker) {
+                    if (familyTree.getNode(gen + 1, node * 2)) {
                         makePedigree(gen + 1, node * 2);
                         infoBoxClick(familyTree.getNode(gen + 1, node * 2).marker);
                     }
@@ -972,7 +975,7 @@ function makePedigree(gen, node) {
                 rootNode: person.node,
                 mother: true,
                 callback: function() {
-                    if (familyTree.getNode(gen + 1, node * 2 + 1).marker) {
+                    if (familyTree.getNode(gen + 1, node * 2 + 1)) {
                         makePedigree(gen + 1, node * 2 + 1);
                         infoBoxClick(familyTree.getNode(gen + 1, node * 2 + 1).marker);
                     }
