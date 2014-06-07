@@ -1230,7 +1230,7 @@ function getPhoto(id, gen, node, callback) {
             familyTree.getNode(gen, node).image = result;
             typeof callback === 'function' && callback(result);
         }, 10000);
-        
+
     } else {
         typeof callback === 'function' && callback('');
     }
@@ -1504,6 +1504,10 @@ function createMarker(p,yellow) {
             } else {
                 var icon = 'images/female' + p.generation + '.png?v=' + version;
                 var src = 'images/woman.png?v=' + version;
+            }
+
+            if (p.image) {
+                var src = p.image;
             }
 
             var scaleFactor = .5;
