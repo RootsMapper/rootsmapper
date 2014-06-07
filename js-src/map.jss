@@ -642,8 +642,6 @@ function rootsMapper(options) {
     	} else {
     		finish(options);
     	}
-        cur_title = title + ": " + cur_gens + "x " + document.getElementById("personName").textContent + " (" + document.getElementById("personid").value + ")";
-	document.title = cur_title;
     });
 }
 
@@ -1645,6 +1643,8 @@ function createMarker(p,yellow) {
         var yd = pathArray[pathArray.length-1].indexOf('&selected=');
         if (yd == -1) {yd = undefined;}
         //window.history.pushState("none","",pathArray[pathArray.length-1].substring(0,yd) + "&selected=" + mark.generation + "," + mark.node);
+        cur_title = title + ": " + mark.name + " (" + mark.personID + ")";
+	document.title = cur_title;
 	       cur_selected = mark.generation + "," + mark.node;
            window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
 		if (baseurl.indexOf('sandbox') == -1) {
