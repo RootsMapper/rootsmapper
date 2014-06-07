@@ -456,62 +456,76 @@ function currentUser(callback) {
 
 }
 
+function expandDelete(optionsExpand) {
+    if (optionsExpand.length > 0) {
+        var expand = optionsExpand[0].split(',');
+        if (expand[2] === "d") {
+            var gen = parseInt(expand[0])
+            var node = parseInt(expand[1]);
+
+            familyTree.getNode(gen, node).marker.setVisible(false);
+            familyTree.getNode(gen, node).polyline.setVisible(false);
+            familyTree.getChild(gen, node).marker.isExpanded = false;
+            familyTree.getNode(gen, node).isPlotted = false;
+            familyTree.setNode(undefined, gen, node);
+
+            countryLoop();
+
+            optionsExpand.shift();
+            return expandDelete(optionsExpand);
+        } else {
+            return optionsExpand;
+        }
+    } else {
+        return optionsExpand;
+    }
+}
+
 function rootsMapperURL(options) {
 
     if (options.expand.length > 0) {
         options.callback = function () {
             // run expansion
-            var expand = options.expand[0].split(',');
-            var gen = parseInt(expand[0]);
-            var node = parseInt(expand[1]);
-            options.expand.shift();
+            // check for deletions
+            options.expand = expandDelete(options.expand);
+            if (options.expand.length > 0) {
+                var expand = options.expand[0].split(',');
+                var gen = parseInt(expand[0]);
+                var node = parseInt(expand[1]);
+                options.expand.shift();
 
 
 
-            var p = familyTree.getNode(gen,node);
-            p.marker.isExpanded = true;
+                var p = familyTree.getNode(gen,node);
+                p.marker.isExpanded = true;
 
-            var newOptions = {
-                rootGen: gen,
-                rootNode: node,
-                generations: parseInt(expand[2]),
-                expand: options.expand,
-                rootComplete: true,
-                pid: p.id
+                var newOptions = {
+                    rootGen: gen,
+                    rootNode: node,
+                    generations: parseInt(expand[2]),
+                    expand: options.expand,
+                    rootComplete: true,
+                    pid: p.id
+                }
+
+                if (expand[3] == "m") {
+                    newOptions.father = true;
+                } else if (expand[3] == "f") {
+                    newOptions.mother = true;
+                }
+                // newOptions.pid = p.id;
+
+                rootsMapperURL(newOptions);
+            } else {
+                infoBoxClick(familyTree.getNode(parseInt(cur_selected.split(",")[0]), parseInt(cur_selected.split(",")[1])).marker);
+                firstTime.box = false;
             }
 
-            if (expand[3] == "m") {
-                newOptions.father = true;
-            } else if (expand[3] == "f") {
-                newOptions.mother = true;
-            }
-            // newOptions.pid = p.id;
-
-            rootsMapperURL(newOptions);
         }
-    } else {
-        // options.callback = function () {
-        //     // run expansion
-        //     var expand = options.expand[options.expand.length - 1].split('-');
-        //     options.expand.pop();
-        //     var newOptions = {
-        //         rootGen: expand[0],
-        //         rootNode: expand[1],
-        //         generations: expand[2],
-        //         expand: options.expand,
-        //         rootComplete: true
-        //     }
-        //
-        //     rootsMapperURL(newOptions);
-        // }
     }
 
-    // if (options.rootComplete == false) {
-        // options.rootComplete = true;
-        rootsMapper(options);
-    // } else {
-        // rootsMapperURL(options);
-    // }
+    rootsMapper(options);
+
 }
 
 function rootsMapper(options) {
@@ -522,7 +536,6 @@ function rootsMapper(options) {
 
 	// Default to 3 generations
 	options.generations || (options.generations = 3);
-	cur_gens = options.generations;
 	if(!cur_selected) {
 		cur_selected = "0,0";
 	}
@@ -541,6 +554,7 @@ function rootsMapper(options) {
         if (!options.mother && !options.father) {
             // Not expanding, so reset map
             cur_root = options.pid;
+            cur_gens = options.genQuery || options.generations;
             if (!options.expand) {
                 cur_expand = '';
             }
@@ -548,9 +562,24 @@ function rootsMapper(options) {
             clearOverlays();
         } else {
             if (cur_expand == '') {
-                cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens;
+                if (options.mother) {
+                    cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens + ",f";
+                } else if (options.father) {
+                    cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens + ",m";
+                } else {
+                    cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens;
+                }
+
             } else {
-                cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens;
+                if (!options.expand) {
+                    if (options.mother) {
+                        cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",f";
+                    } else if (options.father) {
+                        cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",m";
+                    } else {
+                        cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens;
+                    }
+                }
             }
             window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
         }
@@ -565,12 +594,14 @@ function rootsMapper(options) {
             }
 
         } else {
-            if (options.mother) {
-                cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",f";
-            } else if (options.father) {
-                cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",m";
-            } else {
-                cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens;
+            if (!options.expand) {
+                if (options.mother) {
+                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",f";
+                } else if (options.father) {
+                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens + ",m";
+                } else {
+                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + cur_gens;
+                }
             }
         }
         window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
@@ -1867,6 +1898,14 @@ function createMarker(p,yellow) {
 		familyTree.getChild(gen, node).marker.isExpanded = false;
 		familyTree.getNode(gen, node).isPlotted = false;
 		familyTree.setNode(undefined, gen, node);
+
+        if (cur_expand == '') {
+            cur_expand = gen + "," + node + "," + "d";
+        } else {
+            cur_expand = cur_expand + ";" + gen + "," + node + "," + "d";
+        }
+        window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
+
 		// ib.close();
 		countryLoop(function (group) {
             infoBoxClick(familyTree.getChild(gen,node).marker);
