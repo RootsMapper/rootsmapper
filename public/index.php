@@ -34,7 +34,7 @@ if( isset($_REQUEST['code']) ) {
 	  session_regenerate_id(true); //Regenerate session ID
 	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
 	  $_SESSION['fingerprint'] = md5($fingerprint);
-          $url_params = (isset($_SESSION['root'])? ("root=" . $_SESSION['root']) : "") . (isset($_SESSION['gens'])? ("&gens=" . $_SESSION['gens']) : "") . (isset($_SESSION['selected'])? ("&selected=" . $_SESSION['selected']) : "" . (isset($_SESSION['expand'])? ("&expand=" . $_SESSION['expand']) : ""));
+          $url_params = (isset($_SESSION['root'])? ("root=" . $_SESSION['root']) : "") . (isset($_SESSION['gens'])? ("&gens=" . $_SESSION['gens']) : "") . (isset($_SESSION['selected'])? ("&selected=" . $_SESSION['selected']) : "") . (isset($_SESSION['expand'])? ("&expand=" . $_SESSION['expand']) : "");
 	  header("Location: ./" . (isset($url_params)? "?" . $url_params : "")); //Refresh page to clear POST variables
 	  exit;
 }
