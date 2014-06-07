@@ -559,7 +559,7 @@ function rootsMapper(options) {
             if (!options.expand) {
                 cur_expand = '';
             }
-            window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
+            window.history.replaceState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
             clearOverlays();
         } else {
             if (cur_expand == '') {
@@ -582,7 +582,7 @@ function rootsMapper(options) {
                     }
                 }
             }
-            window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
+            window.history.replaceState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
         }
     } else {
         if (cur_expand == '') {
@@ -605,7 +605,7 @@ function rootsMapper(options) {
                 }
             }
         }
-        window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
+        window.history.replaceState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
     }
 
     // Start loading animation
@@ -1643,11 +1643,11 @@ function createMarker(p,yellow) {
         var pathArray = window.location.href.split( '/' );
         var yd = pathArray[pathArray.length-1].indexOf('&selected=');
         if (yd == -1) {yd = undefined;}
-        //window.history.pushState("none","",pathArray[pathArray.length-1].substring(0,yd) + "&selected=" + mark.generation + "," + mark.node);
+        //window.history.replaceState("none","",pathArray[pathArray.length-1].substring(0,yd) + "&selected=" + mark.generation + "," + mark.node);
         cur_title = title + ": " + mark.name + " (" + mark.personID + ")";
 	document.title = cur_title;
 	       cur_selected = mark.generation + "," + mark.node;
-           window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
+           window.history.replaceState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
 		if (baseurl.indexOf('sandbox') == -1) {
 		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
 		        setPhoto(mark.generation, mark.node,0);
@@ -1886,7 +1886,7 @@ function createMarker(p,yellow) {
         } else {
             cur_expand = cur_expand + ";" + gen + "," + node + "," + "d";
         }
-        window.history.pushState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
+        window.history.replaceState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
 
 		// ib.close();
 		countryLoop(function (group) {
