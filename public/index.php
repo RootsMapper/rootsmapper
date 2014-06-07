@@ -53,7 +53,7 @@ else if (isset($_REQUEST['login'])) {
 $_SESSION['root'] = isset($_GET['root'])? trim(preg_replace('/[^A-z0-9\-]+/','',$_GET['root'])) : "";
 $_SESSION['gens'] = isset($_GET['gens'])? trim(preg_replace('/[^0-9]+/','',$_GET['gens'])) : "";
 $_SESSION['selected'] = isset($_GET['selected'])? trim(preg_replace('/[^0-9\,]+/','',$_GET['selected'])) : "";
-$_SESSION['expand'] = isset($_GET['expand'])? trim(preg_replace('/[^0-9,MFmf\,\;]+/','',$_GET['expand'])) : "";
+$_SESSION['expand'] = isset($_GET['expand'])? trim(preg_replace('/[^0-9DFMdfm\,\;]+/','',$_GET['expand'])) : "";
 
 // If we have both a valid auth token in our session and our fingerprint matches
 // set the access token to a local variable, otherwise make sure it is unset
