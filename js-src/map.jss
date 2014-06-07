@@ -563,9 +563,9 @@ function rootsMapper(options) {
         } else {
             if (cur_expand == '') {
                 if (options.mother) {
-                    cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens + ",f";
+                    cur_expand = options.rootGen + "," + options.rootNode + ",1,f";
                 } else if (options.father) {
-                    cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens + ",m";
+                    cur_expand = options.rootGen + "," + options.rootNode + ",1,m";
                 } else {
                     cur_expand = options.rootGen + "," + options.rootNode + "," + cur_gens;
                 }
