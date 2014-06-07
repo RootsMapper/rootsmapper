@@ -7,7 +7,7 @@
 
 .SUFFIXES: .js .jss
 
-SOURCES=map.jss keyfilter.jss oms.jss loading.jss infobox.jss url-template.jss binarytree.jss tooltip.jss fsAPI.jss utilities.jss
+SOURCES=map.jss keyfilter.jss oms.jss loading.jss infobox.jss url-template.jss binarytree.jss tooltip.jss fsAPI.jss utilities.jss downloadify.jss swfobject.jss
 JS=$(SOURCES:.jss=.js)
 OUTPUT=../public/scripts/
 

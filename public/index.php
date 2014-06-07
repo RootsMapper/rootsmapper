@@ -93,6 +93,8 @@ else
 		<script src="scripts/fsAPI.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/tooltip.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/utilities.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+		<script src="scripts/downloadify.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+		<script src="scripts/swfobject.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
         <script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
@@ -190,7 +192,22 @@ if (isset($access_token))
 					<button id="countryToggle" class="button yellow off" onclick="toggleLayers()">Countries</button>
 					<button id="highlight" class="button yellow off" onclick="toggleHighlight()">Traceback</button>
 					<button id="isolate" class="button yellow" onclick="toggleIsolate()">Isolate</button>
-					<button id="KML" class="button yellow off" onclick="createKML()">Export KML</button>
+					<div id="KML" style="margin-left: 20px;" onclick="createKML()">Export KML</div>
+					<script type="text/javascript">
+						Downloadify.create('KML',{
+							filename: 'rootsMapper.kml',
+							data: function(){
+								return createKML();
+							},
+							transparent: false,
+							swf: 'media/downloadify.swf',
+							downloadImage: 'images/kml.png',
+							width: 100,
+							height: 30,
+							transparent: true,
+							append: false
+						});
+					</script>
 					<ul id="isolateList" class="listClass">
 						<li class="main" onclick="expandList({listName:'isolateList'});"><img class="triangle" src="images/triangle-down.png"><b>Single Gen</b></li>
 						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop()">View All</li>

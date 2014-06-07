@@ -2255,16 +2255,10 @@ function createKML() {
 
 
 		cont();
-	}, function() {
-		var text = string + xml.innerHTML;
+	});
 
-        var url = "data:application/octet-stream," + text;
-
-        var a = document.createElement("a");
-        a.setAttribute("href",encodeURI(url));
-        a.setAttribute("download","rootsmapper.kml");
-        a.click();
-    });
+    var text = string + xml.innerHTML;
+    return text;
 
 }
 
