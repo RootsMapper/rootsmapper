@@ -1220,29 +1220,17 @@ function queryTable(countryArray,countryCount) {
 function getPhoto(id, gen, node, callback) {
     var person = familyTree.getNode(gen, node);
     if (!person.image) {
-        var q = window.location.href.split('?');
-        // var q = document.URL.split();
+
         var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
             pid: id,
             access_token: accesstoken
         });
 
-        // familyTree.getNode(gen, node).image = url;
-        // typeof callback === 'function' && callback(url);
-
-
-        // var url = discovery.persons.href + '/' + id + '/portrait?access_token=' + accesstoken;
         fsAPI({ url: url, media: 'img' }, function (result, status) {
-           if (status == "No Content") {
-               familyTree.getNode(gen, node).imageIcon = url;
-               familyTree.getNode(gen, node).image = result;
-               typeof callback === 'function' && callback(result);
-           } else {
-               familyTree.getNode(gen, node).imageIcon = "none";
-               familyTree.getNode(gen, node).image = result;
-               typeof callback === 'function' && callback(result);
-           }
-        }, 3000);
+            familyTree.getNode(gen, node).image = result;
+            typeof callback === 'function' && callback(result);
+        }, 10000);
+        
     } else {
         typeof callback === 'function' && callback('');
     }
@@ -1253,17 +1241,12 @@ function setPhoto(gen, node, timer) {
         var portrait = document.getElementById('portrait');
         if (portrait) {
             var person = familyTree.getNode(gen, node);
-            if (person.image && person.imageIcon) {
-                if (person.image == person.imageIcon) {
-                	tooltip.set({id: "portrait", tip: "Image unavailable"});
-                } else {
-                    var imageHTML = "<img style='max-height:300px;' src='" + person.image + "'>";
-                    //var imageHTML = "<img src='" + person.image + "'>";
-                    portrait.setAttribute('src', person.image);
-                    tooltip.set({id: "portrait", tip: imageHTML, duration: 30000});
-                }
+            if (person.image) {
+                var imageHTML = "<img style='max-height:300px;' src='" + person.image + "'>";
+                portrait.setAttribute('src', person.image);
+                tooltip.set({id: "portrait", tip: imageHTML, duration: 30000});
             } else {
-                setPhoto(gen, node, 50)
+                tooltip.set({id: "portrait", tip: "A portrait has not been set for this person"});
             }
         } else {
             setPhoto(gen, node, 50)
@@ -1549,7 +1532,6 @@ function createMarker(p,yellow) {
                 }
             }
 
-            p.imageIcon = src;
             var mark = new google.maps.Marker(opts);
             createInfoBox(mark, p, icon, src);
 
@@ -1701,10 +1683,6 @@ function createMarker(p,yellow) {
 
     	ib.open(map, mark);
 		makePedigree(mark.generation, mark.node);
-
-		if (baseurl.indexOf('sandbox') == -1) {
-			//setPhoto(mark.generation, mark.node, 0);
-		}
 
 		restoreColors();
 		if (highlights == true) {

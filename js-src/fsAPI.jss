@@ -39,8 +39,7 @@ function fsAPI(options, callback, timeout) {
             if (this.status === 204 && options.media == "img") {
               queue = 1;
               var status = this.statusText;
-              var result = '';
-              typeof callback === 'function' && callback(result, status);
+              typeof callback === 'function' && callback(undefined, status);
 
             // Successful response
             } else if (this.status === 200) {
