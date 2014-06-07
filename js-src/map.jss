@@ -1224,8 +1224,7 @@ function getPhoto(id, gen, node, callback) {
         // var q = document.URL.split();
         var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
             pid: id,
-            access_token: accesstoken,
-            "default": q[0] + '/' + person.imageIcon
+            access_token: accesstoken
         });
 
         // familyTree.getNode(gen, node).image = url;
