@@ -494,26 +494,26 @@ function rootsMapperURL(options) {
                 var node = parseInt(expand[1]);
                 options.expand.shift();
 
-
-
                 var p = familyTree.getNode(gen,node);
                 p.marker.isExpanded = true;
 
                 var newOptions = {
                     rootGen: gen,
                     rootNode: node,
-                    generations: parseInt(expand[2]),
                     expand: options.expand,
                     rootComplete: true,
                     pid: p.id
                 }
 
-                if (expand[3] == "m") {
+                if (expand[2] == "m") {
                     newOptions.father = true;
-                } else if (expand[3] == "f") {
+                    newOptions.generations = 1;
+                } else if (expand[2] == "f") {
                     newOptions.mother = true;
+                    newOptions.generations = 1;
+                } else {
+                    newOptions.generations = parseInt(expand[2]);
                 }
-                // newOptions.pid = p.id;
 
                 rootsMapperURL(newOptions);
             } else {
@@ -564,9 +564,9 @@ function rootsMapper(options) {
         } else {
             if (cur_expand == '') {
                 if (options.mother) {
-                    cur_expand = options.rootGen + "," + options.rootNode + ",1,f";
+                    cur_expand = options.rootGen + "," + options.rootNode + ",f";
                 } else if (options.father) {
-                    cur_expand = options.rootGen + "," + options.rootNode + ",1,m";
+                    cur_expand = options.rootGen + "," + options.rootNode + ",m";
                 } else {
                     cur_expand = options.rootGen + "," + options.rootNode + "," + expand_gens;
                 }
@@ -574,9 +574,9 @@ function rootsMapper(options) {
             } else {
                 if (!options.expand) {
                     if (options.mother) {
-                        cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",1,f";
+                        cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",f";
                     } else if (options.father) {
-                        cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",1,m";
+                        cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",m";
                     } else {
                         cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + expand_gens;
                     }
@@ -587,9 +587,9 @@ function rootsMapper(options) {
     } else {
         if (cur_expand == '') {
             if (options.mother) {
-                cur_expand = options.rootGen + "," + options.rootNode + ",1,f";
+                cur_expand = options.rootGen + "," + options.rootNode + ",f";
             } else if (options.father) {
-                cur_expand = options.rootGen + "," + options.rootNode + ",1,m";
+                cur_expand = options.rootGen + "," + options.rootNode + ",m";
             } else {
                 cur_expand = options.rootGen + "," + options.rootNode + "," + expand_gens;
             }
@@ -597,9 +597,9 @@ function rootsMapper(options) {
         } else {
             if (!options.expand) {
                 if (options.mother) {
-                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",1,f";
+                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",f";
                 } else if (options.father) {
-                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",1,m";
+                    cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + ",m";
                 } else {
                     cur_expand = cur_expand + ";" + options.rootGen + "," + options.rootNode + "," + expand_gens;
                 }
