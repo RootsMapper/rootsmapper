@@ -826,7 +826,7 @@ html, body {
 #tt {
      position:fixed;
      display:block;
-     z-index: 99;
+     z-index: 1001;
      background-color: #ffffca;
      padding: 2px 4px;
      color: #000023;
@@ -842,7 +842,7 @@ html, body {
     right: 5px;
     margin: 0 auto;
     white-space: nowrap;
-    z-index: 1;
+    z-index: 1000;
     background-color: transparent;
 }
 
