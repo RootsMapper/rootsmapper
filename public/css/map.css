@@ -124,7 +124,7 @@ html, body {
 
 #rootsMapper {
 	z-index: 50;
-	overflow: visible;
+	/*overflow: visible;*/
 }
 
 #viewOptions {
@@ -305,9 +305,13 @@ html, body {
 
 /* Country Totals button menu styles */
 #countryList {
+    color: black;
     margin-left: 20px;
     display: inline-block;
-    max-height: 210px;
+    max-height: 170px;
+    position: absolute;
+    top: 55px;
+    left: 0px;
 }
 
 #countryList li {
@@ -341,7 +345,10 @@ html, body {
     color: black;
     margin-left: 20px;
     display: inline-block;
-    max-height: 210px;
+    max-height: 240px;
+    position: absolute;
+    top: 55px;
+    left: 0px;
 }
 
 #isolateList li {
@@ -372,21 +379,12 @@ html, body {
     }
 
 /* Styles for display of country totals*/
-#countryListHolder {
-    margin: 0;
-    padding-top: 15px;
-    padding-bottom: 15px;
-    display: inline-block;
-    background-color: rgba(0,0,0,0.8);
-    width: 100%;
-    height: 30px;
-    overflow-y: visible;
-}
-
 #countryDiv {
 	width: 100%;
 	z-index: 30;
 	text-indent: 0px;
+    padding-top: 35px;
+    background-color: rgba(0,0,0,0.8);
 }
 
 #countryStats {
@@ -394,7 +392,6 @@ html, body {
     overflow-y: auto;
 	padding-left: 20px;
 	height: auto;
-    background-color: rgba(0,0,0,0.8);
     -webkit-touch-callout: text;
     -webkit-user-select: text;
     -khtml-user-select: text;
@@ -454,9 +451,10 @@ html, body {
 /* Styles for yellow option buttons at bottom of screen */
 #optionButtons {
     width: 100%;
-    height: 252px;
+    height: 215px;
     text-align: left;
 	background-color: rgba(0,0,0,0.8);
+    padding-top: 35px;
 }
 
 /* Styles for zoom control elements */

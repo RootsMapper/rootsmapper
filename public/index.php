@@ -163,8 +163,8 @@ if (isset($access_token))
 
     <div id="headerbox">
 		<ul style="list-style-type: none; margin: 0; padding: 0; -webkit-transition: height 0.3s, width 0.3s; transition: height 0.3s, width 0.3s;">
-			<li id='rootsMapper' class='menuButton selected unselectable' >
-				<div id='rootsMapperSpan' class='menuButtonSpan lighted'>RootsMapper</div>
+			<li id='rootsMapper' class='menuButton unselectable' >
+				<div id='rootsMapperSpan' class='menuButtonSpan'>RootsMapper</div>
 				<div id="rootDiv">
 					<div id="personName" style="margin-left: 20px; padding-right: 15px;">Root Name</div>
 		 			<input id="personid" type="text" maxlength="8" placeholder="ID..." onkeypress="if (event.keyCode ==13) checkID()"/>
@@ -174,9 +174,9 @@ if (isset($access_token))
 						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:1})">1 generation</li>
 						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:2})">2 generations</li>
 						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:3})">3 generations</li>
+						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:4})">4 generations</li>
 						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:5})">5 generations</li>
 						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:6})">6 generations</li>
-						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:4})">4 generations</li>
 						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:7})">7 generations</li>
 						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:8})">8 generations</li>
 						<li class="item" onclick="expandList({listName:'runList'}); cur_selected = ''; rootsMapper({generations:9})">9 generations</li>
@@ -187,6 +187,11 @@ if (isset($access_token))
 			<li id='viewOptions' class='menuButton unselectable' >
 				<div id='viewOptionsSpan' class='menuButtonSpan'>Map Options</div>
 				<div id="optionButtons">
+					<ul id="isolateList" class="listClass">
+						<li class="main" onclick="expandList({listName:'isolateList'});"><img class="triangle" src="images/triangle-down.png"><b>Single Gen</b></li>
+						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop()">View All</li>
+						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,1)">1<sup>st</sup> generation</li>
+					</ul>
 					<button id="showlines" class="button yellow off" onclick="toggleLines()">Lines</button>
 					<button id="showpins" class="button yellow off" onclick="togglePins()">Pins</button>
 					<button id="countryToggle" class="button yellow off" onclick="toggleLayers()">Countries</button>
@@ -208,11 +213,6 @@ if (isset($access_token))
 							append: false
 						});
 					</script>
-					<ul id="isolateList" class="listClass">
-						<li class="main" onclick="expandList({listName:'isolateList'});"><img class="triangle" src="images/triangle-down.png"><b>Single Gen</b></li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop()">View All</li>
-						<li class="item" onclick="expandList({listName:'isolateList'}); isolateLoop('',false,1)">1<sup>st</sup> generation</li>
-					</ul>
 				</div>
 			</li>
 			<li id='pedigreeChart' class='menuButton unselectable' >
@@ -228,14 +228,12 @@ if (isset($access_token))
 			<li id='countryStatistics' class='menuButton unselectable' >
 				<div id='countryStatisticsSpan' class='menuButtonSpan'>Country Statistics</div>
 				<div id="countryDiv">
+					<ul id="countryList" class="listClass">
+						<li class="main" onclick="expandList({listName:'countryList'});"><img class="triangle" src="images/triangle-down.png"><b>Generation</b></li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop()">All generations</li>
+						<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
+					</ul>
 					<div id="countryStats"></div>
-					<div id="countryListHolder">
-						<ul id="countryList" class="listClass">
-							<li class="main" onclick="expandList({listName:'countryList'});"><img class="triangle" src="images/triangle-down.png"><b>Generation</b></li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop()">All generations</li>
-							<li class="item" onclick="expandList({listName:'countryList'}); countryLoop('',false,1)">1<sup>st</sup> generation</li>
-						</ul>
-					</div>
 				</div>
 			</li>
 			<li id='userInfo' class='menuButton unselectable' >

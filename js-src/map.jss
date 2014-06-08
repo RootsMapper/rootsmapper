@@ -191,7 +191,7 @@ function setupMenu() {
 			var rd = document.getElementById('logoutbutton');
 
 			cs.style.height = document.getElementById('countryStats').clientHeight + 115 + 'px';
-			document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 60 + 'px';
+			document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 25 + 'px';
 
 			setTimeout(function(){
 				cs.style.overflow = 'visible';
@@ -882,6 +882,9 @@ function finish(options) {
 function updateLists() {
     var gen = Math.floor(log2(familyTree.Nodes.length-1));
 
+    expandList({listName: "countryList", noExpanding: true});
+    expandList({listName: "isolateList", noExpanding: true});
+
     var ilist = document.getElementById('isolateList');
     var clist = document.getElementById('countryList');
 
@@ -1165,7 +1168,7 @@ function displayCountryStats(group) {
         var rd = document.getElementById('logoutbutton');
 
         cs.style.height = document.getElementById('countryStats').clientHeight + 115 + 'px';
-        document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 60 + 'px';
+        document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 25 + 'px';
 
         setTimeout(function(){
             cs.style.overflow = 'visible';
@@ -1994,6 +1997,12 @@ function createMarker(p,yellow) {
         	personName.textContent = name;
 //			document.getElementById("userInfo").textContent = name;
     	}
+
+
+        if (document.getElementById('rootsMapper').getAttribute('class').indexOf('selected') == -1) {
+            document.getElementById('rootsMapperSpan').onclick();
+        }
+
     }
 
     function populateUser() {
