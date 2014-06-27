@@ -34,7 +34,8 @@ if( isset($_REQUEST['code']) ) {
 	  session_regenerate_id(true); //Regenerate session ID
 	  $_SESSION['fs-session'] = $fs->GetAccessToken($DEV_KEY, $_REQUEST['code']); //Store access code in session variable
 	  $_SESSION['fingerprint'] = md5($fingerprint);
-          $url_params = (isset($_SESSION['root'])? ("root=" . $_SESSION['root']) : "") . (isset($_SESSION['gens'])? ("&gens=" . $_SESSION['gens']) : "") . (isset($_SESSION['selected'])? ("&selected=" . $_SESSION['selected']) : "") . (isset($_SESSION['expand'])? ("&expand=" . $_SESSION['expand']) : "");
+          $url_params = (isset($_SESSION['root'])? ("root=" . $_SESSION['root']) : "") . (isset($_SESSION['gens'])? ("&gens=" . $_SESSION['gens']) : "") . (isset($_SESSION['selected'])? ("&selected=" . $_SESSION['selected']) : "") .
+		(isset($_SESSION['expand'])? ("&expand=" . $_SESSION['expand']) : "");
 	  header("Location: ./" . (isset($url_params)? "?" . $url_params : "")); //Refresh page to clear POST variables
 	  exit;
 }
@@ -99,6 +100,18 @@ else
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/url-template.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+		<!-- styles needed by jScrollPane -->
+		<link type="text/css" href="css/jquery.jscrollpane.css" rel="stylesheet" media="all" />
+		<script type="text/javascript" id="sourcecode">
+			$(function()
+			{
+				$('.listClass').jScrollPane({showArrows: true, verticalGutter: 30});
+			});
+		</script>
+		<!-- the mousewheel plugin - optional to provide mousewheel support -->
+		<script type="text/javascript" src="scripts/jquery.mousewheel.js"></script>
+		<!-- the jScrollPane script -->
+		<script type="text/javascript" src="scripts/jquery.jscrollpane.js"></script>
         <script type="text/javascript">
              title='<?php echo isset($TITLE)? $TITLE : ""; ?>';
              cur_title=title;

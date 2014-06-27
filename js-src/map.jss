@@ -403,6 +403,8 @@ function pageSetup() {
 
     // Construct spiderfier for overlapping markers
 	oms = new OverlappingMarkerSpiderfier(map, { keepSpiderfied: true, nearbyDistance: 35 });
+
+
 }
 
 function discoveryResource(callback) {
@@ -889,10 +891,11 @@ function updateLists() {
     var clist = document.getElementById('countryList');
 
     var items = ilist.getElementsByTagName("li");
+    var dcont = items[0].parentElement;
 
     for (var i=items.length-1;i>1;i--) {
         if (items[i].getAttribute('class').indexOf('item') !== -1) {
-            ilist.removeChild(items[i]);
+            dcont.removeChild(items[i]);
         }
     }
 
@@ -906,14 +909,15 @@ function updateLists() {
                 isolateLoop('',false,arg+1);
             }
         }(i);
-        ilist.appendChild(li);
+        dcont.appendChild(li);
     }
 
     var items = clist.getElementsByTagName("li");
+    var dcont = items[0].parentElement;
 
     for (var i=items.length-1;i>1;i--) {
         if (items[i].getAttribute('class').indexOf('item') !== -1) {
-            clist.removeChild(items[i]);
+            dcont.removeChild(items[i]);
         }
     }
 
@@ -927,7 +931,7 @@ function updateLists() {
                 countryLoop('',false,arg+1);
             }
         }(i);
-        clist.appendChild(li);
+        dcont.appendChild(li);
     }
 
 }
@@ -1984,7 +1988,6 @@ function createMarker(p,yellow) {
             }
             tooltip.set({id: "copyButton", tip:"Copy this ID to the Root Person ID"});
             tooltip.set({id: "fsButton", tip: "View this person on FamilySearch.org"});
-
         });
     }
 
@@ -2149,7 +2152,6 @@ function createMarker(p,yellow) {
     }
 
     function expandList(options) {
-
     	if (document.getElementById(options.listName)) {
 
 	    	var listName = document.getElementById(options.listName);
@@ -2178,16 +2180,36 @@ function createMarker(p,yellow) {
 	    	for (i=0;i<items.length;i++) {
 	    		if (i!=options.buttonIndex) {
 		    		if (items[i].style.display == "block") {
+                        listName.style.height = '29px';
+
 		    			items[i].style.display = "none";
 		    			triangle[0].src = "images/triangle-"+ arrowStart +".png";
 		    		} else {
 		    			if (options.noExpanding == false) {
+                            listName.style.height = '150px';
+
 		    				items[i].style.display = "block";
 		    				triangle[0].src = "images/triangle-"+ arrowEnd+".png";
 		    			}
 		    		}
 	    		}
 	    	}
+
+
+            // $('.listClass').jScrollPane({showArrows: false});
+
+            var element = $('#' + options.listName).jScrollPane();
+            var api = element.data('jsp');
+            api.reinitialise();
+            // var jspContainer = listName.children[0];
+            // var jspPane = jspContainer.children[0];
+            // var jspVerticalBar = jspContainer.children[1];
+            // var jspTrack = jspVerticalBar.children[1];
+            // var jspDrag = jspTrack.children[0];
+            // jspContainer.style.height = jspPane.clientHeight + 'px';
+            // jspTrack.style.height = jspPane.clientHeight + 'px';
+
+
     	}
 
 

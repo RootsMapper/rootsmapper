@@ -199,8 +199,9 @@ html, body {
 
 /* General styles for dropdown menus */
 .listClass {
-    overflow-y: auto;
-    overflow-x: hidden;
+    /*overflow-y: auto;*/
+    /*overflow-x: hidden;*/
+    overflow: auto;
     list-style-type: none;
     margin: 0;
     padding: 0;
@@ -268,7 +269,8 @@ html, body {
     position: relative;
     float: right;
     z-index: 40;
-    max-height: 210px;
+    max-height: 150px;
+    /*overflow: auto;*/
 }
 
 #ebutton {
@@ -312,6 +314,7 @@ html, body {
     position: absolute;
     top: 55px;
     left: 0px;
+    /*overflow: auto;*/
 }
 
 #countryList li {
