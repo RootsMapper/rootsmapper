@@ -847,6 +847,19 @@ html, body {
     background-color: transparent;
 }
 
+#hangout-div {
+    position: absolute;
+    bottom: 55px;
+    right: 5px;
+    margin: 0 auto;
+    white-space: nowrap;
+    z-index: 1000;
+    background-color: transparent;
+    float: right;
+    margin-right: 5px;
+    cursor: pointer;
+}
+
 #faqbutton {
     float: right;
     margin-left: 5px;

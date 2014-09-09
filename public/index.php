@@ -90,13 +90,36 @@ else
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/loading.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 	<!-- loading animation references -->
+<?php
+if (!empty($HANGOUT_EMAIL))
+{
+?>
+<script type="text/javascript">
+    (function() {
+      var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+      po.src = 'https://apis.google.com/js/platform.js?onload=renderButtons';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    })();
+
+    function renderButtons(){
+      gapi.hangout.render('hangout-div', {
+          'render' : 'createhangout',
+          'invites': [
+           { id : '<?php echo $HANGOUT_EMAIL; ?>', invite_type : 'EMAIL' },
+          ]
+        });
+    }
+  </script>
+<?php
+}
+?>
 		<script src="scripts/binarytree.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/fsAPI.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/tooltip.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/utilities.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/downloadify.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/swfobject.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-        <script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+		<script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/url-template.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
@@ -128,7 +151,6 @@ else
     		$('#loading').hide();
  	 });
 	</script>
-
     </head>
     <body>
         <?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
@@ -269,12 +291,6 @@ if (isset($access_token))
 
 
 <?php
-if (!empty($PLEDGIE_CODE))
-{
-?>
-            		<a href='https://pledgie.com/campaigns/<?php echo($PLEDGIE_CODE); ?>' target='_blank'><img id="pledgiebutton" src='https://pledgie.com/campaigns/ <?php echo($PLEDGIE_CODE); ?> .png?skin_name=chrome' border='0' ></a>
-<?php
-}
 if (!empty($FAQ_URL))
 {
 ?>
@@ -293,16 +309,11 @@ if (!empty($DONATE_URL))
             		<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">$</button>
 <?php
 }
-if (!empty($BLOG_URL))
-{
-?>
-            		<button id="blogbutton" class="button green" onclick="window.open('<?php echo($BLOG_URL); ?>', '_blank')">Blog</button>
-<?php
-}
 ?>
 
 
 				</div>
+			        <div id="hangout-div"></div>
 			</div>
 		</div>
 </body>
