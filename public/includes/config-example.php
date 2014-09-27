@@ -27,10 +27,6 @@ $SITE_MODE = 'sandbox';
 // different than what is in this example!!
 $SECRET_WORD = 'mysecret';
 
-// Set a Google email address to accept tech support hangouts
-// If left unset, button will not show
-$HANGOUT_EMAIL = '';
-
 // Set the URL for the Feedback button on the lower
 // right of the page
 // Leave blank to disable button

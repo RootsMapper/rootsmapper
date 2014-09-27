@@ -394,7 +394,9 @@ function pageSetup() {
 	tooltip.set({id: "feedbackbutton", tip: "Leave some comments about your experience"});
 	tooltip.set({id: "faqbutton", tip: "Frequently asked questions"});
 	tooltip.set({id: "donatebutton", tip: "Help keep this site up and running"});
-	tooltip.set({id: "hangout-div", tip: "Video chat with tech support"});
+	tooltip.set({id: "youtubebutton", tip: "Watch RootsMapper videos on YouTube"});
+	tooltip.set({id: "twitterbutton", tip: "Follow @RootsMapper on Twitter"});
+	tooltip.set({id: "bloggerbutton", tip: "Go to RootsMapper Blog"});
 	tooltip.set({id: "showlines", tip: "Hide connecting lines"});
 	tooltip.set({id: "showpins", tip: "Hide pins"});
 	tooltip.set({id: "highlight", tip: "Toggle trace back to root person"});

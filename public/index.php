@@ -90,29 +90,6 @@ else
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script type="text/javascript" src="scripts/loading.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 	<!-- loading animation references -->
-<?php
-if (!empty($HANGOUT_EMAIL))
-{
-?>
-<script type="text/javascript">
-    (function() {
-      var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-      po.src = 'https://apis.google.com/js/platform.js?onload=renderButtons';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-    })();
-
-    function renderButtons(){
-      gapi.hangout.render('hangout-div', {
-          'render' : 'createhangout',
-          'invites': [
-           { id : '<?php echo $HANGOUT_EMAIL; ?>', invite_type : 'EMAIL' },
-          ]
-        });
-    }
-  </script>
-<?php
-}
-?>
 		<script src="scripts/binarytree.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/fsAPI.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/tooltip.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
@@ -172,6 +149,7 @@ if (!isset($access_token))
 <?php
 }
 ?>
+
 
 				<div id="mapDisplay"></div>
 					<div id="zoomControl" class='unselectable'>
@@ -289,6 +267,9 @@ if (isset($access_token))
 			    <div id="lowerbuttonframe">
 
 
+			<img id="youtubebutton" height="30px" onclick="window.open('https://www.youtube.com/watch?v=zrSsFe9TyKU', '_blank')" src="images/YouTube_icon_block.png">
+			<img id="twitterbutton" height="30px" onclick="window.open('https://twitter.com/RootsMapper', '_blank')" src="images/twitter_button.png">
+			<img id="bloggerbutton" height="30px" onclick="window.open('http://blog.rootsmapper.com', '_blank')" src="images/bloggerbutton.png">
 
 <?php
 if (!empty($FAQ_URL))
@@ -313,7 +294,6 @@ if (!empty($DONATE_URL))
 
 
 				</div>
-			        <div id="hangout-div"></div>
 			</div>
 		</div>
 </body>
