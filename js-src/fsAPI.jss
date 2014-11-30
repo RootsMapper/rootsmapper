@@ -14,6 +14,7 @@ function fsAPI(options, callback, timeout) {
     var xhttp;
     xhttp = new XMLHttpRequest();
 
+
     // Set request type
     if (options.media == "image" ) {
       xhttp.open("HEAD", options.url);
@@ -21,6 +22,7 @@ function fsAPI(options, callback, timeout) {
     } else {
       xhttp.open("GET", options.url);
       xhttp.setRequestHeader('Accept', 'application/' + (options.media || 'json'));
+    //   xhttp.setRequestHeader('Accept-Encoding','compress, gzip');
     }
 
     // If concerned about timing out, define a timeout limit

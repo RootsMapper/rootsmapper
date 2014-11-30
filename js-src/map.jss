@@ -416,6 +416,11 @@ function discoveryResource(callback) {
 			// Object "discovery" holds all the available API options
             discovery = result.links;
             typeof callback === 'function' && callback();
+        } else {
+            alert("Unable to retrieve the FamilySearch API discovery resource. " +
+                  "Please try logging in again. If the problem persists, send us this error message and we'll look into it.");
+            loadingAnimationEnd();
+            window.location = 'index.php?login=true';
         }
     });
 }
@@ -447,12 +452,16 @@ function currentUser(callback) {
             // Set user as root person by default unless URL root parameter is set
             if (get_root == "") {
                 populateIdField(userID,userName);
-            } else
-            {
+            } else {
                 populateIdField(get_root);
-		checkID();
+		        checkID();
             }
             typeof callback === 'function' && callback();
+        } else {
+            alert("Unable to retrieve user data from FamilySearch. " +
+                  "Please try logging in again. If the problem persists, send us this error message and we'll look into it.");
+            loadingAnimationEnd();
+            window.location = 'index.php?login=true';
         }
     });
 
@@ -760,8 +769,8 @@ function getPedigree(options, callback) {
 			}
 			typeof callback === 'function' && callback();
 		} else {
+            alert('Pedigree query failed to execute. Please try again.');
 		    loadingAnimationEnd();
-
 		}
 	});
 }
@@ -772,16 +781,18 @@ function personReadLoop(callback) {
         var gen = leaf.generation;
         if (leaf.value.isPlotted !== true) {
             if (leaf.value.links.self) {
-                personRead(leaf.value.links.self.href, function (result) {
+                personRead(leaf.value.links.self.href, function (result,status) {
                     var person = familyTree.getNode(gen, node);
                     person.generation = gen;
                     person.node = node;
                     if (node < Math.pow(2, gen - 1)) {
                         person.isPaternal = true;
                     }
-                    person.display = result.display;
-                    person.place = result.place;
-                    person.links = result.links;
+                    if (status == "OK") {
+                        person.display = result.display;
+                        person.place = result.place;
+                        person.links = result.links;
+                    }
                 });
                 cont();
             } else {
@@ -2010,11 +2021,15 @@ function createMarker(p,yellow) {
 
     function populateUser() {
         if (!userID) {
-            personRead("", function (currentUser) {
-                populateIdField(currentUser.id,currentUser.display.name);
-                userID = currentUser.id;
-                var username = document.getElementById("username");
-                username.innerHTML = currentUser.name;
+            personRead("", function (currentUser, status) {
+                if (status == "OK") {
+                    populateIdField(currentUser.id,currentUser.display.name);
+                    userID = currentUser.id;
+                    var username = document.getElementById("username");
+                    username.innerHTML = currentUser.name;
+                } else {
+                    alert("Operation failed. Unable to retrieve user information from FamilySearch.");
+                }
             });
         } else {
             populateIdField(userID,userName);
@@ -2227,6 +2242,7 @@ function checkID() {
 			document.getElementById("personName").textContent = result.display.name;
 		} else {
 			alert('No person found with ID: ' + id);
+            loadingAnimationEnd();
 		}
 	})
 }
