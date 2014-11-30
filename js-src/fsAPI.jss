@@ -78,6 +78,11 @@ function fsAPI(options, callback, timeout) {
         }
     }
 
+    xhttp.onerror = function(e) {
+        alert('A FamilySearch servor error occurred. Please try again.');
+        loadingAnimationEnd();
+    }
+
     // Send request
     xhttp.send();
 }
