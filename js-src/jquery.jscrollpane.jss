@@ -1092,7 +1092,6 @@
 					hash = escape(this.href.substr(this.href.indexOf('#') + 1));
 
 					// find the element on the page
-					element;
 					try {
 						element = $('#' + hash + ', a[name="' + hash + '"]');
 					} catch (e) {

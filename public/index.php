@@ -96,7 +96,7 @@ else
 		<script src="scripts/utilities.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/downloadify.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/swfobject.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
-        <script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
+		<script src="scripts/map.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/oms.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/infobox.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
 		<script src="scripts/url-template.js?v=<?php echo isset($VERSION)? $VERSION : ""; ?>"></script>
@@ -128,7 +128,6 @@ else
     		$('#loading').hide();
  	 });
 	</script>
-
     </head>
     <body>
         <?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
@@ -150,6 +149,7 @@ if (!isset($access_token))
 <?php
 }
 ?>
+
 
 				<div id="mapDisplay"></div>
 					<div id="zoomControl" class='unselectable'>
@@ -267,14 +267,11 @@ if (isset($access_token))
 			    <div id="lowerbuttonframe">
 
 
+			<img id="youtubebutton" height="30px" onclick="window.open('https://www.youtube.com/watch?v=zrSsFe9TyKU', '_blank')" src="images/YouTube_icon_block.png">
+			<img id="twitterbutton" height="30px" onclick="window.open('https://twitter.com/RootsMapper', '_blank')" src="images/twitter_button.png">
+			<img id="bloggerbutton" height="30px" onclick="window.open('http://blog.rootsmapper.com', '_blank')" src="images/bloggerbutton.png">
 
 <?php
-if (!empty($PLEDGIE_CODE))
-{
-?>
-            		<a href='https://pledgie.com/campaigns/<?php echo($PLEDGIE_CODE); ?>' target='_blank'><img id="pledgiebutton" src='https://pledgie.com/campaigns/ <?php echo($PLEDGIE_CODE); ?> .png?skin_name=chrome' border='0' ></a>
-<?php
-}
 if (!empty($FAQ_URL))
 {
 ?>
@@ -291,12 +288,6 @@ if (!empty($DONATE_URL))
 {
 ?>
             		<button id="donatebutton" class="button green" onclick="window.open('<?php echo($DONATE_URL); ?>', '_blank')">$</button>
-<?php
-}
-if (!empty($BLOG_URL))
-{
-?>
-            		<button id="blogbutton" class="button green" onclick="window.open('<?php echo($BLOG_URL); ?>', '_blank')">Blog</button>
 <?php
 }
 ?>
