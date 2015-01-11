@@ -1267,10 +1267,12 @@ function getPhoto(id, gen, node, callback) {
     var person = familyTree.getNode(gen, node);
     if (!person.image) {
 
-        var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
-            pid: id,
-            access_token: accesstoken
-        });
+        // var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
+        //     pid: id,
+        //     access_token: accesstoken
+        // });
+
+        var url = FSFT.persons.href + "/" + id + "/portrait?access_token=" + accesstoken;
 
         fsAPI({ url: url, media: 'img' }, function (result, status) {
             familyTree.getNode(gen, node).image = result;
@@ -1699,11 +1701,11 @@ function createMarker(p,yellow) {
 	document.title = cur_title;
 	       cur_selected = mark.generation + "," + mark.node;
            window.history.replaceState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
-		if (baseurl.indexOf('sandbox') == -1) {
+		// if (baseurl.indexOf('sandbox') == -1) {
 		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
 		        setPhoto(mark.generation, mark.node,0);
 		    });
-		}
+		// }
 		var fatherPlotted = false;
 		var motherPlotted = false;
 		if (familyTree.getFather(mark.generation, mark.node)) {
