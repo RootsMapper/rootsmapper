@@ -1487,7 +1487,7 @@ function checkBounds(latlng) {
     var currentBounds = map.getBounds();
     if (currentBounds.contains(latlng) == false) {
         currentBounds.extend(latlng);
-        map.fitBounds(currentBounds);
+        // map.fitBounds(currentBounds);
     }
 }
 
