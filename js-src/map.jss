@@ -1414,6 +1414,7 @@ function getPlaceAuthority(gen, node, cont, callback) {
             });
 
                 fsAPI({url: url }, function (result, status) {
+                    
                     if (status == "OK") {
                         var point = result.entries;
                         // var form = $(result).find("form");
