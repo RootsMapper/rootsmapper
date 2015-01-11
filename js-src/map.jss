@@ -1486,7 +1486,7 @@ function plotParent(gen, node) {
 function checkBounds(latlng) {
     var currentBounds = map.getBounds();
     if (currentBounds.contains(latlng) == false) {
-        currentBounds.extend(latlng);
+        // currentBounds.extend(latlng);
         // map.fitBounds(currentBounds);
     }
 }
