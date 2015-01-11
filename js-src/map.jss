@@ -1412,20 +1412,26 @@ function getPlaceAuthority(gen, node, cont, callback) {
                 q: "name:" + encodeURIComponent(place),
                 access_token: accesstoken
             });
-                fsAPI({ media: 'xml', url: url }, function (result, status) {
+                fsAPI({ url: url }, function (result, status) {
                     if (status == "OK") {
-                        var form = $(result).find("form");
-                        if (form[0]) {
-                            var split = form[0].textContent.split(",");
+                        var point = result.entries;
+                        // var form = $(result).find("form");
+                        // if (form[0]) {
+                        //     var split = form[0].textContent.split(",");
+                        //     var country = split[split.length - 1];
+                        //     while (country.charAt(0) === ' ') {
+                        //         country = country.substr(1);
+                        //     }
+                        // }
+                        // var point = $(result).find("point");
+                        if (point[0]) {
+                            var split = point[0].content.gedcomx.places[0].display.fullName.split(",");
                             var country = split[split.length - 1];
                             while (country.charAt(0) === ' ') {
                                 country = country.substr(1);
                             }
-                        }
-                        var point = $(result).find("point");
-                        if (point[0]) {
-                            var lat = point[0].childNodes[0].textContent;
-                            var lng = point[0].childNodes[1].textContent;
+                            var lat = point[0].content.gedcomx.places[0].latitude;
+                            var lng = point[0].content.gedcomx.places[0].longitude;
                             var latlng = new google.maps.LatLng(lat, lng);
                             typeof callback === 'function' && callback({latlng: latlng, country: country, cont: cont}, status);
                         } else {
