@@ -41,6 +41,8 @@ var treeVar = false;
 var statVar = false;
 var highlights = true;
 var headerBoxVisible = true;
+var FSFT;
+var PLACES;
 
 function initialize() {
 
@@ -414,18 +416,40 @@ function discoveryResource(callback) {
 	// Start loading animation to blank the page when first logged in
 	loadingAnimationStart();
 
-    fsAPI({ url: baseurl + '/.well-known/app-meta' }, function (result, status) {
+    fsAPI({ url: baseurl + '/platform/collection' }, function (result, status) {
         if (status == "OK") {
 			// Object "discovery" holds all the available API options
-            discovery = result.links;
-            typeof callback === 'function' && callback();
+            discovery = result.collections[0].links;
+
+            fsAPI({ url: discovery["family-tree"].href }, function (result, status) {
+                if (status == "OK") {
+            	    FSFT = result.collections[0].links;
+
+                    fsAPI({ url: discovery.places.href }, function (result, status) {
+                        if (status == "OK") {
+                            PLACES = result.collections[0].links;
+                            typeof callback === 'function' && callback();
+                        } else {
+                            fsBroken();
+                        }
+                    });
+
+                } else {
+                    fsBroken();
+                }
+            });
+
         } else {
-            alert("Unable to retrieve the FamilySearch API discovery resource. " +
-                  "Please try logging in again. If the problem persists, send us this error message and we'll look into it.");
-            loadingAnimationEnd();
-            window.location = 'index.php?login=true';
+            fsBroken();
         }
     });
+}
+
+function fsBroken() {
+    alert("Unable to retrieve the FamilySearch API discovery resource. " +
+      "Please try logging in again. If the problem persists, send us this error message and we'll look into it.");
+      loadingAnimationEnd();
+      window.location = 'index.php?login=true';
 }
 
 function currentUser(callback) {
@@ -436,7 +460,7 @@ function currentUser(callback) {
     // No template for "current-user-person", so build it manually
     var options = {
         media: 'xml',
-        url: discovery["current-user-person"].href + '?&access_token=' + accesstoken
+        url: FSFT["current-user-person"].href + '?&access_token=' + accesstoken
     }
 
     fsAPI(options, function (result, status) {
@@ -722,12 +746,14 @@ function mapEightMore(options,callback) {
 
 function getPedigree(options, callback) {
 	// Generate API query URL
-    var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
-        generations: options.generations,
-        person: options.pid,
-        access_token: accesstoken,
-		personDetails: true
-    });
+    // var url = urltemplate.parse(discovery['ancestry-query'].template).expand({
+    //     generations: options.generations,
+    //     person: options.pid,
+    //     access_token: accesstoken,
+	// 	personDetails: true
+    // });
+
+    var url = baseurl + "/platform/tree/ancestry?person=" + options.pid + "&personDetails=true&generations=" + options.generations + "&access_token=" + accesstoken;
 
 	fsAPI({ url: url }, function (result, status) {
 		if (status == "OK") {
@@ -1241,10 +1267,12 @@ function getPhoto(id, gen, node, callback) {
     var person = familyTree.getNode(gen, node);
     if (!person.image) {
 
-        var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
-            pid: id,
-            access_token: accesstoken
-        });
+        // var url = urltemplate.parse(discovery['person-portrait-template'].template).expand({
+        //     pid: id,
+        //     access_token: accesstoken
+        // });
+
+        var url = FSFT.persons.href + "/" + id + "/portrait?access_token=" + accesstoken;
 
         fsAPI({ url: url, media: 'img' }, function (result, status) {
             familyTree.getNode(gen, node).image = result;
@@ -1379,7 +1407,11 @@ function getPlaceAuthority(gen, node, cont, callback) {
             if (!(gen == 0 && node == 0)) {
                 typeof cont === 'function' && cont();
             }
-            var url = discovery.authorities.href + '/v1/place?place=' + encodeURIComponent(place) + "&filter=true&locale=en&sessionId=" + accesstoken;
+            // var url = discovery.authorities.href + '/v1/place?place=' + encodeURIComponent(place) + "&filter=true&locale=en&sessionId=" + accesstoken;
+            var url = urltemplate.parse(PLACES["place-search"].template).expand({
+                q: "name:" + encodeURIComponent(place),
+                access_token: accesstoken
+            });
                 fsAPI({ media: 'xml', url: url }, function (result, status) {
                     if (status == "OK") {
                         var form = $(result).find("form");
@@ -1669,11 +1701,11 @@ function createMarker(p,yellow) {
 	document.title = cur_title;
 	       cur_selected = mark.generation + "," + mark.node;
            window.history.replaceState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
-		if (baseurl.indexOf('sandbox') == -1) {
+		// if (baseurl.indexOf('sandbox') == -1) {
 		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
 		        setPhoto(mark.generation, mark.node,0);
 		    });
-		}
+		// }
 		var fatherPlotted = false;
 		var motherPlotted = false;
 		if (familyTree.getFather(mark.generation, mark.node)) {
@@ -2235,7 +2267,7 @@ function createMarker(p,yellow) {
 
 function checkID() {
 	id = document.getElementById('personid').value;
-	var url = urltemplate.parse(discovery['person-template'].template).expand({
+	var url = urltemplate.parse(FSFT.person.template).expand({
 	    pid: id,
 	    access_token: accesstoken
 	});
