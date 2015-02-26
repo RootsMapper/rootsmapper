@@ -459,19 +459,21 @@ function currentUser(callback) {
 
     // No template for "current-user-person", so build it manually
     var options = {
-        media: 'xml',
+        media: 'json',
         url: FSFT["current-user-person"].href + '?&access_token=' + accesstoken
     }
 
     fsAPI(options, function (result, status) {
         if (status == "OK") {
         	// Some browsers return "gx:person" while others return "person"
-            var p = $(result).find("gx\\:person, person");
-            var f = $(result).find("gx\\:fullText, fullText");
+            // var p = $(result).find("gx\\:person, person");
+            // var f = $(result).find("gx\\:fullText, fullText");
 
             // Get user ID and display name
-            userID = p[0].getAttribute("id");
-            userName = f[0].textContent;
+            // userID = p[0].getAttribute("id");
+            userID = result.persons[0].id;
+            // userName = f[0].textContent;
+            userName = result.persons[0].display.name;
 
             // Display username in appropriate field
             document.getElementById("username").innerHTML = userName;
