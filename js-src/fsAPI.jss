@@ -66,7 +66,7 @@ function fsAPI(options, callback, timeout) {
                 }, 5 * 1000);
 
             // Session is expired
-            } else if (this.status === 401) {
+            } else if (this.status === 401 && options.media != "img") {
                 alert("Your session has expired. Please log in again.");
                 window.location = '';
 
