@@ -68,7 +68,7 @@ function fsAPI(options, callback, timeout) {
             // Session is expired
             } else if (this.status === 401) {
                 alert("Your session has expired. Please log in again.");
-                window.location = 'index.php?login=true';
+                window.location = '';
 
             // Other error
             } else {
