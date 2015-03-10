@@ -766,6 +766,14 @@ function getPedigree(options, callback) {
 				var node = n + Math.pow(2, gen) * (options.rootNode - 1);
                 p[i].generation = gen+ options.rootGen;
                 p[i].node = node;
+                var facts = p[i].facts;
+
+                for (var j = 0; j < facts.length; j++) {
+                    if (facts[j].place && facts[j].place.original) {
+                        p[i].display[facts[j].type] = facts[j].place.original;
+                    }
+                }
+
 				if (node < Math.pow(2, gen+ options.rootGen -1)) {
                     p[i].isPaternal = true;
 				}
@@ -845,6 +853,7 @@ function personRead(url, callback) {
                 var places = result.places;
                 var display = person.display;
                 var links = person.links;
+                var facts = person.facts;
 
                 if (person.living == true) {
                     display.deathDate = "Living";
@@ -862,6 +871,14 @@ function personRead(url, callback) {
                     place: placestring
                 }
 			    // Send reply
+
+
+                for (var i = 0; i < facts.length; i++) {
+                    if (facts[i].place && facts[i].place.original) {
+                        display[facts[i].type] = facts[i].place.original;
+                    }
+                }
+
 
         		typeof callback === 'function' && callback(object,status);
                 // callback(object);
@@ -1651,6 +1668,19 @@ function createMarker(p,yellow) {
 
         mark.personID = p.id;
         var url = baseurl + '/tree/#view=ancestor&person=' + p.id;
+        var displayBirthString;
+        var displayDeathString;
+        if (p.display["http://gedcomx.org/Birth"]) {
+            displayBirthString = p.display["http://gedcomx.org/Birth"];
+        } else {
+            displayBirthString = p.display.birthPlace;
+        }
+
+        if (p.display["http://gedcomx.org/Death"]) {
+            displayDeathString = p.display["http://gedcomx.org/Death"];
+        } else {
+            displayDeathString = p.display.deathPlace;
+        }
 
         mark.infoBoxContent =
             "<div class='person'>" +
@@ -1668,14 +1698,14 @@ function createMarker(p,yellow) {
                 "<div class='label'>BIRTH</div>" +
                 "<div class='box'>" +
                     "<div class='large'>" + (HtmlEncode(p.display.birthDate || "")) + "</div>" +
-                    "<div class='small'>" + (HtmlEncode(p.display.birthPlace || "")) + "</div>" +
+                    "<div class='small'>" + (HtmlEncode(displayBirthString || "")) + "</div>" +
                 "</div>" +
             "</div>" +
             "<div class='person'>" +
                 "<div class='label'>DEATH</div>" +
                 "<div class='box'>" +
                     "<div class='large'>" + (HtmlEncode(p.display.deathDate || "")) + "</div>" +
-                    "<div class='small'>" + (HtmlEncode(p.display.deathPlace || "")) + "</div>" +
+                    "<div class='small'>" + (HtmlEncode(displayDeathString || "")) + "</div>" +
                 "</div>" +
             "</div>";
     }
