@@ -465,9 +465,9 @@ function currentUser(callback) {
 
     fsAPI(options, function (result, status) {
         if (status == "OK") {
-        	// Some browsers return "gx:person" while others return "person"
-            var p = $(result).find("gx\\:person, person");
-            var f = $(result).find("gx\\:fullText, fullText");
+        	// Some browsers return "ns4:person" while others return "person"
+            var p = $(result).find("ns4\\:person, person");
+            var f = $(result).find("ns4\\:fullText, fullText");
 
             // Get user ID and display name
             userID = p[0].getAttribute("id");
