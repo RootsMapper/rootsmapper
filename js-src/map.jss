@@ -767,10 +767,12 @@ function getPedigree(options, callback) {
                 p[i].generation = gen+ options.rootGen;
                 p[i].node = node;
                 var facts = p[i].facts;
+                if ("facts" in window) { 
 
-                for (var j = 0; j < facts.length; j++) {
-                    if (facts[j].place && facts[j].place.original) {
-                        p[i].display[facts[j].type] = facts[j].place.original;
+                    for (var j = 0; j < facts.length; j++) {
+                        if (facts[j].place && facts[j].place.original) {
+                            p[i].display[facts[j].type] = facts[j].place.original;
+                        }
                     }
                 }
 
