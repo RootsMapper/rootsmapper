@@ -1,4 +1,4 @@
-(function (root, factory) {
+(((root, factory) => {
     if (typeof exports === 'object') {
         module.exports = factory();
     } else if (typeof define === 'function' && define.amd) {
@@ -6,7 +6,7 @@
     } else {
         root.urltemplate = factory();
     }
-}(this, function () {
+})(this, () => {
   /**
    * @constructor
    */
@@ -18,14 +18,12 @@
    * @param {string} str
    * @return {string}
    */
-  UrlTemplate.prototype.encodeReserved = function (str) {
-    return str.split(/(%[0-9A-Fa-f]{2})/g).map(function (part) {
-      if (!/%[0-9A-Fa-f]/.test(part)) {
-        part = encodeURI(part);
-      }
-      return part;
-    }).join('');
-  };
+  UrlTemplate.prototype.encodeReserved = str => str.split(/(%[0-9A-Fa-f]{2})/g).map(part => {
+    if (!/%[0-9A-Fa-f]/.test(part)) {
+      part = encodeURI(part);
+    }
+    return part;
+  }).join('');
 
   /**
    * @private
@@ -49,18 +47,14 @@
    * @param {*} value
    * @return {boolean}
    */
-  UrlTemplate.prototype.isDefined = function (value) {
-    return value !== undefined && value !== null;
-  };
+  UrlTemplate.prototype.isDefined = value => value !== undefined && value !== null;
 
   /**
    * @private
    * @param {string}
    * @return {boolean}
    */
-  UrlTemplate.prototype.isKeyOperator = function (operator) {
-    return operator === ';' || operator === '&' || operator === '?';
-  };
+  UrlTemplate.prototype.isKeyOperator = operator => operator === ';' || operator === '&' || operator === '?';
 
   /**
    * @private
@@ -70,8 +64,8 @@
    * @param {string} modifier
    */
   UrlTemplate.prototype.getValues = function (context, operator, key, modifier) {
-    var value = context[key],
-        result = [];
+    var value = context[key];
+    var result = [];
 
     if (this.isDefined(value) && value !== '') {
       if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
@@ -139,20 +133,20 @@
     var operators = ['+', '#', '.', '/', ';', '?', '&'];
 
     return {
-      expand: function (context) {
-        return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, function (_, expression, literal) {
+      expand(context) {
+        return template.replace(/\{([^\{\}]+)\}|([^\{\}]+)/g, (_, expression, literal) => {
           if (expression) {
-            var operator = null,
-                values = [];
+            var operator = null;
+            var values = [];
 
             if (operators.indexOf(expression.charAt(0)) !== -1) {
               operator = expression.charAt(0);
               expression = expression.substr(1);
             }
 
-            expression.split(/,/g).forEach(function (variable) {
+            expression.split(/,/g).forEach(variable => {
               var tmp = /([^:\*]*)(?::(\d+)|(\*))?/.exec(variable);
-              values.push.apply(values, that.getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
+              values.push(...that.getValues(context, operator, tmp[1], tmp[2] || tmp[3]));
             });
 
             if (operator && operator !== '+') {

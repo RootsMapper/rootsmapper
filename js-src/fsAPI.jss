@@ -28,7 +28,7 @@ function fsAPI(options, callback, timeout) {
     // If concerned about timing out, define a timeout limit
     if (timeout) {
         xhttp.timeout = timeout;
-        xhttp.ontimeout = function () {
+        xhttp.ontimeout = () => {
             typeof callback === 'function' && callback(undefined, "Operation Timed Out");
         }
     }
@@ -61,7 +61,7 @@ function fsAPI(options, callback, timeout) {
 
             // Throttled by FamilySearch
             } else if (this.status === 429) {
-                setTimeout(function () {
+                setTimeout(() => {
                     fsAPI(options, callback);
                 }, 5 * 1000);
 
@@ -78,7 +78,7 @@ function fsAPI(options, callback, timeout) {
         }
     }
 
-    xhttp.onerror = function(e) {
+    xhttp.onerror = e => {
         alert('A FamilySearch servor error occurred. Please try again.');
         loadingAnimationEnd();
     }

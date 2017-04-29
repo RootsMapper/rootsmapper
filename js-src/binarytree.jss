@@ -13,7 +13,7 @@ function BinaryTree() {
     this.traverse = function (run, index, callback) {
         var that = this;
         if (index < this.stage.length) {
-            run(this.stage[index], function () {
+            run(this.stage[index], () => {
                 index++;
                 that.traverse(run, index, callback)
             });
@@ -90,7 +90,7 @@ function BinaryTree() {
             return this.Nodes[this.btSMF(this.generation, this.node)];
         } else {
             this.generation = Math.floor(log2(location));
-            this.node = location - Math.pow(2, this.generation);
+            this.node = location - 2 ** this.generation;
             return this.Nodes[location];
         }
     }
@@ -144,7 +144,5 @@ function BinaryTree() {
         return this.Nodes[this.btSMF(gen - 1, (node >> 1))];
     }
 
-    this.btSMF = function (generation, node) {
-        return node + (1 << generation);
-    }
+    this.btSMF = (generation, node) => node + (1 << generation)
 }

@@ -25,52 +25,52 @@
   THE SOFTWARE.
 */
 
-(function(){
+((() => {
   Downloadify = window.Downloadify = {
     queue: {},
     uid: new Date().getTime(), 
-    getTextForSave: function(queue){
+    getTextForSave(queue) {
       var obj = Downloadify.queue[queue];
       if(obj) return obj.getData();
       return "";
     },
-    getFileNameForSave: function(queue){
+    getFileNameForSave(queue) {
       var obj = Downloadify.queue[queue];
       if(obj) return obj.getFilename();
       return "";
     },
-    getDataTypeForSave: function(queue){
+    getDataTypeForSave(queue) {
       var obj = Downloadify.queue[queue];
       if(obj) return obj.getDataType();
       return "";
     },
-    saveComplete: function(queue){
+    saveComplete(queue) {
       var obj = Downloadify.queue[queue];
       if(obj) obj.complete();
       return true;
     },
-    saveCancel: function(queue){
+    saveCancel(queue) {
       var obj = Downloadify.queue[queue];
       if(obj) obj.cancel();
       return true;
     },
-    saveError: function(queue){
+    saveError(queue) {
       var obj = Downloadify.queue[queue];
       if(obj) obj.error();
       return true;
     },
-    addToQueue: function(container){
+    addToQueue(container) {
       Downloadify.queue[container.queue_name] = container;
     },
     // Concept adapted from: http://tinyurl.com/yzsyfto
     // SWF object runs off of ID's, so this is the good way to get a unique ID
-    getUID: function(el){
+    getUID(el) {
       if(el.id == "") el.id = 'downloadify_' + Downloadify.uid++;
       return el.id;
     }
   };
  
-  Downloadify.create = function( idOrDOM, options ){
+  Downloadify.create = (idOrDOM, options) => {
     var el = (typeof(idOrDOM) == "string" ? document.getElementById(idOrDOM) : idOrDOM );
     return new Downloadify.Container(el, options);
   };
@@ -85,7 +85,7 @@
     base.data = null;
     base.filename = null;
  
-     var init = function(){
+     var init = () => {
        base.options = options;
 
       if( !base.options.append ) base.el.innerHTML = "";
@@ -132,45 +132,45 @@
       Downloadify.addToQueue( base );
      };
 
-    base.enable = function(){
+    base.enable = () => {
       var swf = document.getElementById(base.flashContainer.id);
       swf.setEnabled(true);
       base.enabled = true;
     };
     
-    base.disable = function(){
+    base.disable = () => {
       var swf = document.getElementById(base.flashContainer.id);
       swf.setEnabled(false);
       base.enabled = false;
     };
  
-    base.getData = function(){
+    base.getData = () => {
       if( !base.enabled ) return "";
       if( base.dataCallback ) return base.dataCallback();
       else if (base.data) return base.data;
       else return "";
     };
  
-    base.getFilename = function(){
+    base.getFilename = () => {
       if( base.filenameCallback ) return base.filenameCallback();
       else if (base.filename) return base.filename;
       else return "";
     };
     
-    base.getDataType = function(){
+    base.getDataType = () => {
       if (base.options.dataType) return base.options.dataType;
       return "string";
     };
     
-    base.complete = function(){
+    base.complete = () => {
       if( typeof(base.options.onComplete) === "function" ) base.options.onComplete();
     };
     
-    base.cancel = function(){
+    base.cancel = () => {
       if( typeof(base.options.onCancel) === "function" ) base.options.onCancel();
     };
     
-    base.error = function(){
+    base.error = () => {
       if( typeof(base.options.onError) === "function" ) base.options.onError();
     };
   
@@ -186,11 +186,11 @@
     append: false,
     dataType: "string"
   };
-})();
+}))();
 
 // Support for jQuery
 if(typeof(jQuery) != "undefined"){
-  (function($){
+  (($ => {
     $.fn.downloadify = function(options){
       return this.each(function(){
         options = $.extend({}, Downloadify.defaultOptions, options);
@@ -198,13 +198,13 @@ if(typeof(jQuery) != "undefined"){
         $(this).data('Downloadify', dl);  
       });
     };
-  })(jQuery);
+  }))(jQuery);
 };
 
 /* mootools helper */
 if(typeof(MooTools) != 'undefined'){
   Element.implement({
-    downloadify: function(options) {
+    downloadify(options) {
       options = $merge(Downloadify.defaultOptions,options);
       return this.store('Downloadify',Downloadify.create(this,options));
     }

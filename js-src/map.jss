@@ -60,10 +60,10 @@ function initialize() {
 		setupMenu();
 
     	// Get discovery resource
-        discoveryResource(function () {
+        discoveryResource(() => {
 
         	// Load user information
-            currentUser(function () {
+            currentUser(() => {
 
         		cur_selected = get_selected;
                 cur_expand = get_expand;
@@ -121,7 +121,7 @@ function setupMenu() {
 	var css = document.getElementById('countryStatisticsSpan');
 	var uis = document.getElementById('username');
 
-	rms.onclick = function () {
+	rms.onclick = () => {
 		if (rm.getAttribute('class').indexOf('selected') !== -1) {
 			// currently selected, unselect
 			unselectItem('rootsMapper','rootsMapperSpan');
@@ -135,13 +135,13 @@ function setupMenu() {
 			unselectItem('countryStatistics','countryStatisticsSpan');
             unselectItem('userInfo','username');
 
-			setTimeout(function(){
+			setTimeout(() => {
 				rm.style.overflow = 'visible';
 			},250);
 		}
 	}
 
-	vos.onclick = function () {
+	vos.onclick = () => {
 		if (vo.getAttribute('class').indexOf('selected') !== -1) {
 			// currently selected, unselect
 			unselectItem('viewOptions','viewOptionsSpan');
@@ -154,14 +154,14 @@ function setupMenu() {
 			unselectItem('countryStatistics','countryStatisticsSpan');
             unselectItem('userInfo','username');
 
-            setTimeout(function(){
+            setTimeout(() => {
                 vo.style.overflow = 'visible';
             },250);
 		}
 
 	}
 
-	pcs.onclick = function () {
+	pcs.onclick = () => {
 		if (pc.getAttribute('class').indexOf('selected') !== -1) {
 			// currently selected, unselect
 			unselectItem('pedigreeChart','pedigreeChartSpan');
@@ -177,7 +177,7 @@ function setupMenu() {
 		}
 	}
 
-	css.onclick = function () {
+	css.onclick = () => {
 		if (css.getAttribute('class').indexOf('lighted') !== -1) {
 			// currently selected, unselect
 			unselectItem('countryStatistics','countryStatisticsSpan');
@@ -195,13 +195,13 @@ function setupMenu() {
 			cs.style.height = document.getElementById('countryStats').clientHeight + 115 + 'px';
 			document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 25 + 'px';
 
-			setTimeout(function(){
+			setTimeout(() => {
 				cs.style.overflow = 'visible';
 			},250);
 		}
 	}
 
-	uis.onclick = function(e) {
+	uis.onclick = e => {
         if (uis.getAttribute('class').indexOf('lighted') !== -1) {
             // currently selected, unselect
             unselectItem('userInfo','username');
@@ -229,7 +229,7 @@ function toggleHeaderBox() {
         var step = 0;
         var numSteps = 100; //Change this to set animation resolution
         var timePerStep = 3; //Change this to alter animation speed
-        var interval = setInterval(function () {
+        var interval = setInterval(() => {
             var now = new Date();
             var elapsedTime = (now.getTime() - before.getTime())
             if (elapsedTime > timePerStep * numSteps) {
@@ -255,7 +255,7 @@ function toggleHeaderBox() {
         var step = 0;
         var numSteps = 100; //Change this to set animation resolution
         var timePerStep = 3; //Change this to alter animation speed
-        var interval = setInterval(function () {
+        var interval = setInterval(() => {
             var now = new Date();
             var elapsedTime = (now.getTime() - before.getTime())
             if (elapsedTime > timePerStep * numSteps) {
@@ -367,18 +367,18 @@ function startGoogleMaps() {
     var zmi = document.getElementById("zoomIn");
     var zmo = document.getElementById("zoomOut");
 
-	google.maps.event.addDomListener(zmi, 'click', function() {
+	google.maps.event.addDomListener(zmi, 'click', () => {
 		var z = map.getZoom();
 		map.setZoom(z+1);
 	});
 
-	google.maps.event.addDomListener(zmo, 'click', function() {
+	google.maps.event.addDomListener(zmo, 'click', () => {
 		var z = map.getZoom();
 		map.setZoom(z-1)
 	});
 
 	// Close infoBox when user clicks anywhere on the map
-	google.maps.event.addListener(map, 'click', function () {
+	google.maps.event.addListener(map, 'click', () => {
 		ib.close();
 		expandList({listName:"runList",noExpanding:true});
 		expandList({listName:"countryList",noExpanding:true});
@@ -416,16 +416,16 @@ function discoveryResource(callback) {
 	// Start loading animation to blank the page when first logged in
 	loadingAnimationStart();
 
-    fsAPI({ url: baseurl + '/platform/collection' }, function (result, status) {
+    fsAPI({ url: baseurl + '/platform/collection' }, (result, status) => {
         if (status == "OK") {
 			// Object "discovery" holds all the available API options
             discovery = result.collections[0].links;
 
-            fsAPI({ url: discovery["family-tree"].href }, function (result, status) {
+            fsAPI({ url: discovery["family-tree"].href }, (result, status) => {
                 if (status == "OK") {
             	    FSFT = result.collections[0].links;
 
-                    fsAPI({ url: discovery.places.href }, function (result, status) {
+                    fsAPI({ url: discovery.places.href }, (result, status) => {
                         if (status == "OK") {
                             PLACES = result.collections[0].links;
                             typeof callback === 'function' && callback();
@@ -463,7 +463,7 @@ function currentUser(callback) {
         url: FSFT["current-user-person"].href + '?&access_token=' + accesstoken
     }
 
-    fsAPI(options, function (result, status) {
+    fsAPI(options, (result, status) => {
         if (status == "OK") {
         	// Some browsers return "ns4:person" while others return "person"
             var p = $(result).find("ns4\\:person, person");
@@ -524,7 +524,7 @@ function expandDelete(optionsExpand) {
 function rootsMapperURL(options) {
 
     if (options.expand.length > 0) {
-        options.callback = function () {
+        options.callback = () => {
             // run expansion
             // check for deletions
             options.expand = expandDelete(options.expand);
@@ -652,10 +652,10 @@ function rootsMapper(options) {
     loadingAnimationStart();
     delay = 1;
 
-    mainRoutine(options, function () {
+    mainRoutine(options, () => {
     	if (options.tooManyGens == true) {
 
-    		mapEightMore(options, function() {
+    		mapEightMore(options, () => {
 
     			loadingAnimationEnd();
 
@@ -692,19 +692,19 @@ function mainRoutine(options, callback) {
     document.getElementById('loadingMessage').textContent = 'Retrieving FamilySearch ancestry data...';
 
     // Get FamilySearch pedigree
-    getPedigree(options, function () {
+    getPedigree(options, () => {
 
         // Geocode birth locations
-        placeReadLoop(function () {
+        placeReadLoop(() => {
 
             // Update loading message
             document.getElementById('loadingMessage').textContent = 'Plotting...';
 
             // Plot birth locations
-            plotterLoop(function () {
+            plotterLoop(() => {
 
 	            // Check for completion
-	            completionEvents(options, function () {
+	            completionEvents(options, () => {
 
                     typeof callback === 'function' && callback();
 
@@ -717,7 +717,7 @@ function mainRoutine(options, callback) {
 function mapEightMore(options,callback) {
 
 	// When finished mapping minimum set, loop through last generation and expand each by 8 generations
-    familyTree.IDDFS(function (leaf, cont) {
+    familyTree.IDDFS((leaf, cont) => {
 
     	// Ignore generations less than the last one
         if (leaf.generation < options.genQuery - 8) {
@@ -733,7 +733,7 @@ function mapEightMore(options,callback) {
         		tooManyGens: true
         	};
 
-            mainRoutine(opt, function () {
+            mainRoutine(opt, () => {
                 cont();
             });
 
@@ -757,13 +757,13 @@ function getPedigree(options, callback) {
 
     var url = baseurl + "/platform/tree/ancestry?person=" + options.pid + "&personDetails=true&generations=" + options.generations + "&access_token=" + accesstoken;
 
-	fsAPI({ url: url }, function (result, status) {
+	fsAPI({ url }, (result, status) => {
 		if (status == "OK") {
 		    var p = result.persons;
 			for (var i = 0; i < p.length; i++) {
 			    var n = parseFloat(p[i].display.ascendancyNumber);
 				var gen = Math.floor(log2(n));
-				var node = n + Math.pow(2, gen) * (options.rootNode - 1);
+				var node = n + 2 ** gen * (options.rootNode - 1);
                 p[i].generation = gen+ options.rootGen;
                 p[i].node = node;
                 var facts = p[i].facts;
@@ -776,7 +776,7 @@ function getPedigree(options, callback) {
                     }
                 }
 
-				if (node < Math.pow(2, gen+ options.rootGen -1)) {
+				if (node < 2 ** (gen+ options.rootGen - 1)) {
                     p[i].isPaternal = true;
 				}
 				if (p[i].living == true) {
@@ -817,16 +817,16 @@ function getPedigree(options, callback) {
 }
 
 function personReadLoop(callback) {
-	familyTree.IDDFS(function (leaf, cont) {
+	familyTree.IDDFS((leaf, cont) => {
         var node = leaf.node;
         var gen = leaf.generation;
         if (leaf.value.isPlotted !== true) {
             if (leaf.value.links.self) {
-                personRead(leaf.value.links.self.href, function (result,status) {
+                personRead(leaf.value.links.self.href, (result, status) => {
                     var person = familyTree.getNode(gen, node);
                     person.generation = gen;
                     person.node = node;
-                    if (node < Math.pow(2, gen - 1)) {
+                    if (node < 2 ** (gen - 1)) {
                         person.isPaternal = true;
                     }
                     if (status == "OK") {
@@ -842,14 +842,14 @@ function personReadLoop(callback) {
         } else {
             cont();
         }
-    }, function () {
+    }, () => {
 		typeof callback === 'function' && callback();
     });
 }
 
 function personRead(url, callback) {
     fsAPI({ media: 'x-gedcomx-v1+json', url: url + '&callback' },
-        function (result, status) {
+        (result, status) => {
             if (status == "OK") {
                 var person = result.persons[0];
                 var places = result.places;
@@ -868,8 +868,8 @@ function personRead(url, callback) {
                 }
 
                 var object = {
-                    display: display,
-                    links: links,
+                    display,
+                    links,
                     place: placestring
                 }
 			    // Send reply
@@ -891,7 +891,7 @@ function personRead(url, callback) {
 }
 
 function placeReadLoop(callback) {
-	familyTree.IDDFS(function (leaf, cont) {
+	familyTree.IDDFS((leaf, cont) => {
 		var node = leaf.node;
 		var gen = leaf.generation;
 		if (leaf.value.isPlotted !== true) {
@@ -900,26 +900,26 @@ function placeReadLoop(callback) {
 		} else {
 			cont();
 		}
-	}, function() {
+	}, () => {
 		typeof callback === 'function' && callback();
 	});
 }
 
 function plotterLoop(callback) {
-	familyTree.IDDFS(function (leaf, cont) {
+	familyTree.IDDFS((leaf, cont) => {
 		var node = leaf.node;
 		var gen = leaf.generation;
 		if (leaf.value.isPlotted !== true) {
 		    if (!(gen == 0 && node == 0)) {
 		        plotParent(gen, node);
 		    }
-			setTimeout(function () {
+			setTimeout(() => {
 				cont();
 			}, 50);
 		} else {
 			cont();
 		}
-	}, function() {
+	}, () => {
 		typeof callback === 'function' && callback();
     });
 }
@@ -964,12 +964,10 @@ function updateLists() {
         var li = document.createElement('li');
         li.setAttribute('class','item');
         li.innerHTML = getGetOrdinal(i+1) + ' generation';
-        li.onclick = function(arg) {
-            return function() {
-                expandList({listName:'isolateList'});
-                isolateLoop('',false,arg+1);
-            }
-        }(i);
+        li.onclick = (arg => () => {
+            expandList({listName:'isolateList'});
+            isolateLoop('',false,arg+1);
+        })(i);
         dcont.appendChild(li);
     }
 
@@ -986,21 +984,19 @@ function updateLists() {
         var li = document.createElement('li');
         li.setAttribute('class','item');
         li.innerHTML = getGetOrdinal(i+1) + ' generation';
-        li.onclick = function(arg) {
-            return function() {
-                expandList({listName:'countryList'});
-                countryLoop('',false,arg+1);
-            }
-        }(i);
+        li.onclick = (arg => () => {
+            expandList({listName:'countryList'});
+            countryLoop('',false,arg+1);
+        })(i);
         dcont.appendChild(li);
     }
 
 }
 
 function getGetOrdinal(n) {
-   var s=["th","st","nd","rd"],
-       v=n%100;
-   return n+'<sup>'+(s[(v-20)%10]||s[v]||s[0])+'</sup>';
+    var s=["th","st","nd","rd"];
+    var v=n%100;
+    return n+'<sup>'+(s[(v-20)%10]||s[v]||s[0])+'</sup>';
 }
 
 function makePedigree(gen, node) {
@@ -1030,13 +1026,13 @@ function makePedigree(gen, node) {
 
 	if (father) {
 		daddy.innerHTML = HtmlEncode(father.display.name) + '</br> (' + HtmlEncode(father.display.lifespan) + ')';
-		daddy.onclick = function () {
+		daddy.onclick = () => {
 			makePedigree(gen + 1, node * 2);
 			infoBoxClick(familyTree.getNode(gen + 1, node * 2).marker);
 		}
 	} else {
         daddy.innerHTML = "</br><span style='padding-left: 40px'>[+]</span>";
-        daddy.onclick = function () {
+        daddy.onclick = () => {
 
             var options = {
                 pid: person.id,
@@ -1044,7 +1040,7 @@ function makePedigree(gen, node) {
                 rootGen: person.generation,
                 rootNode: person.node,
                 father: true,
-                callback: function() {
+                callback() {
                     if (familyTree.getNode(gen + 1, node * 2)) {
                         makePedigree(gen + 1, node * 2);
                         infoBoxClick(familyTree.getNode(gen + 1, node * 2).marker);
@@ -1058,13 +1054,13 @@ function makePedigree(gen, node) {
 
 	if (mother) {
 		mommy.innerHTML = HtmlEncode(mother.display.name) + '</br> (' + HtmlEncode(mother.display.lifespan) + ')';
-		mommy.onclick = function () {
+		mommy.onclick = () => {
 			makePedigree(gen + 1, node * 2 + 1);
 			infoBoxClick(familyTree.getNode(gen + 1, node * 2 + 1).marker);
 		}
 	} else {
         mommy.innerHTML = "</br><span style='padding-left: 40px'>[+]</span>";
-        mommy.onclick = function () {
+        mommy.onclick = () => {
 
             var options = {
                 pid: person.id,
@@ -1072,7 +1068,7 @@ function makePedigree(gen, node) {
                 rootGen: person.generation,
                 rootNode: person.node,
                 mother: true,
-                callback: function() {
+                callback() {
                     if (familyTree.getNode(gen + 1, node * 2 + 1)) {
                         makePedigree(gen + 1, node * 2 + 1);
                         infoBoxClick(familyTree.getNode(gen + 1, node * 2 + 1).marker);
@@ -1085,7 +1081,7 @@ function makePedigree(gen, node) {
     }
 
 	if (gen > 0) {
-		child.onclick = function() {
+		child.onclick = () => {
 			makePedigree(gen - 1, (node >> 1));
 			infoBoxClick(familyTree.getNode(gen - 1, (node >> 1)).marker);
 		}
@@ -1098,12 +1094,12 @@ function addOMSListeners() {
     oms.clearListeners('spiderfy');
 
     // When a pin is clicked, bring up the infoBox
-    oms.addListener('click', function (mark, event) {
+    oms.addListener('click', (mark, event) => {
         infoBoxClick(mark);
     });
 
     // When a pile of pins is clicked, don't bring up an infoBox
-    oms.addListener('spiderfy', function (mark) {
+    oms.addListener('spiderfy', mark => {
         ib.close();
     });
 }
@@ -1114,7 +1110,7 @@ function isolateLoop(callback, all, generation) {
         all = true;
     }
 
-    familyTree.IDDFS(function (tree, cont) {
+    familyTree.IDDFS((tree, cont) => {
         var node = tree.node;
         var gen = tree.generation;
         if (all == true) {
@@ -1134,7 +1130,7 @@ function isolateLoop(callback, all, generation) {
             }
         }
         cont();
-    }, function () {
+    }, () => {
         typeof callback === 'function' && callback(group);
     });
 }
@@ -1147,7 +1143,7 @@ function countryLoop(callback, all, generation) {
     	all = true;
     }
 
-    familyTree.IDDFS(function (tree, cont) {
+    familyTree.IDDFS((tree, cont) => {
         var node = tree.node;
         var gen = tree.generation;
         if (all == true) {
@@ -1160,7 +1156,7 @@ function countryLoop(callback, all, generation) {
 	        if (n > max) { max = n; }
         }
         cont();
-    }, function () {
+    }, () => {
         displayCountryStats(group);
         typeof callback === 'function' && callback(group);
     });
@@ -1202,10 +1198,10 @@ function displayCountryStats(group) {
     var keystore = keys.slice(0);
     // vals.sort(function(a, b){return b-a});
 
-	var absmaxval = Math.max.apply(Math,vals);
+	var absmaxval = Math.max(...vals);
 
 	for (var i = 0; i < vals.length; i++) {
-        var maxval = Math.max.apply(Math,vals);
+        var maxval = Math.max(...vals);
 
         for (var j = 0; j < keys.length; j++) {
             if (group[keys[j]] == maxval) {
@@ -1235,7 +1231,7 @@ function displayCountryStats(group) {
         cs.style.height = document.getElementById('countryStats').clientHeight + 115 + 'px';
         document.getElementById('countryDiv').style.height = document.getElementById('countryStats').clientHeight + 25 + 'px';
 
-        setTimeout(function(){
+        setTimeout(() => {
             cs.style.overflow = 'visible';
         },250);
     }
@@ -1251,7 +1247,7 @@ function queryTable(countryArray,countryCount) {
 
     	var tableid = 424206; // 423734; //
     	var where = "'name' IN ('" + countryArray.join("','") + "')";
-    	var maxval = Math.max.apply(Math,countryCount);
+    	var maxval = Math.max(...countryCount);
 
     	var styles = [];
     	for (k=0; k<5; k++) {
@@ -1275,8 +1271,8 @@ function queryTable(countryArray,countryCount) {
     	layer = new google.maps.FusionTablesLayer({query:{
     			select: 'kml_4326',
     			from: tableid,
-    			where: where
-    		},styles: styles,
+    			where
+    		},styles,
     		suppressInfoWindows: true
     	});
 
@@ -1295,7 +1291,7 @@ function getPhoto(id, gen, node, callback) {
 
         var url = FSFT.persons.href + "/" + id + "/portrait?access_token=" + accesstoken;
 
-        fsAPI({ url: url, media: 'img' }, function (result, status) {
+        fsAPI({ url, media: 'img' }, (result, status) => {
             familyTree.getNode(gen, node).image = result;
             typeof callback === 'function' && callback(result);
         }, 10000);
@@ -1306,7 +1302,7 @@ function getPhoto(id, gen, node, callback) {
 }
 
 function setPhoto(gen, node, timer) {
-    setTimeout(function () {
+    setTimeout(() => {
         var portrait = document.getElementById('portrait');
         if (portrait) {
             var person = familyTree.getNode(gen, node);
@@ -1324,7 +1320,7 @@ function setPhoto(gen, node, timer) {
 }
 
 function getMeABirthPlace(gen, node, cont, callback) {
-    getPlaceAuthority(gen,node,cont, function (result, status) {
+    getPlaceAuthority(gen,node,cont, (result, status) => {
         if (status == "OK") {
             familyTree.getNode(gen, node).display.birthLatLng = result.latlng;
             familyTree.getNode(gen, node).display.birthCountry = result.country;
@@ -1346,14 +1342,14 @@ function getMeABirthPlace(gen, node, cont, callback) {
 
 			} else {
 			    typeof result === 'function' && result();
-				getChildBirthPlace(gen, node, function (result) {
+				getChildBirthPlace(gen, node, result => {
                     familyTree.getNode(gen, node).display.birthLatLng = result;
                     typeof callback === 'function' && callback();
                 });
 			}
         } else {
        //     console.log("Place authority fail. Try google.")
-            getLatLng(familyTree.getNode(gen, node).display.birthPlace, cont, function (result, status) {
+            getLatLng(familyTree.getNode(gen, node).display.birthPlace, cont, (result, status) => {
                 if (status == "OK") {
                     familyTree.getNode(gen, node).display.birthLatLng = result.latlng;
             		familyTree.getNode(gen, node).display.birthCountry = result.country;
@@ -1373,7 +1369,7 @@ function getMeABirthPlace(gen, node, cont, callback) {
                             loadingAnimationEnd();
 
                         } else {
-                            getChildBirthPlace(gen, node, function (result) {
+                            getChildBirthPlace(gen, node, result => {
                                 familyTree.getNode(gen, node).display.birthLatLng = result;
                                 typeof callback === 'function' && callback();
                             });
@@ -1388,13 +1384,13 @@ function getMeABirthPlace(gen, node, cont, callback) {
 function getLatLng(place, cont, callback) {
 
     if (place) {
-        setTimeout(function () {
+        setTimeout(() => {
             var geocoder = new google.maps.Geocoder();
             var georequest = {
                 address: place
             };
 
-            geocoder.geocode(georequest, function (result, status) {
+            geocoder.geocode(georequest, (result, status) => {
                 if (status == google.maps.GeocoderStatus.OK) {
                     var latlng = result[0].geometry.location;
 					var split = place.split(",");
@@ -1402,7 +1398,7 @@ function getLatLng(place, cont, callback) {
                     while (country.charAt(0) === ' ') {
                         country = country.substr(1);
                     }
-                    typeof callback === 'function' && callback({latlng: latlng, country: country, cont: cont}, "OK");
+                    typeof callback === 'function' && callback({latlng, country, cont}, "OK");
                 } else {
                     if (status == google.maps.GeocoderStatus.OVER_QUERY_LIMIT) {
                         //typeof callback === 'function' && callback(undefined, "LIMIT");
@@ -1434,7 +1430,7 @@ function getPlaceAuthority(gen, node, cont, callback) {
                 access_token: accesstoken
             });
 
-                fsAPI({url: url }, function (result, status) {
+                fsAPI({url }, (result, status) => {
                     if (status == "OK") {
                         var point = result.entries;
                         // var form = $(result).find("form");
@@ -1455,7 +1451,7 @@ function getPlaceAuthority(gen, node, cont, callback) {
                             var lat = point[0].content.gedcomx.places[0].latitude;
                             var lng = point[0].content.gedcomx.places[0].longitude;
                             var latlng = new google.maps.LatLng(lat, lng);
-                            typeof callback === 'function' && callback({latlng: latlng, country: country, cont: cont}, status);
+                            typeof callback === 'function' && callback({latlng, country, cont}, status);
                         } else {
                             typeof callback === 'function' && callback(cont, "NONE");
                         }
@@ -1468,12 +1464,12 @@ function getPlaceAuthority(gen, node, cont, callback) {
         }
     } else {
         if (gen == 0 && node == 0) {
-            setTimeout(function () {
+            setTimeout(() => {
                 getPlaceAuthority(gen, node, cont, callback)
             }, 100);
         } else {
             typeof cont === 'function' && cont();
-            setTimeout(function () {
+            setTimeout(() => {
                 getPlaceAuthority(gen, node, '', callback)
             }, 100);
         }
@@ -1492,13 +1488,13 @@ function plotParent(gen, node) {
 
     if (child.display.birthLatLng && parent.display.birthLatLng) {
         checkBounds(parent.display.birthLatLng);
-        polymap([child.display.birthLatLng, parent.display.birthLatLng], color, node, gen, function (result) { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
+        polymap([child.display.birthLatLng, parent.display.birthLatLng], color, node, gen, result => { //rgbToHex(74,96,255) rgbToHex(0, 176, 240)
             createMarker(familyTree.getNode(gen, node));
             familyTree.getNode(gen, node).isPlotted = true;
         });
     } else {
         //  console.log("Recursion waiting for " + child.name + " ... ");
-        setTimeout(function () {
+        setTimeout(() => {
             plotParent(gen, node);
         }, 1000);
     }
@@ -1525,7 +1521,7 @@ function polymap(coords, color, node, gen, callback) {
             strokeWeight: 3,
             geodesic: true,
             path: [c1, c1],
-            map: map
+            map
         };
 
         var geodesicPoly = new google.maps.Polyline(geodesicOptions);
@@ -1538,7 +1534,7 @@ function polymap(coords, color, node, gen, callback) {
             var node = this.node;
             var zindex = familyTree.getNode(gen, node).marker.getZIndex();
             familyTree.getNode(gen, node).marker.setZIndex(9999);
-            setTimeout(function () {
+            setTimeout(() => {
                 familyTree.getNode(gen, node).marker.setZIndex(zindex);
             }, 300);
         });
@@ -1555,7 +1551,7 @@ function polymap(coords, color, node, gen, callback) {
         var step = 0;
         var numSteps = 100; //Change this to set animation resolution
         var timePerStep = 5; //Change this to alter animation speed
-        var interval = setInterval(function () {
+        var interval = setInterval(() => {
 			var now = new Date();
 			var elapsedTime = (now.getTime() - before.getTime())
 			if (elapsedTime > timePerStep * numSteps || onlyPins == true) {
@@ -1592,7 +1588,7 @@ function createMarker(p,yellow) {
 
             var scaleFactor = .5;
             var opts = {
-                map: map,
+                map,
                 position: p.display.birthLatLng,
                 icon: {
                     url: icon,
@@ -1604,7 +1600,7 @@ function createMarker(p,yellow) {
 
             if (yellow == true) {
                 var opts = {
-                    map: map,
+                    map,
                     position: p.display.birthLatLng,
                     zIndex: 999,
                     icon: {
@@ -1633,7 +1629,7 @@ function createMarker(p,yellow) {
                 ib2.open(map);
             });
 
-            google.maps.event.addListener(mark, 'mouseout', function () {
+            google.maps.event.addListener(mark, 'mouseout', () => {
                 ib2.close();
             });
 
@@ -1717,7 +1713,7 @@ function createMarker(p,yellow) {
         p.marker.isExpanded=true;
 
         if (callback == undefined) {
-            callback = function() {
+            callback = () => {
                 infoBoxClick(p.marker);
             }
         }
@@ -1727,7 +1723,7 @@ function createMarker(p,yellow) {
         	generations: gens,
         	rootGen: gen,
         	rootNode: node,
-            callback: callback
+            callback
         };
 
         rootsMapper(options);
@@ -1743,7 +1739,7 @@ function createMarker(p,yellow) {
 	       cur_selected = mark.generation + "," + mark.node;
            window.history.replaceState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
 		// if (baseurl.indexOf('sandbox') == -1) {
-		    getPhoto(mark.personID, mark.generation, mark.node, function (img) {
+		    getPhoto(mark.personID, mark.generation, mark.node, img => {
 		        setPhoto(mark.generation, mark.node,0);
 		    });
 		// }
@@ -1785,7 +1781,7 @@ function createMarker(p,yellow) {
 
 		restoreColors();
 		if (highlights == true) {
-		    getToRoot(mark.generation, mark.node, function (gen, node) {
+		    getToRoot(mark.generation, mark.node, (gen, node) => {
 		        familyTree.getNode(gen, node).offColored = true;
 		        if (familyTree.getNode(gen, node).polyline !== undefined) {
 		            familyTree.getNode(gen, node).polyline.setOptions({ strokeColor: '#000000', zIndex: 999 });
@@ -1825,7 +1821,7 @@ function createMarker(p,yellow) {
     function restoreColors(callback) {
     	if (fixColors == true) {
 			fixColors = false;
-			familyTree.IDDFS(function (leaf, cont) {
+			familyTree.IDDFS((leaf, cont) => {
 				var node = leaf.node;
 				var gen = leaf.generation;
 				if (leaf.value.isPlotted == true) {
@@ -1859,7 +1855,7 @@ function createMarker(p,yellow) {
 				    }
 				}
 				cont();
-			}, function () {
+			}, () => {
 				typeof callback === 'function' && callback();
 			});
 		} else {
@@ -1868,7 +1864,7 @@ function createMarker(p,yellow) {
 	}
 
     function toggleIsolate(callback) {
-        familyTree.IDDFS(function (leaf, cont) {
+        familyTree.IDDFS((leaf, cont) => {
             if (leaf.value.offColored !== true) {
                 if (onlyPins == false) {
                     if (leaf.value.polyline !== undefined) {
@@ -1879,7 +1875,7 @@ function createMarker(p,yellow) {
             }
             cont();
 
-        }, function () {
+        }, () => {
             if (isolate == false) {
                 isolate = true;
                 document.getElementById('isolate').className = 'button yellow off';
@@ -1892,7 +1888,7 @@ function createMarker(p,yellow) {
     }
 
     function toggleLines(callback) {
-        familyTree.IDDFS(function (leaf, cont) {
+        familyTree.IDDFS((leaf, cont) => {
             if (leaf.value.polyline !== undefined) {
                 if (isolate == true) {
                     if (leaf.value.offColored == true) {
@@ -1903,7 +1899,7 @@ function createMarker(p,yellow) {
                 }
             }
             cont();
-        }, function () {
+        }, () => {
             if (onlyPins == false) {
                 onlyPins = true;
                 document.getElementById('showlines').className = 'button yellow';
@@ -1918,10 +1914,10 @@ function createMarker(p,yellow) {
     }
 
 	function togglePins(callback) {
-		familyTree.IDDFS(function (leaf, cont) {
+		familyTree.IDDFS((leaf, cont) => {
 			leaf.value.marker.setVisible(!pinsVisible);
 			cont();
-		},function() {
+		},() => {
 			if (pinsVisible == false) {
 				pinsVisible = true;
 				document.getElementById('showpins').className = 'button yellow off';
@@ -1983,7 +1979,7 @@ function createMarker(p,yellow) {
         window.history.replaceState("none","", "?root=" + cur_root + "&gens=" + cur_gens + "&selected=" + cur_selected + "&expand=" + cur_expand);
 
 		// ib.close();
-		countryLoop(function (group) {
+		countryLoop(group => {
             infoBoxClick(familyTree.getChild(gen,node).marker);
 		});
     }
@@ -1996,7 +1992,7 @@ function createMarker(p,yellow) {
         if (child.display.birthLatLng) {
             typeof callback === 'function' && callback(child.display.birthLatLng);
         } else {
-            setTimeout(function () {
+            setTimeout(() => {
                 getChildBirthPlace(gen, node, callback);
             }, 1000);
         }
@@ -2006,20 +2002,20 @@ function createMarker(p,yellow) {
     function loadingAnimationStart() {
         document.title = "*" + cur_title;
         document.getElementById('loadingDiv').style.visibility = 'visible';
-        $(function () {
+        $(() => {
             $('#loading').show();
         });
-        $(function () {
+        $(() => {
             $('#loading').activity({ segments: 10, width: 10, space: 1, length: 10, color: '#eeeeee', speed: 1.5 });
         });
     }
 
     function loadingAnimationEnd() {
         document.title = cur_title;
-        $(function () {
+        $(() => {
             $('#loading').activity(false);
         });
-        $(function () {
+        $(() => {
             $('#loading').hide();
             document.getElementById('loadingDiv').style.visibility = 'hidden';
         });
@@ -2039,7 +2035,7 @@ function createMarker(p,yellow) {
         oms.clearMarkers();
         oms.clearListeners('click');
         if (familyTree) {
-            familyTree.IDDFS(function (tree, cont) {
+            familyTree.IDDFS((tree, cont) => {
                 var node = tree.node;
                 var gen = tree.generation;
                 if (familyTree.getNode(gen, node).marker) {
@@ -2049,7 +2045,7 @@ function createMarker(p,yellow) {
                     familyTree.getNode(gen, node).polyline.setMap(null);
                 }
                 cont();
-            }, function () { });
+            }, () => { });
         }
 
     	if (ib) {
@@ -2065,7 +2061,7 @@ function createMarker(p,yellow) {
 		    box: true
 		};
 
-        google.maps.event.addListener(ib, 'domready', function () {
+        google.maps.event.addListener(ib, 'domready', () => {
 
             if (document.getElementById("ebutton")) {
             	tooltip.set({id: "ebutton", tip: "Plot the ancestors of this person"});
@@ -2097,7 +2093,7 @@ function createMarker(p,yellow) {
 
     function populateUser() {
         if (!userID) {
-            personRead("", function (currentUser, status) {
+            personRead("", (currentUser, status) => {
                 if (status == "OK") {
                     populateIdField(currentUser.id,currentUser.display.name);
                     userID = currentUser.id;
@@ -2114,7 +2110,7 @@ function createMarker(p,yellow) {
 
     function completionEvents(options,callback) {
 
-        markerCheckLoop(function () {
+        markerCheckLoop(() => {
 
         	if (options.tooManyGens == true) {
 
@@ -2147,15 +2143,15 @@ function createMarker(p,yellow) {
 
     function markerCheckLoop(callback) {
     	// Makes sure every person is plotted before proceeding
-        familyTree.IDDFS(function (leaf, cont) {
+        familyTree.IDDFS((leaf, cont) => {
             if (!leaf.value.marker) {
-                setTimeout(function () {
+                setTimeout(() => {
                     markerCheckLoop(callback);
                 }, 1000);
             } else {
                 cont();
             }
-        }, function () {
+        }, () => {
             typeof callback === 'function' && callback();
         });
     }
@@ -2169,7 +2165,7 @@ function createMarker(p,yellow) {
         var b = "<button class='button red' onclick='" + "window.location = 'logout.php'" + "';>Logout</button>";
 
         var count = 5;
-        var counter = setInterval(function () {
+        var counter = setInterval(() => {
             count = count - 1;
             if (count <= 0) {
                 clearInterval(counter);
@@ -2210,7 +2206,7 @@ function createMarker(p,yellow) {
         xhttp.open("GET", url);
         xhttp.setRequestHeader('Accept', 'application/xml');
 
-        xhttp.onload = function (e) {
+        xhttp.onload = e => {
             if (xhttp.readyState === 4) {
                 if (xhttp.status === 200) {
                 } else if (xhttp.status === 401) {
@@ -2225,7 +2221,7 @@ function createMarker(p,yellow) {
     }
 
     function sessionHandler() {
-        var handler = setTimeout(function () {
+        var handler = setTimeout(() => {
             customAlert();
         }, 10 * 1000);
     }
@@ -2313,7 +2309,7 @@ function checkID() {
 	    access_token: accesstoken
 	});
 
-	personRead(url,function(result,status) {
+	personRead(url,(result, status) => {
 		if (status == "OK") {
 			document.getElementById("personName").textContent = result.display.name;
 		} else {
@@ -2340,7 +2336,7 @@ function createKML() {
 	var Document = doc.createElement("Document");
 	kml.appendChild(Document);
 
-    familyTree.IDDFS(function (leaf, cont) {
+    familyTree.IDDFS((leaf, cont) => {
 
     	// for each person in familyTree...
 		var Placemark = doc.createElement("Placemark");

@@ -5,10 +5,10 @@
   Released under the MIT licence: http://opensource.org/licenses/mit-license
 */
 
-var tooltip = new function(){
-	this.set = function(options) {
+var tooltip = new (function() {
+	this.set = options => {
 		if (document.getElementById(options.id) != null) {
-			document.getElementById(options.id).onmouseover = function(event) {
+			document.getElementById(options.id).onmouseover = event => {
 				constructor(event,options);
 			}
 		}
@@ -37,12 +37,12 @@ var tooltip = new function(){
 	    options.yBuffer || (options.yBuffer = 50);
 
 	    // Make tooltip appear when mouse stops
-	    e.onmousemove = function(event) {
+	    e.onmousemove = event => {
 	    	onMouseStop(event,options);
 	    }
 
 	    // Clear all events and remove tooltip when mouse leaves
-	    e.onmouseout = function() {
+	    e.onmouseout = () => {
 	    	clearTimeout(onMouseStop.thread);
 
 	    	if (document.getElementById('tt')) {
@@ -57,19 +57,23 @@ var tooltip = new function(){
 	}
 
 	function onMouseStop(event,options) {
-		var e = event.toElement || event.relatedTarget;
+        var e = event.toElement || event.relatedTarget;
 
-		clearTimeout(onMouseStop.thread);
+        clearTimeout(onMouseStop.thread);
 
-		// Remove any lingering tooltips
-		if (document.getElementById('tt')) {
+        // Remove any lingering tooltips
+        if (document.getElementById('tt')) {
 	    	var m = document.getElementById('tt');
 	    	document.body.removeChild(m);
 		}
 
-		// Set up event when mouse stops
-		var event = event ? event : window.event, x=event.clientX, y=event.clientY,
-		mouseStopEvent = function() {
+        // Set up event when mouse stops
+        var event = event ? event : window.event;
+
+        var x=event.clientX;
+        var y=event.clientY;
+
+        var mouseStopEvent = () => {
 			// Get window size
 			var page = pageDimensions();
 
@@ -99,7 +103,7 @@ var tooltip = new function(){
 	        e.onmousemove = null;
 
 	        // Set tooltip duration
-	        var timer = setTimeout(function () {
+	        var timer = setTimeout(() => {
 	            if (document.getElementById('tt')) {
 	                var m = document.getElementById('tt');
 	                document.body.removeChild(m);
@@ -108,24 +112,24 @@ var tooltip = new function(){
 
 		};
 
-		onMouseStop.thread=setTimeout(mouseStopEvent, options.hoverTime);
-	}
+        onMouseStop.thread=setTimeout(mouseStopEvent, options.hoverTime);
+    }
 
 	function pageDimensions() {
+        // Gives the dimensions of the viewable area of the window
+        var w = window;
 
-		// Gives the dimensions of the viewable area of the window
-		var w = window,
-	    	d = document,
-	    	e = d.documentElement,
-	    	g = d.getElementsByTagName('body')[0],
-	    	x = w.innerWidth || e.clientWidth || g.clientWidth,
-	    	y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+        var d = document;
+        var e = d.documentElement;
+        var g = d.getElementsByTagName('body')[0];
+        var x = w.innerWidth || e.clientWidth || g.clientWidth;
+        var y = w.innerHeight|| e.clientHeight|| g.clientHeight;
 
-	    return {
+        return {
 	    	width: x,
 	    	height: y
 	    	};
-	}
+    }
 
-}();
+})();
 

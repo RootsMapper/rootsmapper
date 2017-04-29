@@ -11,7 +11,7 @@
 /**
  * Plugin that renders a customisable activity indicator (spinner) using SVG or VML.
  */
-(function($) {
+(($ => {
 
 	$.fn.activity = function(opts) {
 		this.each(function() {
@@ -59,7 +59,7 @@
 		padding: 4
 	};
 	
-	$.fn.activity.getOpacity = function(opts, i) {
+	$.fn.activity.getOpacity = (opts, i) => {
 		var steps = opts.steps || opts.segments-1;
 		var end = opts.opacity !== undefined ? opts.opacity : 1/steps;
 		return 1 - Math.min(i, steps) * (1 - end) / steps;
@@ -69,14 +69,12 @@
 	 * Default rendering strategy. If neither SVG nor VML is available, a div with class-name 'busy' 
 	 * is inserted, that can be styled with CSS to display an animated gif as fallback.
 	 */
-	var render = function() {
-		return $('<div>').addClass('busy');
-	};
+	var render = () => $('<div>').addClass('busy');
 	
 	/**
 	 * The default animation strategy does nothing as we expect an animated gif as fallback.
 	 */
-	var animate = function() {
+	var animate = () => {
 	};
 	
 	/**
@@ -85,7 +83,7 @@
 	function svg(tag, attr) {
 		var el = document.createElementNS("http://www.w3.org/2000/svg", tag || 'svg');
 		if (attr) {
-			$.each(attr, function(k, v) {
+			$.each(attr, (k, v) => {
 				el.setAttributeNS(null, k, v);
 			});
 		}
@@ -101,7 +99,7 @@
 		/**
 		 * Rendering strategy that creates a SVG tree.
 		 */
-		render = function(target, d) {
+		render = (target, d) => {
 			var innerRadius = d.width*2 + d.space;
 			var r = (innerRadius + d.length + Math.ceil(d.width / 2) + 1);
 			
@@ -136,7 +134,7 @@
 			/**
 			 * Animation strategy that uses dynamically created CSS animation rules.
 			 */
-			animate = function(el, steps, duration) {
+			animate = (el, steps, duration) => {
 				if (!animations[steps]) {
 					var name = 'spin' + steps;
 					var rule = '@-webkit-keyframes '+ name +' {';
@@ -158,10 +156,10 @@
 			/**
 			 * Animation strategy that transforms a SVG element using setInterval().
 			 */
-			animate = function(el, steps, duration) {
+			animate = (el, steps, duration) => {
 				var rotation = 0;
 				var g = el.find('g g').get(0);
-				el.data('interval', setInterval(function() {
+				el.data('interval', setInterval(() => {
 					g.setAttributeNS(null, 'transform', 'rotate(' + (++rotation % steps * (360 / steps)) + ')');
 				},  duration * 1000 / steps));
 			};
@@ -187,7 +185,7 @@
 			/**
 			 * Rendering strategy that creates a VML tree. 
 			 */
-			render = function(target, d) {
+			render = (target, d) => {
 			
 				var innerRadius = d.width*2 + d.space;
 				var r = (innerRadius + d.length + Math.ceil(d.width / 2) + 1);
@@ -208,10 +206,10 @@
 			/**
 		     * Animation strategy that modifies the VML rotation property using setInterval().
 		     */
-			animate = function(el, steps, duration) {
+			animate = (el, steps, duration) => {
 				var rotation = 0;
 				var g = el.get(0);
-				el.data('interval', setInterval(function() {
+				el.data('interval', setInterval(() => {
 					g.style.rotation = ++rotation % steps * (360 / steps);
 				},  duration * 1000 / steps));
 			};
@@ -219,4 +217,4 @@
 		$(s).remove();
 	}
 
-})(jQuery);
+}))(jQuery);

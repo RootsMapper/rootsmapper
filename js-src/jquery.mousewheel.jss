@@ -6,7 +6,7 @@
  * Requires: jQuery 1.2.2+
  */
 
-(function (factory) {
+((factory => {
     if ( typeof define === 'function' && define.amd ) {
         // AMD. Register as an anonymous module.
         define(['jquery'], factory);
@@ -17,13 +17,15 @@
         // Browser globals
         factory(jQuery);
     }
-}(function ($) {
+})($ => {
+    var toFix  = ['wheel', 'mousewheel', 'DOMMouseScroll', 'MozMousePixelScroll'];
 
-    var toFix  = ['wheel', 'mousewheel', 'DOMMouseScroll', 'MozMousePixelScroll'],
-        toBind = ( 'onwheel' in document || document.documentMode >= 9 ) ?
-                    ['wheel'] : ['mousewheel', 'DomMouseScroll', 'MozMousePixelScroll'],
-        slice  = Array.prototype.slice,
-        nullLowestDeltaTimeout, lowestDelta;
+    var toBind = ( 'onwheel' in document || document.documentMode >= 9 ) ?
+                ['wheel'] : ['mousewheel', 'DomMouseScroll', 'MozMousePixelScroll'];
+
+    var slice  = Array.prototype.slice;
+    var nullLowestDeltaTimeout;
+    var lowestDelta;
 
     if ( $.event.fixHooks ) {
         for ( var i = toFix.length; i; ) {
@@ -34,7 +36,7 @@
     var special = $.event.special.mousewheel = {
         version: '3.1.9',
 
-        setup: function() {
+        setup() {
             if ( this.addEventListener ) {
                 for ( var i = toBind.length; i; ) {
                     this.addEventListener( toBind[--i], handler, false );
@@ -47,7 +49,7 @@
             $.data(this, 'mousewheel-page-height', special.getPageHeight(this));
         },
 
-        teardown: function() {
+        teardown() {
             if ( this.removeEventListener ) {
                 for ( var i = toBind.length; i; ) {
                     this.removeEventListener( toBind[--i], handler, false );
@@ -57,11 +59,11 @@
             }
         },
 
-        getLineHeight: function(elem) {
+        getLineHeight(elem) {
             return parseInt($(elem)['offsetParent' in $.fn ? 'offsetParent' : 'parent']().css('fontSize'), 10);
         },
 
-        getPageHeight: function(elem) {
+        getPageHeight(elem) {
             return $(elem).height();
         },
 
@@ -71,23 +73,23 @@
     };
 
     $.fn.extend({
-        mousewheel: function(fn) {
+        mousewheel(fn) {
             return fn ? this.bind('mousewheel', fn) : this.trigger('mousewheel');
         },
 
-        unmousewheel: function(fn) {
+        unmousewheel(fn) {
             return this.unbind('mousewheel', fn);
         }
     });
 
 
     function handler(event) {
-        var orgEvent   = event || window.event,
-            args       = slice.call(arguments, 1),
-            delta      = 0,
-            deltaX     = 0,
-            deltaY     = 0,
-            absDelta   = 0;
+        var orgEvent   = event || window.event;
+        var args       = slice.call(arguments, 1);
+        var delta      = 0;
+        var deltaX     = 0;
+        var deltaY     = 0;
+        var absDelta   = 0;
         event = $.event.fix(orgEvent);
         event.type = 'mousewheel';
 
@@ -197,6 +199,5 @@
         // Turn this off by setting $.event.special.mousewheel.settings.adjustOldDeltas to false.
         return special.settings.adjustOldDeltas && orgEvent.type === 'mousewheel' && absDelta % 120 === 0;
     }
-
 }));
 

@@ -16,7 +16,7 @@ function alphaFilterKeypress(evt) {
     }
 }
 
-window.onload = function() {
+window.onload = () => {
     var input = document.getElementById("personid");
     input.onkeypress = alphaFilterKeypress;
 };
