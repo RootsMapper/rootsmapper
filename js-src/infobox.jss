@@ -138,7 +138,7 @@ InfoBox.prototype.createInfoBoxDiv_ = function () {
 
   // This handler prevents an event in the InfoBox from being passed on to the map.
   //
-  var cancelHandler = function (e) {
+  var cancelHandler = e => {
     e.cancelBubble = true;
     if (e.stopPropagation) {
       e.stopPropagation();
@@ -148,7 +148,7 @@ InfoBox.prototype.createInfoBoxDiv_ = function () {
   // This handler ignores the current event in the InfoBox and conditionally prevents
   // the event from being passed on to the map. It is used for the contextmenu event.
   //
-  var ignoreHandler = function (e) {
+  var ignoreHandler = e => {
 
     e.returnValue = false;
 
@@ -287,7 +287,7 @@ InfoBox.prototype.getCloseClickHandler_ = function () {
 
   var me = this;
 
-  return function (e) {
+  return e => {
 
     // 1.0.3 fix: Always prevent propagation of a close box click to the map:
     e.cancelBubble = true;
@@ -313,10 +313,10 @@ InfoBox.prototype.getCloseClickHandler_ = function () {
  * @private
  */
 InfoBox.prototype.panBox_ = function (disablePan) {
-
   var map;
   var bounds;
-  var xOffset = 0, yOffset = 0;
+  var xOffset = 0;
+  var yOffset = 0;
 
   if (!disablePan) {
 
@@ -379,8 +379,8 @@ InfoBox.prototype.panBox_ = function (disablePan) {
  * @private
  */
 InfoBox.prototype.setBoxStyle_ = function () {
-
-  var i, boxStyle;
+  var i;
+  var boxStyle;
 
   if (this.div_) {
 
