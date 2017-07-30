@@ -1430,7 +1430,7 @@ function getPlaceAuthority(gen, node, cont, callback) {
             }
             // var url = discovery.authorities.href + '/v1/place?place=' + encodeURIComponent(place) + "&filter=true&locale=en&sessionId=" + accesstoken;
             var url = urltemplate.parse(PLACES["place-search"].template).expand({
-                q: "name:" + encodeURIComponent(place),
+                q: 'name:"' + place + '"',
                 access_token: accesstoken
             });
 
