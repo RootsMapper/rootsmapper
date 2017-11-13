@@ -53,7 +53,7 @@ function fsAPI(options, callback, timeout) {
                     var result = this.responseXML.documentElement;
                 } else if (options.media =="img") {
                     var headers = parseResponseHeaders(this.getAllResponseHeaders());
-                    var result = headers["Content-Location"];
+                    var result = headers["content-location"];
                 } else {
                     var result = JSON.parse(this.response);
                 }
