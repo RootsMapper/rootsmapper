@@ -116,7 +116,7 @@ else
              title='<?php echo isset($TITLE)? $TITLE : ""; ?>';
              cur_title=title;
              accesstoken='<?php echo isset($access_token) ? $access_token : ""; ?>';
-             baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "sandbox." : "") . "familysearch.org"); ?>';
+             baseurl='<?php echo("https://" . ($SITE_MODE == 'sandbox' ? "api-integ." : "api.") . "familysearch.org"); ?>';
              version='<?php echo isset($VERSION)? $VERSION : ""; ?>';
              get_root='<?php echo isset($GET_ROOT)? $GET_ROOT : ""; ?>';
              get_gens='<?php echo isset($GET_GENS)? $GET_GENS : ""; ?>';
@@ -128,9 +128,9 @@ else
     		$('#loading').hide();
  	 });
 	</script>
+	<?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
     </head>
     <body>
-        <?php echo isset($TRACKING_CODE) ? $TRACKING_CODE : ""; ?>
 		<div id="bigDiv">
 			<div id="adDiv">
 <?php
@@ -145,7 +145,7 @@ echo($SIDEAD_CODE);
 <?php
 if (!isset($access_token))
 { ?>
-				<button id="loginbutton" onclick="window.location='?login'">Login to begin mapping</button>
+				<button id="loginbutton" onclick="window.location='?login'">Sign In to FamilySearch to Begin Mapping</button>
 <?php
 }
 ?>

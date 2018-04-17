@@ -1669,7 +1669,7 @@ function createMarker(p,yellow) {
         mark.deleteButton = "<button id='trashcan' class='button red' onclick='deleteMarker(" + p.generation + "," + p.node + ") ;'>X</button>";
 
         mark.personID = p.id;
-        var url = baseurl + '/tree/#view=ancestor&person=' + p.id;
+        var url = 'https://www.familysearch.org/tree/person/details/' + p.id;
         var displayBirthString;
         var displayDeathString;
         if (p.display["http://gedcomx.org/Birth"]) {
