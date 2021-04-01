@@ -19,4 +19,4 @@ Point your webserver at the public folder.
 * OverlappingMarkerSpiderfier (MIT License) https://github.com/jawj/OverlappingMarkerSpiderfier
 * Neteye Activity Indicator (MIT License) https://github.com/neteye/jquery-plugins
 * php-sample-person-browser https://github.com/justincy/php-sample-person-browser
-* Journalness https://github.com/dawithers/journalness
+* Journalness https://gitlab.com/dawithers/journalness
